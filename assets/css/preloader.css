@@ -1,0 +1,44 @@
+.preloader{
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: block;
+    opacity: 1.0;
+    background-color: #061325;
+    z-index: 100;
+    text-align: center;
+}
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0
+}
+
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal
+}
+
+.spinner-border {
+    -webkit-animation-duration: .85s;
+    animation-duration: 1s;
+    -webkit-animation-timing-function: cubic-bezier(.47, .25, .4, .65);
+    animation-timing-function: cubic-bezier(.47, .25, .4, .65)
+}
+
+.text-primary {
+    color: #2c7be5 !important
+}

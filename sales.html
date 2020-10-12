@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<html class="navbar-vertical-collapsed" lang="en-US" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Sales</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/illustrations/logo.ico">
+
+
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/config.navbar-vertical.min.js"></script>
+    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
+    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lightbox2/css/lightbox.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/fancybox/jquery.fancybox.min.css" rel="stylesheet">
+    <link href="assets/css/theme-dark.min.css" rel="stylesheet">
+    <script>
+      const ipc = require('electron').ipcRenderer
+      ipc.send("getUsername")
+      ipc.on("ReturnedUsername",(event,arg) => {
+          console.log("Nome")
+          console.log(arg)
+          $("#nickName").text(arg)
+      })
+    </script>
+  </head>
+
+  <body onload="LoadSales()">
+    <style>
+      .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+      }
+      .dot1 {
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+    </style>
+    <main class="main" id="top">
+      <div class="preloader" id = "Preloader1">
+        <div style = "position:fixed;top: 50%;left: 50%;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid" data-layout="container">
+        <div style="height: 20px;cursor: pointer;-webkit-user-select: none; -webkit-app-region: drag;">
+          <span style="float: right; -webkit-app-region: no-drag;">
+            <span class="dot2" onclick = "minimize()"></span>
+            <span class="dot1" onclick = "maximize()"></span>
+            <span class="dot" onclick = "quit()"></span>
+          </span>
+        </div>
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand mr-1 mr-sm-3">
+            <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
+          </a>
+          <div class="collapse navbar-collapse" id="navbarStandard">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="inventory.html">Inventory</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Sales</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="expenses.html">Expenses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="bot.html">Bot</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tracking.html" >Tracking</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="market.html">Market</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="log.html">Log</a>
+            </li>
+          </ul>
+          </div>
+          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <div class="avatar avatar-xl">
+                  <span style="float: right;" id = "nickName"></span>
+             </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
+              <div class="bg-white rounded-soft py-2">
+                <a class="dropdown-item" href="settings.html">Settings</a>
+                <a class="dropdown-item" onclick="LogOut()">Logout</a>
+              </div>
+            </div>
+          </li>
+          </ul>
+        </nav>
+          <div class="content">
+          <div class="card mb-3 bg-200">
+            <div class="card-header bg-200">
+              <div class="row align-items-center justify-content-between">
+                <div class="col-6 col-sm-auto d-flex align-items-center pr-0">
+                  <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
+                  <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
+                </div>
+                <div class="col-6 col-sm-auto ml-auto text-right pl-0">
+                  <div id="dashboard-actions">
+                    <button class="btn btn-falcon-default btn-sm mx-2" type="button" onclick="SyncAvgPrice()">
+                      <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
+                      <span class="d-none d-sm-inline-block ml-1">Sync</span>
+                  </button>
+                    <button class="btn btn-falcon-default btn-sm" type="button" onclick="Export()">
+                        <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
+                        <span class="d-none d-sm-inline-block ml-1">Export</span>
+                    </button>
+                    <button class="btn btn-falcon-default btn-sm mx-2" type="button" data-toggle="modal" data-target="#stats">
+                        <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
+                        <span class="d-none d-sm-inline-block ml-1">Statistics</span>
+                    </button> 
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-header bg-200">
+              <h1 style="text-align: center;">
+                <input type="text" id = "Filter" class="btn btn-falcon-default btn-sm" placeholder="Filter items" style="width: auto;" onkeyup="FilterTable()">
+                <div id="ricerca" style="display:none !important;background-color: #132238;display: block;margin-left: auto;margin-right: auto;width: 55%;height: 245px;border-radius: 4px;text-align: left;">
+                </div>
+              </h1>
+            </div>
+                <table class="table table-borderless table-hover">
+                  <thead class="text-900">
+                    <tr>
+                      <th class="sort pr-1 align-middle">Name</th>
+                      <th class="sort pr-1 align-middle">Date Sales</th>
+                      <th class="sort pr-1 align-middle">Buyer</th>
+                      <th class="sort pr-1 align-middle">Price</th>
+                      <th class="sort pr-1 align-middle">Value</th>
+                      <th class="sort pr-1 align-middle">Sale</th>
+                      <th class="sort pr-1 align-middle">Size</th>
+                      <th></th>
+                      <th class="sort pr-1 align-middle"></th>
+                    </tr>
+                  </thead>
+                  <tbody id = "SalesTable">
+                    
+                 </tbody>
+              </table>
+          </div>
+        </div>
+          <!--END-->
+          <!--MODAL VENDITA-->
+          <div class="modal fade" id="sale" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">Sale item</h4>
+                      <p class="fs--1 mb-0">Sales details</p>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <form>
+                    <div class="form-row">
+                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="wizard-datepicker" type="text" data-options='{"dateFormat":"d/m/y"}' /></div>
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Site</label>
+                        <input list="vendita" class="form-control">
+                        <datalist id="vendita" class="form-group">
+                          <option value="Luisaviaroma">
+                          <option value="Kith">
+                          <option value="Stockx">
+                          <option value="Opera">
+                          <option value="Safari">
+                        </datalist>
+                      </div>
+                    </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" type="submit" name="submit">Add</button></div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          <!--END-->
+          <!--MODAL PIAZZAMENTO OFFERTA-->
+          <div class="modal fade" id="ask" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">Place ask</h4>
+                      <p class="fs--1 mb-0">Easily place an ask on Stockx</p>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <form>
+                    <div class="form-row">
+                      <div class="form-group col-12"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  /></div>
+                    </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" type="submit" name="submit">Add</button></div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          <!--END-->
+          <!--MODAL STATS-->
+          <div class="modal modal-fixed-right fade" id="stats" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-vertical" role="document">
+              <div class="modal-content border-0 min-vh-100">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalRightLabel">Statistics</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="card-deck">
+                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                      <!--/.bg-holder-->
+                      <div class="card-body position-relative">
+                        <h6>Total Sales</h6>
+                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id="TotalSales"></div>
+                      </div>
+                    </div>
+                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                      <!--/.bg-holder-->
+                      <div class="card-body position-relative">
+                        <h6>Total Profit</h6>
+                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id = "TotalProfit"></div>
+                      </div>
+                    </div>
+                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                      <!--/.bg-holder-->
+                      <div class="card-body position-relative">
+                        <h6>Total Sales StockX</h6>
+                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="TotalSalesStockX"></div>
+                      </div>
+                    </div>
+                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                      <!--/.bg-holder-->
+                      <div class="card-body position-relative">
+                        <h6>Total Sales Custom</h6>
+                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="TotalSalesCustom"></div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <!---->
+          <footer>
+            <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+              <div class="col-12 col-sm-auto text-center">
+              </div>
+              <div class="col-12 col-sm-auto text-center">
+                <p class="mb-0 text-600"></p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+      if (isFluid) {
+        var container = document.querySelector('[data-layout]');
+        container.classList.remove('container');
+        container.classList.add('container-fluid');
+      }
+
+      function FilterTable(){
+        var Filter = $("#Filter").val()
+        var inventory = document.getElementById("SalesTable")
+
+        var trList = inventory.getElementsByTagName("tr")
+
+        for(var tr of trList){
+          for(var tr of trList){
+            tr.setAttribute("style","display: table-row")
+          }
+        }
+
+        if(Filter == ""){
+          for(var tr of trList){
+            tr.setAttribute("style","display: table-row")
+          }
+        }
+
+        for(var tr of trList){
+          if(tr.id.toUpperCase().includes(Filter.toUpperCase())){
+            //console.log(tr)
+          }else{
+            tr.setAttribute("style","display: none")
+          }
+        }
+        //console.log(tr)
+      }
+    </script>
+
+    <script>if (typeof module === 'object') 
+      {window.module = module; module = undefined;}</script> 
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/jquery.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/popper.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/bootstrap.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/@fortawesome/all.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/stickyfilljs/stickyfill.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/is_js/is.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lodash/lodash.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/shopify-draggable/draggable.bundle.legacy.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lightbox2/js/lightbox.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/fancybox/jquery.fancybox.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/theme.min.js"></script>
+    <script src="assets/lib/leaflet/leaflet.js"></script>
+    <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+    <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+    <script src="assets/js/theme.min.js"></script>
+    <script src="assets/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
+    <script src="assets/lib/dropzone/dropzone.min.js"></script>
+    <script src="scripts/sales.js"></script>
+    <script>if(window.module){module = window.module;}</script>
+  </body>
+
+</html>

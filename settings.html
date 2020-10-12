@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BoringIO</title>
+    <link rel="shortcut icon" href="https://www.boringio.com/src/assets/images/logo.ico"/>
+    <link rel="manifest" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <!--<script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/config.navbar-vertical.min.js"></script>-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <link href="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
+    <link href="assets/css/profile.css" rel="stylesheet">
+    <!--<link href="assets/css/theme-dark.min.css" rel="stylesheets">-->
+    <script src = "scripts/settings.js"></script>
+    <script>
+      ipc.send("getUsername")
+      ipc.on("ReturnedUsername",(event,arg) => {
+          console.log("Nome")
+          console.log(arg)
+          $("#nickName").text(arg)
+      })
+    </script>
+  </head>
+  <body>
+    <style>
+      .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+      }
+      .dot1 {
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+    </style>
+    <main class="main" id="top">
+      <div class="container-fluid" data-layout="container">
+        <div style="height: 20px;cursor: pointer;-webkit-user-select: none; -webkit-app-region: drag;">
+          <span style="float: right; -webkit-app-region: no-drag;">
+            <span class="dot2" onclick = "minimize()"></span>
+            <span class="dot1" onclick = "maximize()"></span>
+            <span class="dot" onclick = "quit()"></span>
+          </span>
+        </div>
+        <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand mr-1 mr-sm-3" href="index.html">
+            <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
+          </a>
+          <div class="collapse navbar-collapse" id="navbarStandard">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="inventory.html">Inventory</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="sales.html">Sales</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="expenses.html">Expenses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="bot.html">Bot</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tracking.html" >Tracking</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="market.html">Market</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="log.html">Log</a>
+            </li>
+          </ul>
+          </div>
+          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <div class="avatar avatar-xl">
+                  <span style="float: right;" id = "nickName"></span>
+             </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
+              <div class="bg-white rounded-soft py-2">
+                <a class="dropdown-item" href="settings.html">Settings</a>
+                <a class="dropdown-item" onclick="LogOut()">Logout</a>
+              </div>
+            </div>
+          </li>
+          </ul>
+        </nav>
+          <div class="card mb-3">
+            <div class="card-header">
+              <div class="row">
+                <div class="col">
+                  <!--(<a href="mailto:tony@gmail.com">markdoe@gmail.com</a>)-->
+                  <h5 class="mb-2" id = "AccountName"></h5>
+                </div>
+                <div class="col-auto d-none d-sm-block">
+                  <h6 class="text-uppercase text-600">Customer<span class="fas fa-user ml-2"></span></h6>
+                </div>
+              </div>
+            </div>
+            <div class="card-body border-top">
+              <div class="media"><span class="fas fa-user text-success mr-2" data-fa-transform="down-5"></span>
+                <div class="media-body">
+                  <p class="mb-0">Customer was created</p>
+                  <p class="fs--1 mb-0 text-600" id="CreationDate"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card mb-3">
+            <div class="card-header">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h5 class="mb-0">Details</h5>
+                </div>
+              </div>
+            </div>
+            <div class="card-body bg-light border-top">
+              <div class="row">
+                <div class="col-lg col-xxl-5">
+                  <h6 class="font-weight-semi-bold ls mb-3 text-uppercase">Account Information</h6>
+                  <div class="row">
+                    <div class="col-5 col-sm-4">
+                      <p class="font-weight-semi-bold mb-1">ID</p>
+                    </div>
+                    <div class="col" id="AccountId"></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-5 col-sm-4">
+                      <p class="font-weight-semi-bold mb-1">Email</p>
+                    </div>
+                    <div class="col"><a id = "AccountEmail"></a></div>
+                  </div>
+                </div>
+                <div class="col-lg col-xxl-5 mt-4 mt-lg-0 offset-xxl-1">
+                  <h6 class="font-weight-semi-bold ls mb-3 text-uppercase">Billing Information</h6>
+                  <div class="row">
+                    <div class="col-5 col-sm-4">
+                      <p class="font-weight-semi-bold mb-1">Last 4 numbers</p>
+                    </div>
+                    <div class="col"><a id="AccountLastNumbers"></a></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-5 col-sm-4">
+                      <p class="font-weight-semi-bold mb-0">Type</p>
+                    </div>
+                    <div class="col">
+                      <p class="font-weight-semi-bold mb-0" id ="PaymentType"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer border-top text-right">
+                <a class="btn btn-falcon-default btn-sm" data-toggle="modal" data-target="#changePaymentMethod"><span class="fas fa-credit-card fs--2 mr-1"></span>Change Payment</a>
+                <a class="btn btn-falcon-default btn-sm" data-toggle="modal" data-target="#deleteSubscription"><span class="fas fa-lock fs--2 mr-1"></span>Delete Subscription</a>
+                <!--<a class="btn btn-falcon-default btn-sm ml-2" data-toggle="modal" data-target="#changePaymentMethod"><span class="fas fa-credit-card fs--2 mr-1"></span>Change Card</a>-->
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Subscription</h5>
+            </div>
+            <div class="card-body border-top p-0" id="SubscriptionInfo">
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/SubscriptionId/</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="lastUpdate"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/CustomerId/</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="lastUpdate"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/StartDate/</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="lastUpdate"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/EndDate/</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="lastUpdate"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoices/Status/</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="lastUpdate"></p>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer bg-light p-0"><a class="btn btn-link btn-block" ></a></div>
+          </div>
+          <footer>
+          </footer>
+        </div>
+        <div class="modal fade" id="deleteSubscription" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog mt-6" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Are you sure you want to delete it?</h4>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="deleteSubscription()">Delete</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="modal fade" id="changePass" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">Change Password</h4>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-6"><label for="modal-auth-password">Username</label><input class="form-control" type="text" id = "prodPrice" /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Password</label><input class="form-control" type="text" id = "prodPrice" /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">New Password</label><input class="form-control" type="text" id = "newPassword" /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Confirm Password</label><input class="form-control" type="text" id = "prodPrice" /></div>
+                    </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="changePass()">Change</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="changePaymentMethod" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog mt-6" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Change Payment Method</h4>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-row">
+                    <div class="form-group col-12"><label for="modal-auth-password">Card Holder</label><input class="form-control" type="text" id = "CardHolder" /></div>
+                    <div class="form-group col-12"><label for="modal-auth-password">Card Number</label><input class="form-control" type="text" id = "CardNumber" /></div>
+                    <div class="form-group col-6"><label for="modal-auth-password">Cvc</label><input class="form-control" type="text" id = "Cvc" /></div>
+                    <div class="form-group col-6"><label for="modal-auth-password">Expiration Date</label><input class="form-control" type="text" id = "ExpirationDate" placeholder="mm/yyyy"/></div>
+                    <div class="form-group col-12"><label id = "errorLabelPayment" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                    <div class="form-group col-12"><label id = "successLabelPayment" style = "font-size: 15px;color:rgb(64, 199, 40); align-content: center;"></label></div>
+                  </div>
+                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="ChangePaymentMethod()">Change</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="toast bg-white notice" id="cookie-notice" role="alert" data-options='{"autoShow":false,"autoShowDelay":3000,"showOnce":true,"cookieExpireTime":7200000}' data-autohide="false" aria-live="assertive" aria-atomic="true">
+          <div class="toast-body d-flex justify-content-center px-5">
+            <div class="d-lg-flex align-items-center text-center"><button class="close text-shadow-none position-absolute t-0 r-0 p-2 mr-2 mt-2" type="button" data-dismiss="toast" aria-label="Close"><span class="font-weight-medium" aria-hidden="true">×</span></button><img class="mr-2" src="https://prium.github.io/falcon/v2.7.1/dark/assets/img/icons/cookie.png" width="20" alt="" />
+              <p class="mb-2 mb-lg-0"> <a class="text-underline" href="../components/cookie-notice.html"></a></p><button class="btn btn-primary btn-sm ml-3" type="button" data-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+      if (isFluid) {
+        var container = document.querySelector('[data-layout]');
+        container.classList.remove('container');
+        container.classList.add('container-fluid');
+      }
+    </script>
+    <script>if (typeof module === 'object') 
+      {window.module = module; module = undefined;}</script> 
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/jquery.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/popper.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/bootstrap.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/@fortawesome/all.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/stickyfilljs/stickyfill.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/is_js/is.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/lodash/lodash.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/theme.min.js"></script>
+    <script>if(window.module){module = window.module;}</script>
+  </body>
+</html>

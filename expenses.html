@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+<html class="navbar-vertical-collapsed" lang="en-US" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>Expenses</title>
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/illustrations/logo.ico">
+
+
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/config.navbar-vertical.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
+    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lightbox2/css/lightbox.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/fancybox/jquery.fancybox.min.css" rel="stylesheet">
+    <link href="assets/css/theme-dark.min.css" rel="stylesheet">
+  </head>
+  <script>
+    const ipc = require('electron').ipcRenderer
+    ipc.send("getUsername")
+    ipc.on("ReturnedUsername",(event,arg) => {
+        console.log("Nome")
+        console.log(arg)
+        $("#nickName").text(arg)
+    })
+  </script>
+  <body class="overflow-hidden">
+    <style>
+      .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+      }
+      .dot1 {
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+    </style>
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+      <div class="preloader" id = "Preloader1">
+        <div style = "position:fixed;top: 50%;left: 50%;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid" data-layout="container">
+        <div style="height: 20px;cursor: pointer;-webkit-user-select: none; -webkit-app-region: drag;">
+          <span style="float: right; -webkit-app-region: no-drag;">
+            <span class="dot2" onclick = "minimize()"></span>
+            <span class="dot1" onclick = "maximize()"></span>
+            <span class="dot" onclick = "quit()"></span>
+          </span>
+        </div>
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand mr-1 mr-sm-3" href="index.html">
+            <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
+          </a>
+          <div class="collapse navbar-collapse" id="navbarStandard">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="inventory.html">Inventory</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="sales.html">Sales</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Expenses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="bot.html">Bot</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tracking.html" >Tracking</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="market.html">Market</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="log.html">Log</a>
+            </li>
+          </ul>
+          </div>
+          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <div class="avatar avatar-xl">
+                  <span style="float: right;" id = "nickName"></span>
+             </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
+              <div class="bg-white rounded-soft py-2">
+                <a class="dropdown-item" href="settings.html">Settings</a>
+                <a class="dropdown-item" onclick="LogOut()">Logout</a>
+              </div>
+            </div>
+          </li>
+          </ul>
+        </nav>
+        <div class="content">
+          <div class="row no-gutters bg-100 rounded-soft px-card py-2 mt-2 mb-3">
+            <div class="col d-flex align-items-center">
+              <h5 class="mb-0">Expenses</h5>
+            </div>
+            <div class="col-auto d-flex">
+                <button class="btn btn-sm btn-falcon-default mr-2 d-none d-md-block" data-toggle="modal" data-target="#stats"><span class="fas fa-chart-bar mr-2"></span>Statistics</button>
+            </div>
+          </div>
+          <div class="kanban-container scrollbar perfect-scrollbar mr-n3" data-options='{"suppressScrollY":true,"suppressScrollX":false}'>
+            <div class="kanban-column">
+              <div class="kanban-column-header">
+                <h5 class="text-serif fs-0 mb-0">CookGroup <span class="text-500" id = "Nr1"></span></h5>
+                <div class="dropdown text-sans-serif btn-reveal-trigger">
+                  <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="kanban-column-0">
+                    
+                  </div>
+                </div>
+              </div>
+              <div class="kanban-items-container scrollbar perfect-scrollbar"  id = "CookGroups">
+                <div class="add-card-form p-3 border bg-white rounded-soft transition-none mt-3" id="add-form-0" data-collapse="kanban">
+                  <form><textarea class="form-control add-card" rows="2" placeholder="Enter a title for this card..."></textarea>
+                    <div class="form-row mt-2">
+                      <div class="col"><button class="btn btn-primary btn-sm btn-block" type="button">Add</button></div>
+                      <div class="col"><button class="btn btn-outline-secondary btn-sm btn-block border-400 hide-add-card-form" type="button">Cancel</button></div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="kanban-column-footer"><button class="btn btn-link btn-sm btn-block btn-aggiunta text-decoration-none text-600" type="button" data-toggle="modal" data-target="#cookGroup"><span class="fas fa-plus mr-2"></span>Add another card</button></div>
+            </div>
+            <div class="kanban-column">
+                <div class="kanban-column-header">
+                  <h5 class="text-serif fs-0 mb-0">Proxies <span class="text-500" id = "Nr2"></span></h5>
+                  <div class="dropdown text-sans-serif btn-reveal-trigger">
+                    <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="kanban-column-0">
+                      
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-items-container scrollbar perfect-scrollbar"  id = "Proxies">
+                  <div class="add-card-form p-3 border bg-white rounded-soft transition-none mt-3" id="add-form-0" data-collapse="kanban">
+                    <form><textarea class="form-control add-card" rows="2" placeholder="Enter a title for this card..."></textarea>
+                      <div class="form-row mt-2">
+                        <div class="col"><button class="btn btn-primary btn-sm btn-block" type="button">Add</button></div>
+                        <div class="col"><button class="btn btn-outline-secondary btn-sm btn-block border-400 hide-add-card-form" type="button">Cancel</button></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="kanban-column-footer"><button class="btn btn-link btn-sm btn-block btn-aggiunta text-decoration-none text-600" type="button" data-toggle="modal" data-target="#proxy"><span class="fas fa-plus mr-2"></span>Add another card</button></div>
+              </div>
+              <div class="kanban-column">
+                <div class="kanban-column-header">
+                  <h5 class="text-serif fs-0 mb-0">Bot <span class="text-500" id = "Nr3"></span></h5>
+                  <div class="dropdown text-sans-serif btn-reveal-trigger">
+                    <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="kanban-column-0">
+                      
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-items-container scrollbar perfect-scrollbar"  id = "Bots">
+                  <div class="add-card-form p-3 border bg-white rounded-soft transition-none mt-3" id="add-form-0" data-collapse="kanban">
+                    <form><textarea class="form-control add-card" rows="2" placeholder="Enter a title for this card..."></textarea>
+                      <div class="form-row mt-2">
+                        <div class="col"><button class="btn btn-primary btn-sm btn-block" type="button">Add</button></div>
+                        <div class="col"><button class="btn btn-outline-secondary btn-sm btn-block border-400 hide-add-card-form" type="button">Cancel</button></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="kanban-column-footer"><button class="btn btn-link btn-sm btn-block btn-aggiunta text-decoration-none text-600" type="button" data-toggle="modal" data-target="#bot"><span class="fas fa-plus mr-2"></span>Add another card</button></div>
+              </div>
+              <div class="kanban-column" >
+                <div class="kanban-column-header">
+                  <h5 class="text-serif fs-0 mb-0">Ship <span class="text-500" id = "Nr4"></span></h5>
+                  <div class="dropdown text-sans-serif btn-reveal-trigger">
+                    <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="kanban-column-0"><a class="dropdown-item" href="#!">Add Card</a><a class="dropdown-item" href="#!">Edit</a><a class="dropdown-item" href="#!">Copy link</a>
+                      <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-items-container scrollbar perfect-scrollbar"  id = "Ships">
+                  <div class="add-card-form p-3 border bg-white rounded-soft transition-none mt-3" id="add-form-0" data-collapse="kanban">
+                    <form><textarea class="form-control add-card" rows="2" placeholder="Enter a title for this card..."></textarea>
+                      <div class="form-row mt-2">
+                        <div class="col"><button class="btn btn-primary btn-sm btn-block" type="button">Add</button></div>
+                        <div class="col"><button class="btn btn-outline-secondary btn-sm btn-block border-400 hide-add-card-form" type="button">Cancel</button></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="kanban-column-footer"><button class="btn btn-link btn-sm btn-block btn-aggiunta text-decoration-none text-600" type="button" data-toggle="modal" data-target="#ship"><span class="fas fa-plus mr-2"></span>Add another card</button></div>
+              </div>
+              <div class="kanban-column">
+                <div class="kanban-column-header">
+                  <h5 class="text-serif fs-0 mb-0">Custom <span class="text-500" id = "Nr5"></span></h5>
+                </div>
+                <div class="kanban-items-container scrollbar perfect-scrollbar" id = "Others">
+                  <div class="add-card-form p-3 border bg-white rounded-soft transition-none mt-3" id="add-form-0" data-collapse="kanban">
+                    <form><textarea class="form-control add-card" rows="2" placeholder="Enter a title for this card..."></textarea>
+                      <div class="form-row mt-2">
+                        <!--<div class="col"><button class="btn btn-primary btn-sm btn-block" type="button">Add</button></div>
+                        <div class="col"><button class="btn btn-outline-secondary btn-sm btn-block border-400 hide-add-card-form" type="button">Cancel</button></div>-->
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="kanban-column-footer"><button class="btn btn-link btn-sm btn-block btn-aggiunta text-decoration-none text-600" type="button" data-toggle="modal" data-target="#custom"><span class="fas fa-plus mr-2"></span>Add another card</button></div>
+              </div>
+          </div>
+        </div>
+
+         <!--MODAL COOKGROUP-->
+         <div class="modal fade" id="cookGroup" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">New Cookgroup</h4>
+                      <p class="fs--1 mb-0">Search your cookgroup or write it</p>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">CookGroup</label>
+                        <select class="form-control" id="CookGroupsList">
+                          <option selected >Select a CookGroup</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1212825013193248775/vh5IQiYu_400x400.jpg" >SauceMonitor</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1300527672162955264/rc4Spz1n_400x400.png" >Calicox</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1298304291388751884/6MG3N--1_400x400.jpg" >Amnotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1221091150066569216/ettUD6Z8_400x400.jpg"  >FleekNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1224105378796826624/-g_6PVOk_400x400.jpg" >Ardini</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1238514749467430913/LBfV8UzN_400x400.jpg ">BestNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1278387051252142081/F-5iw4ID_400x400.jpg" >Escape</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1263111404569100289/zCFyDE_K_400x400.jpg " >Blinkers</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1275118492866379776/dHdEqchd_400x400.jpg"  >RestockWorld</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1190262504250859521/-HFsMoUP_400x400.jpg" >R3stock</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1267654416427036677/Ybffdc8c_400x400.jpg"  >Notify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1216815964538404865/2-XLXoGR_400x400.jpg" >OneNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1085073962068074497/fb1MrwF8_400x400.jpg" >35io</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1198714881995919361/g4hlKLZS_400x400.jpg" >FlipsIO</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1180419560429760512/n5sy2J2N_400x400.png"  >BonzayIO</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1259533095176454145/bO7khw_D_400x400.jpg"  >GhostCop</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1287189002949296129/C2OiSAOW_400x400.png"  >PulseNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1261366572335202304/EK3PGXcI_400x400.jpg"  >CopGang</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1213552650425393152/OgUssTUq_400x400.jpg"  >Excluded</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1224776547850182658/I10ILU4d_400x400.jpg"  >Peachypings</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1211784619722498048/USwkqqMd_400x400.jpg"  >Cheesify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1212665183195283461/-veu-kZl_400x400.jpg" >Checkouters</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1241183350024548352/oghXdLLa_400x400.jpg"  >FirstNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1224079134621483008/0r2moNcK_400x400.jpg"  >VoltaNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1217166809167749122/7Kk95fkz_400x400.jpg"  >NotifySolutions</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1282089153979719684/FpvsTy6-_400x400.jpg"  >KingdomCooks</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1267792129558032384/Ke5nVqWi_400x400.jpg"  >ProjectZ</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1221042515392061440/6V6e9n5-_400x400.jpg"  >BlckMonitor</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1252165272951193600/mMjsE-PS_400x400.jpg"  >Zeus</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1288118353475690499/qWs7N7XZ_400x400.png"  >Goatify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1088507001280307202/SJUY-jAp_400x400.jpg" >Pjmonitor</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1118977043679580168/KrVLEZn__400x400.jpg"  >LoopStarts</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1268104770709008386/mBAUPERG_400x400.jpg"  >AteamEU</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1278002669861273601/adeTh5ar_400x400.jpg"  >CookBeast</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1214052590398234624/o-uOX6Wo_400x400.png"  >AycdPRO</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1271183844054630411/b1DiBD-Y_400x400.jpg"  >NotifyEU</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1234470067938746368/EZ9nRMLH_400x400.jpg"  >Vanguard</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1240609001617981440/Hrcl6Rr1_400x400.jpg"  >MoonCook</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1217977202387701760/IjxRUPAx_400x400.jpg"  >HermesNotify</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1241023915385851905/7yrmMpIm_400x400.jpg"  >HyperPoint</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Write it if you dont find it</label>
+                        <input type = "text" class="form-control" id = "CookGroupsTextBox">
+                      </div>
+                      
+                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id ="PriceCookGroups" /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="DateCookGroups" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                      <div class="form-group col-12"><label for="modal-auth-password">Type</label>
+                        <select class="form-control" id="RecurrencyCookGroups">
+                            <option value="0">Single Payment</option>
+                            <option value="12">Every Year</option>
+                            <option value="1">Every Month</option>
+                            <option value="2">2 month</option>
+                            <option value="3">3 month</option>
+                            <option value="4">4 month</option>
+                            <option value="5">5 month</option>
+                            <option value="6">6 month</option>
+                            <option value="7">7 month</option>
+                            <option value="8">8 month</option>
+                            <option value="9">9 month</option>
+                            <option value="10">10 month</option>
+                            <option value="11">11 month</option>
+                        </select>
+                      </div>
+
+                    </div>
+                    <div class="form-group col-12"><label id = "errorCookGroupModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick = "AddCookGroup()">Add</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <!--END-->
+         <!--MODAL Proxy-->
+         <div class="modal fade" id="proxy" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">New Proxy</h4>
+                      <p class="fs--1 mb-0">Search your proxy brand or write it</p>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Proxy</label>
+                        <select class="form-control" id="ProxiesList">
+                          <option selected >Select a Proxy</option>
+                          <option  data-value="https://pbs.twimg.com/profile_images/1267914720767406081/4VF6Mgwd_400x400.jpg">Leaf Proxies</option>
+
+                            <option  data-value="https://pbs.twimg.com/profile_images/1211742323765399552/ewgfycDr_400x400.jpg">Blank Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1154515772401733632/DEgvzU05_400x400.jpg">Ashburn Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/992794943658786817/M1EIwOOS_400x400.jpg">Cookie Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1141045550479007744/ENzVKdqO_400x400.png">Non va</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1219758683296534528/8568aV1Y_400x400.jpg">Bull Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1214052590398234624/o-uOX6Wo_400x400.png">Aycd Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1030532699608494082/hf2qC73h_400x400.jpg">Chi Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1172282359451987968/RmXFl4zx_400x400.jpg">Infinity Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1228553110383136769/Ba9TaiI7_400x400.jpg">Vision Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1184953151021080576/HEg0dvHl_400x400.jpg">Space Proxies</option>
+                          
+
+                            <option  data-value="https://twitter.com/UnknownProxies/photo">Unknown Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1208401550734966784/25ptgpAm_400x400.jpg">Coca Proxies</option>
+                          
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1202375544152702976/SKktXsu-_400x400.jpg">Ruby Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/940348120096964608/4Y7DjgEo_400x400.jpg">Cop Proxies</option>
+                            
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1248278493265154048/LEs3icxa_400x400.jpg">10x Proxies</option>
+                          
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1259917768587186178/XNg30Npe_400x400.jpg">Hydra Proxies</option>                     
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1204684431967096833/RKmNN7L3_400x400.jpg">Blast Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1225791146468749318/doaSnXWv_400x400.jpg">Btw Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1214946192934739974/wr8PJipn_400x400.jpg">Maniya Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1177310786265460738/pZMb7vcU_400x400.jpg">Zodiac Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1214565926760144897/LxPILC_K_400x400.jpg">Pookyy Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1238848962041389056/BXiKL3Gc_400x400.jpg">Hawk Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1261568914150043648/fGeUD-bV_400x400.jpg">Wizard Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1225486208496754689/7U9J4GIR_400x400.jpg">Neptun Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1275213098597711878/Xa00e9Cp_400x400.jpg">Calibre Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1189289941974560769/7j3jqzC9_400x400.jpg">Slash Proxies</option>
+                            
+                            <option  data-value="https://pbs.twimg.com/profile_images/1227231523604172800/olxoNQ6D_400x400.jpg">Kochclub.XYZ Proxies</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Write it if you dont find it</label>
+                        <input type = "text" class="form-control" id = "ProxiesTextBox">
+                      </div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "PriceProxies"/></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="DateProxies" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                      <div class="form-group col-12"><label for="modal-auth-password">Type</label>
+                        <select class="form-control" id="RecurrencyProxies">
+                          <option value="0">Single Payment</option>
+                          <option value="12">Every Year</option>
+                          <option value="1">Every Month</option>
+                          <option value="2">2 month</option>
+                          <option value="3">3 month</option>
+                          <option value="4">4 month</option>
+                          <option value="5">5 month</option>
+                          <option value="6">6 month</option>
+                          <option value="7">7 month</option>
+                          <option value="8">8 month</option>
+                          <option value="9">9 month</option>
+                          <option value="10">10 month</option>
+                          <option value="11">11 month</option>
+                      </select>
+                      </div>
+                    </div>
+                    <div class="form-group col-12"><label id = "errorProxyModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick = "AddProxy()">Add</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <!--END-->
+      <!--MODAL BOT-->
+      <div class="modal fade" id="bot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+        <div class="modal-dialog mt-6" role="document">
+          <div class="modal-content border-0">
+            <div class="modal-header px-5 text-white position-relative modal-shape-header">
+              <div class="position-relative z-index-1">
+                <div>
+                  <h4 class="mb-0 text-white" id="authentication-modal-label">New Bot</h4>
+                  <p class="fs--1 mb-0">Search your bot or write it</p>
+                </div>
+              </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body py-4 px-5">
+              <div>
+                <div class="form-row">
+                  <div class="form-group col-12"><label for="modal-auth-confirm-password">Bot</label>
+                    <select class="form-control" id="BotsList">
+                      <option selected >Select a Bot</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1184203863269634048/P98ia02p_400x400.jpg"  >CyberSole</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1241542362121166852/0hQnV9lV_400x400.png"  >Kodai</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/917391315746385920/cryapglx_400x400.jpg"  >Splashforce</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1153440082139000832/X59w9ovJ_400x400.jpg"  >ProjectDestroyer</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1172564159294316544/bVcP_UQA_400x400.png"  >Ganesh</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1301616763742822400/tIE2GRp-_400x400.jpg"  >Wrath</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1161630118906859520/WfivwlSI_400x400.jpg"  >Hawk</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1237083907805319169/PoMBrRSV_400x400.jpg"  >Flare</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1291036717886169091/iNqqQrdt_400x400.jpg"  >FlareRaffles</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1295429449740058624/OYclh-Cv_400x400.jpg"  >SoleAIO</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1288738083391909888/Cs3a7gd__400x400.png"  >Nsb</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1011541359382052866/4Ewy9XIw_400x400.jpg"  >Tks</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1221893634926301185/eaXls0Xt_400x400.jpg" >MekPreme</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1243849111121657856/ONmrjEpF_400x400.png" >Fleek</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1234951189608960009/K3Ii9XCW_400x400.jpg"  >MoonAIO</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1102531579660910594/4sm_POYT_400x400.png"  >RuggAIO</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1267907919951126530/5TahNa6S_400x400.jpg" >Hyper</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1247200861652234240/BH-2GIj5_400x400.jpg"  >Chameleon</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1289981783816261637/3sXfDk9__400x400.jpg"  >Snatch</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1276900589151162369/_QFgIYsW_400x400.jpg"  >Pulsar</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1216808451134775296/KuKLwykd_400x400.png"  >Phantom</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1239198822384926720/h0ib34bV_400x400.jpg"  >Favar</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1282394126932156417/6AgOgPRp_400x400.jpg"  >TweetNinja</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1196288680865996800/xobLvyRg_400x400.jpg"  >ZenyScript</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1267772843258974208/SvfA_v4s_400x400.jpg"  >Solid</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1257752393615314945/f_UXtKXr_400x400.jpg"  >Pain</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1269979731254001671/MOD8zm10_400x400.jpg"  >Meow</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1294680561269833731/sVuRbkCg_400x400.jpg"  >F3ather</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1177062169231405056/9whojPiW_400x400.jpg"  >BalkoBot</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1249667064282914817/uRUVPqJq_400x400.jpg"  >Haselts</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1180898803538366470/J_0r5Du6_400x400.png"  >Mbot</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/992447533128429568/o5GvdOoY_400x400.jpg"  >Sieupreme</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1268605118548762624/6PRgONNc_400x400.jpg"  >Qbot</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1244679818236567554/wMUSniMz_400x400.jpg"  >DreamAIO</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1202911765065019393/HU7NFGNx_400x400.jpg"  >Orbit</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1227556625365569536/Y1oerHeU_400x400.jpg"  >PolarCop</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1257034100478705669/NB7Ornfp_400x400.jpg"  >Zonoslabs</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1269909060918403073/vlAetZMx_400x400.jpg"  >Polaris</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1214570378854641665/BvgKZ0AB_400x400.jpg" >Calix</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1208657698482458625/q8TnbiFn_400x400.jpg"  >Aiomoji</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1263643514820341760/vcELacP5_400x400.jpg"  >Oosbot</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1273239771704410113/S-QtJ2DG_400x400.png"  >Ophelia</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1270749903870767105/9x44nurI_400x400.jpg"  >Fattye</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1223747695673794561/fiOXuzdD_400x400.jpg"  >Stealth</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1122983388913242112/UL7r9FE0_400x400.png"  >EveAIO</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1291135791616401410/tYs4F6qS_400x400.jpg" >Thunder</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1293332018336595974/Z2R5VQqb_400x400.jpg"  >Adept</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1236763244896956416/s7NtGsEE_400x400.jpg"  >Venix</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1221980758463655937/n-NfpnHa_400x400.jpg"  >Velox</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1276900589151162369/_QFgIYsW_400x400.jpg" >Pulsar</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-12"><label for="modal-auth-confirm-password">Write it if you dont find it</label>
+                    <input type = "text" class="form-control" id = "BotsTextBox">
+                  </div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "PriceBots" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="DateBots" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                  <div class="form-group col-12"><label for="modal-auth-password">Type</label>
+                    <select class="form-control" id="RecurrencyBots">
+                        <option value="0">Single Payment</option>
+                        <option value="12">Every Year</option>
+                        <option value="1">Every Month</option>
+                        <option value="2">2 month</option>
+                        <option value="3">3 month</option>
+                        <option value="4">4 month</option>
+                        <option value="5">5 month</option>
+                        <option value="6">6 month</option>
+                        <option value="7">7 month</option>
+                        <option value="8">8 month</option>
+                        <option value="9">9 month</option>
+                        <option value="10">10 month</option>
+                        <option value="11">11 month</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group col-12"><label id = "errorBotModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="AddBot()">Add</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<!--END-->
+ <!--MODAL BOT-->
+ <div class="modal fade" id="ship" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+    <div class="modal-dialog mt-6" role="document">
+      <div class="modal-content border-0">
+        <div class="modal-header px-5 text-white position-relative modal-shape-header">
+          <div class="position-relative z-index-1">
+            <div>
+              <h4 class="mb-0 text-white" id="authentication-modal-label">New Ship</h4>
+            </div>
+          </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body py-4 px-5">
+          <div>
+            <div class="form-row">
+              <div class="form-group col-12"><label for="modal-auth-confirm-password">Ship</label>
+                <select id="ShipsList"  class="form-control">
+                  <option data-value="https://www.boringio.com/src/assets/images/ups.png">UPS</option>
+                  <option data-value="https://www.boringio.com/src/assets/images/gls.png">GLS</option>
+                  <option data-value="https://www.boringio.com/src/assets/images/dhl.png">DHL</option>
+                  <option data-value="https://www.boringio.com/src/assets/images/tnt.png">TNT</option>
+                  <option data-value="https://www.boringio.com/src/assets/images/brt.png">BRT</option>
+                  <!--<option value="PST IT">PST IT</option>-->
+                  <option data-value="https://www.boringio.com/src/assets/images/ups.png">SDA</option>
+                  <option data-value="https://www.boringio.com/src/assets/images/dpd.png">DPD</option>
+                  <option data-value="https://www.boringio.com/src/assets/images/fedex.png">FEDEX</option>
+              </select>
+              </div>
+              <div class="form-group col-12"><label for="modal-auth-confirm-password">Write it if you dont find it</label>
+                <input type = "text" class="form-control" id = "ShipsTextBox">
+              </div>
+              
+              <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "PriceShips" /></div>
+              <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="DateShips" type="text" data-options='{"dateFormat":"d/m/Y"}' placeholder="dd/mm/yyyy"/></div>
+              <div class="form-group col-12"><label for="modal-auth-password">Type</label>
+                <select class="form-control" id="RecurrencyShips">
+                    <option value="0">Single Payment</option>
+                    <option value="12">Every Year</option>
+                    <option value="1">Every Month</option>
+                    <option value="2">2 month</option>
+                    <option value="3">3 month</option>
+                    <option value="4">4 month</option>
+                    <option value="5">5 month</option>
+                    <option value="6">6 month</option>
+                    <option value="7">7 month</option>
+                    <option value="8">8 month</option>
+                    <option value="9">9 month</option>
+                    <option value="10">10 month</option>
+                    <option value="11">11 month</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group col-12"><label id = "errorShipModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+            <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="AddShip()">Add</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END-->
+   <!--MODAL CUSTOM-->
+   <div class="modal fade" id="custom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+    <div class="modal-dialog mt-6" role="document">
+      <div class="modal-content border-0">
+        <div class="modal-header px-5 text-white position-relative modal-shape-header">
+          <div class="position-relative z-index-1">
+            <div>
+              <h4 class="mb-0 text-white" id="authentication-modal-label">New Expenses</h4>
+              <p class="fs--1 mb-0"></p>
+            </div>
+          </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body py-4 px-5">
+          <div>
+            <div class="form-row">
+              <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
+                <input type = "text" class="form-control" id = "OthersTextBox">
+              </div>
+              <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id="PriceOthers"/></div>
+              <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="DateOthers" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+              <div class="form-group col-12"><label for="modal-auth-password">Type</label>
+                <select class="form-control" id="RecurrencyOthers">
+                    <option value="0">Single Payment</option>
+                    <option value="12">Every Year</option>
+                    <option value="1">Every Month</option>
+                    <option value="2">2 month</option>
+                    <option value="3">3 month</option>
+                    <option value="4">4 month</option>
+                    <option value="5">5 month</option>
+                    <option value="6">6 month</option>
+                    <option value="7">7 month</option>
+                    <option value="8">8 month</option>
+                    <option value="9">9 month</option>
+                    <option value="10">10 month</option>
+                    <option value="11">11 month</option>
+                </select>
+              </div>
+
+            </div>
+            <div class="form-group col-12"><label id = "errorOtherModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+            <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick = "AddOther()">Add</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END-->
+ <!--MODAL CUSTOM EDIT NAME-->
+ <div class="modal fade" id="customEdit" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+    <div class="modal-dialog mt-6" role="document">
+      <div class="modal-content border-0">
+        <div class="modal-header px-5 text-white position-relative modal-shape-header">
+          <div class="position-relative z-index-1">
+            <div>
+              <h4 class="mb-0 text-white" id="authentication-modal-label">Edit the name</h4>
+              <p class="fs--1 mb-0"></p>
+            </div>
+          </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body py-4 px-5">
+          <form>
+            <div class="form-row">
+              <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
+                <input class="form-control" type="text"  />
+              </div>
+
+
+            </div>
+            <div class="form-group"><button class="btn btn-primary btn-block mt-3" type="submit" name="submit">Add</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END-->
+<!--MODAL STATS-->
+<div class="modal modal-fixed-right fade" id="stats" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-vertical" role="document">
+    <div class="modal-content border-0 min-vh-100">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalRightLabel">Statistics</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="card-deck">
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Total Monthly costs in $</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id = "TotalMonth"></div>
+            </div>
+          </div>
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Total Yearly costs in $</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id = "TotalYear"></div>
+            </div>
+          </div>
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Nr CookGroups</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id = "NrCookGroups"></div>
+            </div>
+          </div>
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Nr Proxies</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id = "NrProxies"></div>
+            </div>
+          </div>
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Nr Ships</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id = "NrShips"></div>
+            </div>
+          </div>
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Nr Bots</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id = "NrBots"></div>
+            </div>
+          </div>
+          <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+            <!--/.bg-holder-->
+            <div class="card-body position-relative">
+              <h6>Nr Customs</h6>
+              <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id = "NrCustoms"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+<!---->
+    </main><!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+
+    <script>
+      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+      if (isFluid) {
+        var container = document.querySelector('[data-layout]');
+        container.classList.remove('container');
+        container.classList.add('container-fluid');
+      }
+    </script>
+
+    <!-- ===============================================-->
+    <!--    JavaScripts-->
+    <!-- ===============================================-->
+    <script>if (typeof module === 'object') 
+      {window.module = module; module = undefined;}</script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/jquery.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/popper.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/bootstrap.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/@fortawesome/all.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/stickyfilljs/stickyfill.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/is_js/is.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lodash/lodash.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/shopify-draggable/draggable.bundle.legacy.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lightbox2/js/lightbox.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/fancybox/jquery.fancybox.min.js"></script>
+    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/theme.min.js"></script>
+    <script src="assets/lib/leaflet/leaflet.js"></script>
+    <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+    <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+    <script src="assets/js/theme.min.js"></script>
+    <script src="assets/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
+    <script src="assets/lib/dropzone/dropzone.min.js"></script>
+    <script src="scripts/expenses.js" defer></script>
+    <script>if(window.module){module = window.module;}</script> 
+  </body>
+
+</html>

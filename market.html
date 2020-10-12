@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>Market</title>
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
+    <link rel="manifest" href="assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script src="assets/js/config.navbar-vertical.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
+    <link href="assets/lib/datatables-bs4/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.css" rel="stylesheet">
+    <link href="assets/lib/leaflet/leaflet.css" rel="stylesheet">
+    <link href="assets/lib/leaflet.markercluster/MarkerCluster.css" rel="stylesheet">
+    <link href="assets/lib/leaflet.markercluster/MarkerCluster.Default.css" rel="stylesheet">
+    <link id = "stile" href="assets/css/theme-dark.min.css" rel="stylesheet">
+    <script>
+      const ipc = require('electron').ipcRenderer
+      ipc.send("getUsername")
+      ipc.on("ReturnedUsername",(event,arg) => {
+          console.log("Nome")
+          console.log(arg)
+          $("#nickName").text(arg)
+      })
+    </script> 
+  </head>
+<script>
+</script>
+  <body>
+    <style>
+      .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+      }
+      .dot1 {
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+    </style>
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+      <div class="container-fluid" data-layout="container">
+        <div style="height: 20px;cursor: pointer;-webkit-user-select: none; -webkit-app-region: drag;">
+          <span style="float: right; -webkit-app-region: no-drag;">
+            <span class="dot2" onclick = "minimize()"></span>
+            <span class="dot1" onclick = "maximize()"></span>
+            <span class="dot" onclick = "quit()"></span>
+          </span>
+        </div>
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand mr-1 mr-sm-3">
+            <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
+          </a>
+          <div class="collapse navbar-collapse" id="navbarStandard">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="inventory.html">Inventory</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="sales.html">Sales</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="expenses.html">Expenses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="bot.html">Bot</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tracking.html" >Tracking</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Market</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="log.html">Log</a>
+            </li>
+          </ul>
+          </div>
+          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <div class="avatar avatar-xl">
+                  <span style="float: right;" id = "nickName"></span>
+             </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
+              <div class="bg-white rounded-soft py-2">
+                <a class="dropdown-item" href="settings.html">Settings</a>
+                <a class="dropdown-item" onclick="LogOut()">Logout</a>
+              </div>
+            </div>
+          </li>
+          </ul>
+        </nav>
+        <div class="content">
+          <div class="card mb-3 bg-200">
+            <div class="card-header bg-200">
+              <h1 style="text-align: center;">
+                <input type="text" id = "ShoesName" class="btn btn-falcon-default btn-sm" placeholder="Search a product" style="width: auto;" oninput = "SearchShoes()">
+                <div id="ricerca" style="display:none !important;background-color: #132238;display: block;margin-left: auto;margin-right: auto;width: 55%;height: 245px;border-radius: 4px;text-align: left;">
+                </div>
+              </h1>
+            </div>
+            <div class="card mb-3">
+              <div class="card-body" style="background-color: #061325;border-radius: 4px;cursor: pointer;">
+                <div class="row" id = "stats" style = "display: none;">
+                  <div class="mb-4 col-md-6 col-lg-12">
+                    <img class="card-img-top"/>
+                      <div class="card-body" style="background-color: #132238;border-radius: 4px;cursor: pointer;">
+                        <div class="row justify-content-between align-items-center">
+                          <div class="col">
+                            <div class="media">
+                              <div class="mr-2">
+                                <img id = "imageProd" src="https://stockx-360.imgix.net//adidas-Yeezy-Boost-350-V2-Cinder/Images/adidas-Yeezy-Boost-350-V2-Cinder/Lv2/img01.jpg?auto=format,compress&q=90&updated_at=1594236988&w=1000" style="width: 64px;border-radius: .25rem !important;">
+                              </div>
+                              <div class="media-body fs--1">
+                                <h6 class="fs-0" id = "nameProd">adidas Yeezy Boost 350 V2 Cinder &nbsp&nbsp</h6>
+                                <span id = "dateProd" class="badge badge rounded-capsule badge-soft-success">23/08/2020</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-auto mt-4 mt-md-0">
+                            <input type = "hidden" id = "UrlToHide"/> 
+                            <button class="btn btn-warning btn-sm mr-2" type="button" id = "prodRetail">Retail: $220</button>
+                            <button class="btn btn-danger btn-sm mr-2" type="button" id = "prodSold">Tot.Sold: 34,300</button>
+                            <button class="btn btn-success btn-sm px-4 px-sm-5" type="button" onclick="OpenStockX()">Stockx</button></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          <footer>
+            <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+              <div class="col-12 col-sm-auto text-center">
+              </div>
+              <div class="col-12 col-sm-auto text-center">
+                <p class="mb-0 text-600"></p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </main><!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+
+    <script>
+      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+      if (isFluid) {
+        var container = document.querySelector('[data-layout]');
+        container.classList.remove('container');
+        container.classList.add('container-fluid');
+      }
+    </script>
+
+    <!-- ===============================================-->
+    <!--    JavaScripts-->
+    <!-- ===============================================-->
+    <script>if (typeof module === 'object') 
+    {window.module = module; module = undefined;}</script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
+    <script src="assets/lib/@fortawesome/all.min.js"></script>
+    <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
+    <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="assets/lib/is_js/is.min.js"></script>
+    <script src="assets/lib/lodash/lodash.min.js"></script>
+    <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="assets/lib/echarts/echarts.min.js"></script>
+    <script src="assets/lib/chart.js/Chart.min.js"></script>
+    <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
+    <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
+    <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
+    <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
+    <script src="assets/lib/leaflet/leaflet.js"></script>
+    <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+    <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
+    <script src="assets/js/theme.min.js"></script>
+    <script src="scripts/market.js" defer></script>
+    <script>if(window.module){module = window.module;}</script> 
+  </body>
+</html>
