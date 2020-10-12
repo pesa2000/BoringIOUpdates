@@ -4,11 +4,27 @@
   "description": "",
   "main": "login/main.js",
   "scripts": {
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
     "start": "electron .",
     "build": "electron-packager ./ --overwrite --platform=all --arch=x64 --out ./builds --overwrite --icon=./icon.ico",
-    "deploy": "electron-builder build --win --publish never"
+    "deploy": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "org.electron.Pesa2000",
+    "directories":{
+      "output": "builds"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "private": false,
+        "owner": "pesa2000",
+        "repo": "BoringIOUpdates"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pesa2000/BoringIOUpdates.git"
   },
   "author": "",
   "license": "ISC",

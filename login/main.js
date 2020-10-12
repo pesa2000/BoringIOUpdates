@@ -29,9 +29,14 @@ console.log(DirectoryLog)
 console.log("Program Version")
 console.log(app.getVersion())
 const {autoUpdater} = require("electron-updater")
+/*autoUpdater.setFeedURL({
+  provider: "github",
+  repo: "BoringIOUpdates",
+  owner: 'pesa2000',
+  private: false
+})*/
 autoUpdater.logger = require("electron-log")
 autoUpdater.logger.transports.file.level = "debug"
-autoUpdater.checkForUpdatesAndNotify()
 
 var GlobalIdUtente = 0
 
@@ -63,7 +68,7 @@ function CheckLogFile(){
       console.log("File Creato")
     })
   }
-  createWindows()
+  autoUpdater.checkForUpdatesAndNotify()
 }
 var internetAvailable = require("internet-available");
 
@@ -875,11 +880,29 @@ autoUpdater.on("checking-for-update", () =>{
   console.log("Checking for updates")
 })
 autoUpdater.on("update-available", () =>{
+  CreateUpdateWindow()
   console.log("Update available")
 })
 autoUpdater.on("update-not-available", () =>{
-  console.log("Update not available")
+  //console.log("Update not available")
+  CreateWindow()
 })
 autoUpdater.on("error", err => {
   console.log(err.toString())
 })
+autoUpdater.on('update-downloaded', () => {
+  autoUpdater.quitAndInstall()
+});
+
+function CreateUpdateWindow(){
+  var WindowUpdate = new BrowserWindow({width:1000,height:800,show: false,frame: true,webPreferences: {
+    zoomFactor: 1.0
+  }})
+  WindowUpdate.loadURL(url.format({
+    pathname:path.join(__dirname,'../update.html'),
+    protocol:'file',
+    slashes:true
+  }))
+  WindowUpdate.show()
+  WindowUpdate.removeMenu()
+}
