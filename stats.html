@@ -4,7 +4,17 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
     <title>BoringIO | Stats</title>
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
     <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
@@ -12,6 +22,10 @@
     <link rel="manifest" href="assets/img/favicons/manifest.json">
     <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
     <meta name="theme-color" content="#ffffff">
+
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
     <script>window.$ = window.jQuery = require('jquery');</script>
     <script src="assets/js/config.navbar-vertical.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
@@ -34,8 +48,25 @@
   </head>
 
   <body>
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
     <main class="main" id="top">
       <div class="container" data-layout="container">
+        <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg">
+          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarStandard" aria-controls="navbarStandard" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+          <a class="navbar-brand mr-1 mr-sm-3">
+            <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
+          </a>
+          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="avatar avatar-xl">
+                  <img class="rounded-circle" src="https://prium.github.io/falcon/v2.7.2/dark/assets/img/team/3-thumb.png" alt="" />
+                </div>
+              </a>
+            </li>
+          </ul>
+        </nav>
         <div class="content">
           <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg">
             <a class="navbar-brand mr-1 mr-sm-3">
@@ -88,7 +119,10 @@
   </div>
 </div>
 </div>
-    </main>
+    </main><!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+
     <script>
       var isFluid = JSON.parse(localStorage.getItem('isFluid'));
       if (isFluid) {
@@ -97,6 +131,10 @@
         container.classList.add('container-fluid');
       }
     </script>
+
+    <!-- ===============================================-->
+    <!--    JavaScripts-->
+    <!-- ===============================================-->
     <script>if (typeof module === 'object') 
     {window.module = module; module = undefined;}</script>
     <script src="assets/js/popper.min.js"></script>

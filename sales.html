@@ -27,6 +27,10 @@
           console.log(arg)
           $("#nickName").text(arg)
       })
+      function visibleSearch(){
+      document.getElementById("Filter").style.display="inline";
+      document.getElementById("cerca").style.display="none";
+    }
     </script>
   </head>
 
@@ -73,8 +77,7 @@
             <span class="dot" onclick = "quit()"></span>
           </span>
         </div>
-        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg">
-          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg" style="outline:none;">
           <a class="navbar-brand mr-1 mr-sm-3">
             <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
           </a>
@@ -107,18 +110,36 @@
           </ul>
           </div>
           <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <div class="avatar avatar-xl">
-                  <span style="float: right;" id = "nickName"></span>
-             </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
-              <div class="bg-white rounded-soft py-2">
-                <a class="dropdown-item" href="settings.html">Settings</a>
-                <a class="dropdown-item" onclick="LogOut()">Logout</a>
-              </div>
+            <div id="dashboard-actions">
+
+             
+
+               <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #2C96F1 !important;color: #fff;" type="button" onclick="SyncAvgPrice()">
+                  <span data-toggle="tooltip" data-placement="top" title="Refresh value for every item">
+                  <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
+                  </span>
+              </button>   
+             
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
+                <span data-toggle="tooltip" data-placement="top" title="See all statistics">
+                <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+              </button>
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #f1743f !important;color: #fff;" type="button" onclick="Export()">
+                <span data-toggle="tooltip" data-placement="top" title="Export your inventory">
+                <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
+                </span>
+              </button>
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #4BB543 !important;color: #fff;" type="button" id="cerca" onclick="visibleSearch()">
+                <span data-toggle="tooltip" data-placement="top" title="Search items in your sales">
+                <span class="fas fa-search" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+              </button>
+                  <input type="text" id = "Filter" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
             </div>
-          </li>
           </ul>
         </nav>
           <div class="content">
@@ -130,29 +151,10 @@
                   <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
                 </div>
                 <div class="col-6 col-sm-auto ml-auto text-right pl-0">
-                  <div id="dashboard-actions">
-                    <button class="btn btn-falcon-default btn-sm mx-2" type="button" onclick="SyncAvgPrice()">
-                      <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
-                      <span class="d-none d-sm-inline-block ml-1">Sync</span>
-                  </button>
-                    <button class="btn btn-falcon-default btn-sm" type="button" onclick="Export()">
-                        <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
-                        <span class="d-none d-sm-inline-block ml-1">Export</span>
-                    </button>
-                    <button class="btn btn-falcon-default btn-sm mx-2" type="button" data-toggle="modal" data-target="#stats">
-                        <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
-                        <span class="d-none d-sm-inline-block ml-1">Statistics</span>
-                    </button> 
-                  </div>
                 </div>
               </div>
             </div>
             <div class="card-header bg-200">
-              <h1 style="text-align: center;">
-                <input type="text" id = "Filter" class="btn btn-falcon-default btn-sm" placeholder="Filter items" style="width: auto;" onkeyup="FilterTable()">
-                <div id="ricerca" style="display:none !important;background-color: #132238;display: block;margin-left: auto;margin-right: auto;width: 55%;height: 245px;border-radius: 4px;text-align: left;">
-                </div>
-              </h1>
             </div>
                 <table class="table table-borderless table-hover">
                   <thead class="text-900">

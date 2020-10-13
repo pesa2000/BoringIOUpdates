@@ -123,44 +123,12 @@
               </ul>
               </div>
               <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-                <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <div class="avatar avatar-xl">
-                      <span style="float: right;" id = "nickName"></span>
-                 </div>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
-                  <div class="bg-white rounded-soft py-2">
-                    <a class="dropdown-item" href="settings.html">Settings</a>
-                    <a class="dropdown-item" onclick="LogOut()">Logout</a>
-                  </div>
-                </div>
-              </li>
               </ul>
             </nav>
-          <div class="content">
-            <script>
-              var navbarPosition = localStorage.getItem('navbarPosition');
-              var navbarVertical = document.querySelector('.navbar-vertical');
-              var navbarTopVertical = document.querySelector('.content .navbar-top');
-              var navbarTop = document.querySelector('[data-layout] .navbar-top');
-              var navbarTopCombo = document.querySelector('.content .navbar-top-combo');
-  
-              if (navbarPosition === 'top') {
-                navbarTop.removeAttribute('style');
-                navbarTopVertical.parentNode.removeChild(navbarTopVertical);
-                navbarVertical.parentNode.removeChild(navbarVertical);
-                navbarTopCombo.parentNode.removeChild(navbarTopCombo);
-              } else if (navbarPosition === 'combo') {
-                navbarVertical.removeAttribute('style');
-                navbarTopCombo.removeAttribute('style');
-                navbarTop.parentNode.removeChild(navbarTop);
-                navbarTopVertical.parentNode.removeChild(navbarTopVertical);
-              }
-            </script>
-            <div class="card" id = "TableLogs">
-              
-            </div>
-    </main><!-- ===============================================-->
+                <div class="content">
+                  <div class="card" id = "TableLogs"></div>
+                </div>
+          </main><!-- ===============================================-->
     <!--    End of Main Content-->
     <!-- ===============================================-->
 

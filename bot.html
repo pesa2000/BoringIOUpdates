@@ -83,8 +83,7 @@
             <span class="dot" onclick = "quit()"></span>
           </span>
         </div>
-        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg">
-          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg" style="outline:none;">
           <a class="navbar-brand mr-1 mr-sm-3">
             <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
           </a>
@@ -117,18 +116,15 @@
           </ul>
           </div>
           <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <div class="avatar avatar-xl">
-                  <span style="float: right;" id = "nickName"></span>
-             </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
-              <div class="bg-white rounded-soft py-2">
-                <a class="dropdown-item" href="settings.html">Settings</a>
-                <a class="dropdown-item" onclick="LogOut()">Logout</a>
-              </div>
+            <div id="dashboard-actions">
+          
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#newBot">
+                <span  data-toggle="tooltip" data-placement="top" title="New Bot">
+                <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+             </button>  
+      
             </div>
-          </li>
           </ul>
         </nav>
         <div class="content">
@@ -136,12 +132,6 @@
             <div class="card-header bg-200">
               <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
               <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
-              <h1 style="text-align: center;">
-                <button class="btn btn-falcon-default btn-sm" type="button" data-toggle="modal" data-target="#newBot">
-                    <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                    <span class="d-none d-sm-inline-block ml-1">New</span>
-                </button>
-              </h1>
             </div>
             <div class="card mb-3">
               <div class="card-body" style="background-color: #061325;border-radius: 4px;cursor: pointer;">

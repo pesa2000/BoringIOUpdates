@@ -120,18 +120,16 @@
           </ul>
           </div>
           <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <div class="avatar avatar-xl">
-                  <span style="float: right;" id = "nickName"></span>
-             </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
-              <div class="bg-white rounded-soft py-2">
-                <a class="dropdown-item" href="settings.html">Settings</a>
-                <a class="dropdown-item" onclick="LogOut()">Logout</a>
-              </div>
+            <div id="dashboard-actions">
+          
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#newTracking">
+                <span  data-toggle="tooltip" data-placement="top" title="New Tracking">
+                <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+             </button>  
+      
             </div>
-          </li>
           </ul>
         </nav>
           <div class="content">
@@ -141,12 +139,6 @@
                 <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
                 <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
                 <div class="col-6 col-sm-auto ml-auto text-right pl-0">
-                  <div id="dashboard-actions">
-                      <button class="btn btn-falcon-default btn-sm" type="button" data-toggle="modal" data-target="#newTracking">
-                          <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                          <span class="d-none d-sm-inline-block ml-1">New</span>
-                      </button>
-                    </div>
                 </div>
               </div>
             </div>

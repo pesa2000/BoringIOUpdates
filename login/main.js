@@ -35,7 +35,9 @@ const {autoUpdater} = require("electron-updater")
   owner: 'pesa2000',
   private: false
 })*/
-autoUpdater.logger = require("electron-log")
+var WindowUpdate
+const Logger = require("electron-log")
+autoUpdater.logger = Logger
 autoUpdater.logger.transports.file.level = "debug"
 
 var GlobalIdUtente = 0
@@ -68,6 +70,7 @@ function CheckLogFile(){
       console.log("File Creato")
     })
   }
+  //createWindows()
   autoUpdater.checkForUpdatesAndNotify()
 }
 var internetAvailable = require("internet-available");
@@ -879,30 +882,27 @@ ipcMain.on("RequestedShoeDetailsServer",async (event,arg) => {
 autoUpdater.on("checking-for-update", () =>{
   console.log("Checking for updates")
 })
-autoUpdater.on("update-available", () =>{
-  CreateUpdateWindow()
-  console.log("Update available")
+autoUpdater.on("update-available", (info) =>{
+  Logger.log("New Update found in the main process")
+  Logger.log(info)
+  //console.log("Update available")
 })
 autoUpdater.on("update-not-available", () =>{
   //console.log("Update not available")
-  CreateWindow()
+  Logger.log("This is the new version")
+  createWindows()
 })
 autoUpdater.on("error", err => {
-  console.log(err.toString())
+  Logger.log("Error")
+  Logger.log(err.toString())
 })
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
+
+autoUpdater.on('download-progress', (progress) => {
+  Logger.log("Download progress")
+  Logger.log(progress)
 });
 
-function CreateUpdateWindow(){
-  var WindowUpdate = new BrowserWindow({width:1000,height:800,show: false,frame: true,webPreferences: {
-    zoomFactor: 1.0
-  }})
-  WindowUpdate.loadURL(url.format({
-    pathname:path.join(__dirname,'../update.html'),
-    protocol:'file',
-    slashes:true
-  }))
-  WindowUpdate.show()
-  WindowUpdate.removeMenu()
-}
+autoUpdater.on('update-downloaded', () => {
+  Logger.log("Installing right now")
+  autoUpdater.quitAndInstall()
+});

@@ -115,18 +115,18 @@
               </ul>
               </div>
               <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-                <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <div class="avatar avatar-xl">
-                      <span style="float: right;" id = "nickName"></span>
-                 </div>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
-                  <div class="bg-white rounded-soft py-2">
-                    <a class="dropdown-item" href="settings.html">Settings</a>
-                    <a class="dropdown-item" onclick="LogOut()">Logout</a>
-                  </div>
-                </div>
-              </li>
+                <button class="btn btn-falcon-default btn-sm mx-1"type="button">
+                  <a style="color: #fff;outline: none;" href="settings.html">
+                  <span  data-toggle="tooltip" data-placement="top" title="Profile">
+                  <span class="fas fa-user" data-fa-transform="shrink-3 down-2"></span>
+                  </a>
+                </span>
+               </button>
+               <button class="btn btn-falcon-danger btn-sm mx-1"type="button" onclick="LogOut()">
+                <span  data-toggle="tooltip" data-placement="top" title="Logout">
+                <span class="fas fa-sign-out-alt" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+             </button>
               </ul>
             </nav>
         <div class="content">
@@ -167,7 +167,7 @@
           </div>-->
             <div class="card-deck">
               <div class="card mb-4 overflow-hidden" style="min-width: 12rem">
-                <div class="bg-holder bg-card" style="background-image:url('https://prium.github.io/falcon/v2.7.1/dark/assets/img/illustrations/corner-1.png');"></div>
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
                 <div class="card-body position-relative">
                   <h6>Inventory Value<!--<span class="badge badge-soft-warning rounded-capsule ml-2">-0.23%</span>--></h6>
                   <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id = "InventoryValue">0</div>
@@ -175,7 +175,7 @@
                 </div>
               </div>
               <div class="card mb-4 overflow-hidden" style="min-width: 12rem">
-                <div class="bg-holder bg-card" style="background-image:url('https://prium.github.io/falcon/v2.7.1/dark/assets/img/illustrations/corner-2.png');"></div>
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
                 <div class="card-body position-relative">
                   <h6>Purchases<!--<span class="badge badge-soft-info rounded-capsule ml-2">0.0%</span>--></h6>
                   <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" Id = "Purchases">0</div>
@@ -183,7 +183,7 @@
                 </div>
               </div>
               <div class="card mb-4 overflow-hidden" style="min-width: 12rem">
-                <div class="bg-holder bg-card" style="background-image:url('https://prium.github.io/falcon/v2.7.1/dark/assets/img/illustrations/corner-3.png');"></div>
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
                 <div class="card-body position-relative">
                   <h6>Sales<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
                   <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success" id = "Sales">0</div>
