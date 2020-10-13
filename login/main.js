@@ -34,17 +34,11 @@ const isPackaged = require('electron-is-packaged').isPackaged
 
 var internetAvailable = require("internet-available");
 
-var DEBUGGER_MODE = true
+var DEBUGGER_MODE
 
 const Logger = require("electron-log")
 autoUpdater.logger = Logger
 autoUpdater.logger.transports.file.level = "debug"
-/*autoUpdater.setFeedURL({
-  provider: "github",
-  repo: "BoringIOUpdates",
-  owner: 'pesa2000',
-  private: false
-})*/
 
 var GlobalIdUtente = 0
 
@@ -79,11 +73,11 @@ function CheckLogFile(){
   //createWindows()
   if(isPackaged == true){
     console.log("Is Packaged")
-    DEBUGGER_MODE = true
+    DEBUGGER_MODE = false
     autoUpdater.checkForUpdatesAndNotify()
   }else{
     console.log("Is not Packaged")
-    DEBUGGER_MODE = false
+    DEBUGGER_MODE = true
     createWindows()
   }
 }

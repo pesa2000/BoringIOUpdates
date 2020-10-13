@@ -159,6 +159,22 @@ function FillCards(){
 }
 
 function CreateCard(Cost){
+  var RecurrencyMonth = ""
+  switch(Cost.MesiRicorrenza){
+    case 0:
+      RecurrencyMonth = "One time cost"
+      break;
+    case 1:
+      RecurrencyMonth = "Renewal every month"
+      break;
+    case 12:
+      RecurrencyMonth = "Renewal every year"
+      break;
+    default:
+      RecurrencyMonth = "Renewal every " + Cost.MesiRicorrenza + " months"
+      break;
+  }
+
   return "<div class='kanban-item'>" +
   "<div class='card kanban-item-card hover-actions-trigger' data-toggle='modal' data-target='#kanban-modal-1'>" +
     "<div class='card-body position-relative'>" +
@@ -170,7 +186,7 @@ function CreateCard(Cost){
           "</div>" +
         "</div>" +
       "<div class='kanban-item-footer'>" +
-        "<div class='text-500'><span class='mr-2' data-toggle='tooltip'><span class='fas fa-check mr-1'></span><span></span></span></div>" +
+        "<div class='text-500'><span class='mr-2' data-toggle='tooltip'>"+RecurrencyMonth+"<span></span></span></div>" +
         "<div>" +
           "<div class='avatar avatar-l' data-toggle='tooltip'>" +
           `<img class='rounded-circle' src='${Cost.UrlFoto}' alt=''/>` +
