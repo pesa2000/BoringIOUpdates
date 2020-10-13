@@ -32,6 +32,10 @@ const {autoUpdater} = require("electron-updater")
 
 const isPackaged = require('electron-is-packaged').isPackaged
 
+var internetAvailable = require("internet-available");
+
+var DEBUGGER_MODE = true
+
 const Logger = require("electron-log")
 autoUpdater.logger = Logger
 autoUpdater.logger.transports.file.level = "debug"
@@ -75,15 +79,15 @@ function CheckLogFile(){
   //createWindows()
   if(isPackaged == true){
     console.log("Is Packaged")
+    DEBUGGER_MODE = true
     autoUpdater.checkForUpdatesAndNotify()
   }else{
     console.log("Is not Packaged")
+    DEBUGGER_MODE = false
     createWindows()
   }
 }
-var internetAvailable = require("internet-available");
 
-var DEBUGGER_MODE = true
 var SubscriptionId = ""
 var CustomerIdDB = ""
 var SubscriptionChanged = ""
