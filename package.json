@@ -1,6 +1,6 @@
 {
   "name": "BoringIO",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "First official release with AutoUpdater",
   "main": "login/main.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "currencies-exchange-rates": "^1.0.2",
     "echarts": "^4.9.0",
     "electron-differential-updater": "^4.3.2",
+    "electron-is-packaged": "^1.0.2",
     "electron-log": "^4.2.4",
     "electron-updater": "^4.3.5",
     "firefox-profile": "^2.0.0",

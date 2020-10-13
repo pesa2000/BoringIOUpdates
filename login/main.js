@@ -29,16 +29,18 @@ console.log(DirectoryLog)
 console.log("Program Version")
 console.log(app.getVersion())
 const {autoUpdater} = require("electron-updater")
+
+const isPackaged = require('electron-is-packaged').isPackaged
+
+const Logger = require("electron-log")
+autoUpdater.logger = Logger
+autoUpdater.logger.transports.file.level = "debug"
 /*autoUpdater.setFeedURL({
   provider: "github",
   repo: "BoringIOUpdates",
   owner: 'pesa2000',
   private: false
 })*/
-var WindowUpdate
-const Logger = require("electron-log")
-autoUpdater.logger = Logger
-autoUpdater.logger.transports.file.level = "debug"
 
 var GlobalIdUtente = 0
 
@@ -71,7 +73,13 @@ function CheckLogFile(){
     })
   }
   //createWindows()
-  autoUpdater.checkForUpdatesAndNotify()
+  if(isPackaged == true){
+    console.log("Is Packaged")
+    autoUpdater.checkForUpdatesAndNotify()
+  }else{
+    console.log("Is not Packaged")
+    createWindows()
+  }
 }
 var internetAvailable = require("internet-available");
 
@@ -303,8 +311,9 @@ ipcMain.on("LogOut",function (){
         console.log('Saved!');
     });
     app.removeAllListeners()
-    app.relaunch()
-    app.exit()
+    //app.relaunch()
+    //app.exit()
+    app.quit()
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
