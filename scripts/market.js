@@ -57,19 +57,14 @@ function SelectedShoesNr(Index){
     GlobalIndex = Index
     $("#imageProd").attr("src",SelectedShoes.media.imageUrl)
     $("#nameProd").text(SelectedShoes.name)
-
     CreateLog(`Searched a pair of ${SelectedShoes.name}`,"Market","Search",moment().format('MMMM Do YYYY, h:mm:ss a'))
-
-    var RetailPrice = 0
-    for(var Trait of SelectedShoes.traits){
-        if(Trait.name == "Retail Price") RetailPrice = Trait.value
-    }
-
+    console.log("Debug Market")
+    console.log(SelectedShoes)
+    var RetailPrice = SelectedShoes.price
     $("#UrlToHide").val("https://stockx.com/"+SelectedShoes.url)
     $("#dateProd").text(FlipDateAndChange(SelectedShoes.release_date))
     $("#prodRetail").text("Retail: " + Currency + "" + Conversion * RetailPrice)
     $("#prodSold").text("Tot.Sold: " + SelectedShoes.deadstock_sold)
-
     ipc.send("RequestedShoeDetails",SelectedShoes.url)
 }
 

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="assets/css/home.css" id="stylesheetLight">
+    <link rel="stylesheet" href="assets/css/home.css" id="stylesheetDark">
+    <title>Homepage</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-blue">
+        <a class="navbar-brand mr-1 mr-sm-3" href="index.html">
+            <div class="d-flex align-items-center"><img class="mr-2" src="img/boring-piccolol.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
+          </a>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="inventory.html">Inventory</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="sales.html">Sales</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="expenses.html">Expenses</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="bot.html">Bot</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="tracking.html">Tracking</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="market.html">Market</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="log.html">Log</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="header">
+        <div class="container-fluid">
+
+          <!-- Body -->
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">
+
+                <!-- Pretitle -->
+                <h6 class="header-pretitle">
+                  Overview
+                </h6>
+
+                <!-- Title -->
+                <h1 class="header-title">
+                  Dashboard
+                </h1>
+
+              </div>
+              <div class="col-auto" style="padding-bottom: 10px;">
+
+                <!-- Button -->
+                  <select name="" id="filtra">
+                    <option value="">January</option>
+                    <option value="">February</option>
+                    <option value="">March</option>
+                    <option value="">April</option>
+                    <option value="">May</option>
+                    <option value="">June</option>
+                    <option value="">July</option>
+                    <option value="">August</option>
+                    <option value="">September</option>
+                    <option value="">October</option>
+                    <option value="">November</option>
+                    <option value="">December</option>
+                    <option value="">This Year</option>
+                  </select>
+
+              </div>
+            </div> <!-- / .row -->
+          </div> <!-- / .header-body -->
+
+        </div>
+      </div> <!-- / .header -->
+      <div class="separa"></div>
+      <!-- CARDS -->
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12 col-lg-6 col-xl">
+
+            <!-- Value  -->
+            <div class="card">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col">
+
+                    <!-- Title -->
+                    <h6 class="text-uppercase text-muted mb-2">
+                      Profit
+                    </h6>
+
+                    <!-- Heading -->
+                    <span class="h2 mb-0">
+                      $24,500
+                    </span>
+
+                    <!-- Badge -->
+                    <span class="badge badge-soft-success mt-n1">
+                      +3.5%
+                    </span>
+                  </div>
+                  <div class="col-auto">
+
+                    <!-- Icon -->
+                    <span class="h2 fe fe-briefcase text-muted mb-0">
+                        <i data-feather="bar-chart"></i>
+                    </span>
+
+                  </div>
+                </div> <!-- / .row -->
+              </div>
+            </div>
+
+          </div>
+          <div class="col-12 col-lg-6 col-xl">
+
+            <!-- Hours -->
+            <div class="card">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col">
+
+                    <!-- Title -->
+                    <h6 class="text-uppercase text-muted mb-2">
+                      Purchases
+                    </h6>
+
+                    <!-- Heading -->
+                    <span class="h2 mb-0">
+                      $2,500
+                    </span>
+
+                  </div>
+                  <div class="col-auto">
+
+                    <!-- Icon -->
+                    <span class="h2 fe fe-briefcase text-muted mb-0">
+                        <i data-feather="dollar-sign"></i>
+                    </span>
+
+                  </div>
+                </div> <!-- / .row -->
+              </div>
+            </div>
+
+          </div>
+          <div class="col-12 col-lg-6 col-xl">
+
+            <!-- Exit -->
+            <div class="card">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col">
+        
+                    <!-- Title -->
+                    <h6 class="text-uppercase text-muted mb-2">
+                      SALES
+                    </h6>
+        
+                    <!-- Heading -->
+                    <span class="h2 mb-0">
+                      $3,000
+                    </span>
+        
+                  </div>
+                  <div class="col-auto">
+        
+                    <!-- Chart -->
+                    <div class="chart chart-sparkline">
+                      <canvas class="chart-canvas" id="sparklineChart"></canvas>
+                    </div>
+        
+                  </div>
+                </div> <!-- / .row -->
+              </div>
+            </div>
+        
+          </div>
+          <div class="col-12 col-lg-6 col-xl">
+
+            <!-- Time -->
+            <div class="card">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col">
+
+                    <!-- Title -->
+                    <h6 class="text-uppercase text-muted mb-2">
+                      Inventory Value
+                    </h6>
+
+                    <!-- Heading -->
+                    <span class="h2 mb-0">
+                      $9,888
+                    </span>
+
+                  </div>
+                  <div class="col-auto">
+
+                    <!-- Icon -->
+                    <span class="h2 fe fe-briefcase text-muted mb-0">
+                        <i data-feather="trending-up"></i>
+                    </span>
+
+                  </div>
+                </div> <!-- / .row -->
+              </div>
+            </div>
+
+          </div>
+        </div> <!-- / .row -->
+        <div class="profile-alert">
+          <i data-feather="user"></i><span style="margin-left: 4px;">Your next renew will be in  5 days. <a href="settings.html"><span style="color: #ff4f70;">Check billing on your profile</span></a></span>
+        </div>
+        <div class="row">
+          <div class="col-12 col-xl-8">
+
+            <!-- Convertions -->
+            <div class="card">
+              <div class="card-header">
+
+                <!-- Title -->
+                <h4 class="card-header-title">
+                  Profit
+                </h4>
+                <span class="text-muted mr-3">
+                  Last year comparison:
+                </span>
+
+                <!-- Switch -->
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="cardToggle" data-toggle="chart" data-target="#conversionsChart" data-trigger="change" data-action="add" data-dataset="1"/>
+                  <label class="custom-control-label" for="cardToggle"></label>
+                </div>
+
+                <!-- Caption -->
+
+
+              </div>
+              <div class="card-body">
+
+                <!-- Chart -->
+                <div class="chart">
+                  <canvas id="conversionsChart" class="chart-canvas"></canvas>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-xl-4">
+
+            <!-- Traffic -->
+            <div class="card">
+                <div class="card-header">
+
+                    <!-- Title -->
+                    <h4 class="card-header-title">
+                      Expenses
+                    </h4>
+    
+                    <!-- Caption -->
+    
+    
+                  </div>
+              <div class="card-body">
+
+                <!-- Chart -->
+                <div class="chart chart-appended">
+                  <canvas id="trafficChart" class="chart-canvas" data-toggle="legend" data-target="#trafficChartLegend"></canvas>
+                </div>
+
+                <!-- Legend -->
+                <div id="trafficChartLegend" class="chart-legend"></div>
+
+              </div>
+            </div>
+          </div>
+        </div> <!-- / .row -->
+        <div class="row">
+          <div class="col-12 col-xl-4">
+
+ <!-- / .card -->
+          </div>
+          <div class="col-12 col-xl-8">
+
+
+          </div>
+        </div> <!-- / .row -->
+ <!-- / .row -->
+ <!-- / .row -->
+      </div>
+
+    </div>
+
+    <script>feather.replace()</script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+    <script src="assets/Chart.min.js"></script>
+    <script src="assets/Chart.extension.js"></script>
+    <!-- Theme JS -->
+    <script src="assets/theme.min.js"></script>
+    <script src="assets/dashkit.min.js"></script>
+
+  </body>
+</html>

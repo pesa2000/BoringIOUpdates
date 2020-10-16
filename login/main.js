@@ -210,6 +210,7 @@ async function createWindows() {
 
                       win.on("close", (event,arg) => {
                         if(windowStats) (windowStats.close() , windowStats = null)
+                        connection.end()
                         app.quit()
                       })
                       windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
@@ -308,10 +309,12 @@ ipcMain.on("LogOut",function (){
     if (err) throw err;
         console.log('Saved!');
     });
+    connection.end()
     app.removeAllListeners()
     //app.relaunch()
     //app.exit()
     app.quit()
+    
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
@@ -391,9 +394,9 @@ ipcMain.on('Maximize', async (event, arg) => {
   }
 })
 
-ipcMain.on('AppQuit',async (event,arg) => {
+/*ipcMain.on('AppQuit',async (event,arg) => {
   app.quit()
-})
+})*/
 
 ipcMain.on('close', async (event, arg) => {
   event.preventDefault()
