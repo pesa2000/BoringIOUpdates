@@ -4,15 +4,15 @@ const Util = require(path.join(__dirname,"/utilityScripts/query_graphs_expenses.
 const moment = require("moment")
 var UserId = require('electron').remote.getGlobal('UserId')
 
-GetValutaAsUtf8(UserId)
+/*GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
     connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
         if(error)console.log(error)
         console.log(results[0].Valuta1)
-        Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+        Valuta = Util.GetCurrencyFromUTF8(results[0].Valuta1)
         console.log(Valuta)
     })
-}
+}*/
 
 var CostsBotList = []
 var CostsCookGroupList = []

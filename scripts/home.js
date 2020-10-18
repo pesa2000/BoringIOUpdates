@@ -60,35 +60,41 @@ function GetNewDateMonth(){
   
 
 $(document).ready(async () => {
-    $("#FilterDate").val(parseInt(GetNewDateMonth()))
-    console.log("Mese scelto")
-    console.log($("#FilterDate").val())
-    LoadStats($("#FilterDate").val())
-    ChangeLog()
-    //LoadLog()
-    if(PrimoCaricamento == true){
-        ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"OnLoad"})
-        ipc.on("ReturnedDataGraphsOnLoad",(event,arg) => {
-            console.log("DATI DAL MAIN RITORNATI ONLOAD")
-            console.log(arg)
-            $("#morris-line-chart").empty();
-            var myScript = document.createElement("script")
-            myScript.setAttribute("src", path.join(__dirname,"dist/js/pages/morris/morris-data.js"))
-            myScript.setAttribute("id","scriptMorris")
-            document.body.appendChild(myScript)
-            PrimoCaricamento = false
-        })
-    }
+    ipc.send("RequestedMonthFilter")
+    ipc.on("ReturnedMonthFilter",(event,arg)=>{
+        console.log("Mese tornato dal main")
+        console.log(arg)
+        $("#FilterDate").val(parseInt(arg))
+        console.log("Mese scelto")
+        console.log($("#FilterDate").val())
+        LoadStats(arg)
+        ChangeLog()
+    })
 })
+/*
+ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"OnLoad"})
+    ipc.on("ReturnedDataGraphsOnLoad",(event,arg) => {
+        console.log("DATI DAL MAIN RITORNATI ONLOAD")
+        console.log(arg)
+        $("#morris-line-chart").empty();
+        var myScript = document.createElement("script")
+        myScript.setAttribute("src", path.join(__dirname,"dist/js/pages/morris/morris-data.js"))
+        myScript.setAttribute("id","scriptMorris")
+        document.body.appendChild(myScript)
+        PrimoCaricamento = false
+    })
+*/
 
 
 async function Changed(){
-    Done = false
-    $("#Preloader1").show()
+    //Done = false
+    ipc.send("StoreSavedMonthFilter",$("#FilterDate").val())
+    location.reload()
+    //LoadStats($("#FilterDate").val())
+    /*$("#Preloader1").show()
     ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"FutureCalls"})
-    LoadStats($("#FilterDate").val())
     await sleep(1000)
-    $("#Preloader1").hide()
+    $("#Preloader1").hide()*/
 }
 
 async function LoadStats(Filter){
@@ -107,7 +113,7 @@ function ChangeValues(){
         var TotSales = 0 
         var TotProfitTime = 0
         var TotProfitLifetime = 0
-        console.log("Filter")
+        console.log("Filter nel change values")
         console.log(GlobalFilter)
         if(GlobalFilter == "Year"){
             Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"

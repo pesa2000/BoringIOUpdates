@@ -77,17 +77,14 @@ function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo){
     Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
     return `<tr id = "${ProductName}" >` +
     "<td>" +
-      "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt='' />" +
-        "<div class='media-body ml-3'>" +
-          "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+ ProductName +"</h6>" +
-          //"<span class='badge badge rounded-capsule badge-soft-info' data-toggle='modal' data-target='#ask' style=cursor:pointer>" +
-            //  "Place ask" +
-          //"</span>" +
-        "</div>" +
-      "</div>" +
-    "</td>"  +
-    "<td class='align-middle'>"+ ReleaseDate +"</td>" +
-    "<td class='align-middle'>"+ Site +"</td>" +
+    "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+    "<div class='media-body ml-3'>" +
+      "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+      "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
+    "</div>" +
+  "</div>" +
+"</td>" +
+    "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " + Value + "</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
@@ -113,14 +110,14 @@ function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
     if(Site == ""){Site = "No Site"}
     return `<tr id = "${ProductName}" >` +
     "<td>" +
-      "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt='' />" +
+        "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
         "<div class='media-body ml-3'>" +
-          "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+ ProductName +"</h6>" +
+        "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+        "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
         "</div>" +
-      "</div>" +
-    "</td>"  +
-    "<td class='align-middle'>"+ ReleaseDate +"</td>" +
-    "<td class='align-middle'>"+ Site +"</td>" +
+    "</div>" +
+    "</td>" +
+    "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " +"?</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +

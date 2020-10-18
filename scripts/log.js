@@ -26,14 +26,14 @@ window.setInterval(CheckConnection,5000)
 function LoadLogs(){
     var FileContentLog = fs.readFileSync(path.join(LogDirectory, "/LogMessage.json"), "utf8");
     LogFile = JSON.parse(FileContentLog)
-    document.getElementById("TableLogs").innerHTML = `<div class="row no-gutters rounded-soft px-card py-2 mt-2 mb-3">` +
+    /*document.getElementById("TableLogs").innerHTML = `<div class="row no-gutters rounded-soft px-card py-2 mt-2 mb-3">` +
     `<div class="col d-flex align-items-center">` +
-    `<h5 class="mb-0">Expenses</h5>` +
+    `<h5 class="mb-0"></h5>` +
     "</div>" +
     `<div class="col-auto d-flex">`+
     `<button class="btn btn-sm btn-falcon-default mr-2 d-none d-md-block" onclick="ClearLog()"><span class="fas fa-chart-bar mr-2"></span>Clear Logs</button>` +
     "</div>" +
-  "</div>"
+  "</div>"*/
     LogFile.Logs.reverse()
     for(var Log of LogFile.Logs){
         console.log(Log)

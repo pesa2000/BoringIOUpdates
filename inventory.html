@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
 
-
     <!-- ===============================================-->
     <!--    Document Title-->
     <!-- ===============================================-->
@@ -113,7 +112,7 @@
                 <a class="nav-link" href="home.html">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="inventory.html">Inventory</a>
+              <a class="nav-link" href="#">Inventory</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="sales.html">Sales</a>
@@ -128,7 +127,7 @@
               <a class="nav-link" href="tracking.html" >Tracking</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Market</a>
+              <a class="nav-link" href="market.html">Market</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="log.html">Log</a>
@@ -180,24 +179,30 @@
           </ul>
         </nav>
         <div class="content">
-          <div class="card mb-3 bg-200">
-            <div class="card-header bg-200">
-              <div class="row align-items-center justify-content-between">
-                <div class="alert alert-export" role="alert" style="display: none;" id="MessageExport">Inventory Exported</div>
-                <div class="alert alert-edit" role="alert" style="display: none;" id="MessageEdit">Item edited</div>
-                <div class="alert alert-duplicate" role="alert" style="display: none;" id="MessageDuplicate">Item duplicated</div>
-                <div class="alert alert-sold" role="alert" style="display: none;" id="MessageSale">Item sold</div>
-                <div class="alert alert-delete" role="alert" style="display: none;" id="MessageDelete">Item deleted</div>
-                <div class="alert alert-add" role="alert" style="display: none;" id="MessageAdd">New item added</div>
-                <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
-                <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">
+        
+                <!-- Title -->
+                <h1 class="header-title">
+                  Inventory
+                </h1>
+                <span class="alert alert-export" role="alert" style="display: none;float: right;" id="MessageExport">Inventory Exported</span>
+                <span class="alert alert-edit" role="alert" style="display: none;float: right;" id="MessageEdit">Item edited</span>
+                <span class="alert alert-duplicate" role="alert" style="display: none;float: right;" id="MessageDuplicate">Item duplicated</span>
+                <span class="alert alert-sold" role="alert" style="display: none;float: right;" id="MessageSale">Item sold</span>
+                <span class="alert alert-delete" role="alert" style="display: none;float: right;" id="MessageDelete">Item deleted</span>
+                <span class="alert alert-add" role="alert" style="display: none; float: right;" id="MessageAdd">New item added</span>
+                <span class="alert alert-primary" role="alert" style="display: none;float: right;" id="MessageSync">Synchronizing prices</span>
+                <span class="alert alert-danger" role="alert" style="display: none;float: right;" id="MessageError">Connection error...</span>
               </div>
-            </div>
+            </div> <!-- / .row -->
+          </div>
+          <div class="card mb-3 bg-200">
                 <table class="table table-borderless table-hover">
                   <thead class="text-900">
                     <tr>
                       <th class="sort pr-1 align-middle">Name</th>
-                      <th class="sort pr-1 align-middle">Date</th>
                       <th class="sort pr-1 align-middle">Site</th>
                       <th class="sort pr-1 align-middle">Price</th>
                       <th class="sort pr-1 align-middle">Value</th>

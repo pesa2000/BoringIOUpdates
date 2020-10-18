@@ -123,10 +123,29 @@
               </ul>
               </div>
               <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+                <div id="dashboard-actions">
+    
+                    <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" onclick="ClearLog()">
+                      <span  data-toggle="tooltip" data-placement="top" title="Clear logs file">
+                      <span class="fas fa-trash" data-fa-transform="shrink-3 down-2"></span>
+                    </span>
+                   </button>
+                </div>
               </ul>
             </nav>
                 <div class="content">
-                  <div class="card" id = "TableLogs"></div>
+                  <div class="header-body">
+                    <div class="row align-items-end">
+                      <div class="col">       
+                        <!-- Title -->
+                        <h1 class="header-title">
+                          Logs
+                        </h1>
+                
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="card" id = "TableLogs" style="margin-top: 30px;"></div>
                 </div>
           </main><!-- ===============================================-->
     <!--    End of Main Content-->

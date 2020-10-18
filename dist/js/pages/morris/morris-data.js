@@ -1,8 +1,4 @@
-// Dashboard 1 Morris-chart
-/*var Data = require('electron').remote.getGlobal('GetGraphMonth')*/
-var Data = require('electron').remote.getGlobal('DataMainGraphs') 
-//console.log("Data nel file graphs")
-//console.log(Data)
+const { ipcMain } = require("electron")
 
 function GetNewDateYear(){
   var d = moment(new Date()).format("DD[/]MM[/]YYYY").split("/")
@@ -16,19 +12,25 @@ function GetNewDateMonth(){
   return m[1]
 }
 
-$(function() {
-  "use strict";
-      var line = new Morris.Line({
-        element: 'morris-line-chart',
-        resize: true,
-        data: Data,
-        parseTime: false,
-        xkey: 'y',
-        ykeys: ['item1'],
-        labels: ['Profit'],
-        gridLineColor: '#082242',
-        lineColors: ['#2771d3'],
-        lineWidth: 2,
-        hideHover: 'auto'
-      });
+$(async function() {
+  ipc.send("RequestedDataGraphs")
+  ipc.on("ReturnedDataGraphsMorris",(event,arg)=>{
+    console.log("Morris Chart Data")
+    console.log(arg)
+    var Data = arg
+    "use strict";
+    var line = new Morris.Line({
+      element: 'morris-line-chart',
+      resize: true,
+      data: Data,
+      parseTime: false,
+      xkey: 'y',
+      ykeys: ['item1'],
+      labels: ['Profit'],
+      gridLineColor: '#082242',
+      lineColors: ['#2771d3'],
+      lineWidth: 2,
+      hideHover: 'auto'
+    });
+  })
  })

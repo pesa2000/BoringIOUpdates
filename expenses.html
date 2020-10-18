@@ -85,9 +85,8 @@
             <span class="dot" onclick = "quit()"></span>
           </span>
         </div>
-        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg">
-          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-          <a class="navbar-brand mr-1 mr-sm-3" href="index.html">
+        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg" style="outline:none;">
+          <a class="navbar-brand mr-1 mr-sm-3">
             <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
           </a>
           <div class="collapse navbar-collapse" id="navbarStandard">
@@ -118,15 +117,29 @@
             </li>
           </ul>
           </div>
+          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+            <div id="dashboard-actions">                   
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
+                <span data-toggle="tooltip" data-placement="top" title="See all statistics">
+                <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+            </button>
+
+                  <input type="text" id = "Filter" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
+            </div>
+          </ul>
         </nav>
         <div class="content">
-          <div class="row no-gutters bg-100 rounded-soft px-card py-2 mt-2 mb-3">
-            <div class="col d-flex align-items-center">
-              <h5 class="mb-0">Expenses</h5>
-            </div>
-            <div class="col-auto d-flex">
-                <button class="btn btn-sm btn-falcon-default mr-2 d-none d-md-block" data-toggle="modal" data-target="#stats"><span class="fas fa-chart-bar mr-2"></span>Statistics</button>
-            </div>
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">       
+                <!-- Title -->
+                <h1 class="header-title">
+                  Expenses
+                </h1>
+        
+              </div>
+            </div> <!-- / .row -->
           </div>
           <div class="kanban-container scrollbar perfect-scrollbar mr-n3" data-options='{"suppressScrollY":true,"suppressScrollX":false}'>
             <div class="kanban-column">
