@@ -59,8 +59,18 @@ function GetNewDateMonth(){
 }
   
 
+function GetDateRightFormat(DateToChange){
+    return moment(DateToChange).format('MMMM do YYYY')
+}
+
 $(document).ready(async () => {
-    ipc.send("RequestedMonthFilter")
+    ipc.send("ReturnStripeSub")
+    ipc.on("ReturnedSub",(event,arg) => {
+        console.log("Stripe subscription")
+        console.log(arg)
+        document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
+        ipc.send("RequestedMonthFilter")
+    })
     ipc.on("ReturnedMonthFilter",(event,arg)=>{
         console.log("Mese tornato dal main")
         console.log(arg)
