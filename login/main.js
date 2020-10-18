@@ -34,7 +34,17 @@ const isPackaged = require('electron-is-packaged').isPackaged
 
 var internetAvailable = require("internet-available");
 
-var FilterMonth = "2"
+
+function GetTodaysMonth(){
+  var today = new Date()
+  var dd = String(today.getDate()).padStart(2, '0')
+  var mm = String(today.getMonth() + 1).padStart(2, '0')
+  var yyyy = today.getFullYear()
+  today = yyyy + '_' + mm + '_' + dd;
+  return mm
+}
+
+var FilterMonth = GetTodaysMonth()
 
 var DEBUGGER_MODE
 
