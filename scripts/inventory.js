@@ -248,7 +248,9 @@ function LoadShoesModal(){
         console.log(SelectedProd)
         windowStats.webContents.send("fillProductStats",SelectedProd)
         document.getElementById("prodPrice").value = SelectedProd[0].searchable_traits["Retail Price"]
-        document.getElementById("wizard-datepicker").value = FlipDate(SelectedProd[0].release_date)
+        if(SelectedProd[0].release_date){
+            document.getElementById("wizard-datepicker").value = FlipDate(SelectedProd[0].release_date)
+        }
         document.getElementById("prodImg").value = SelectedProd[0].media.imageUrl
         document.getElementById("prodPid").value = GenerateRandomNumber(10000000,99999999)
         document.getElementById("prodName").value = SelectedProd[0].name
@@ -565,11 +567,16 @@ ipc.on("ReturnedProductDetailsArr",async function(event,arg){
 async function EditPriceDeadStock(Id,Price){
     var Query = "UPDATE inventario SET PrezzoMedioResell = ? WHERE IdProdotto = ?"
     var Values = [Price,Id]
-    await connection.query(Query,Values,function(error,fields,results){
+    await connection.query(Query,Values,function(error,fields,results){ 
         if(error) console.log(error)
         console.log("UPDATED")
     })
 }
+
+ipc.on("NewSyncReceived",(event,arg)=>{
+    console.log("Sincronizzando nr",arg)
+    $("#MessageSync").text("Syncronizing nr " + arg)
+})
 
 function LogOut(){
     ipc.send("LogOut")

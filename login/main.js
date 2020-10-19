@@ -449,6 +449,7 @@ ipcMain.on("RequestedShoeDetails",(event,arg) => {
 ipcMain.on("RequestedShoeDetailsArray",async (event,arg) => {
   var ArrRes = []
   var Res = ""
+  var k = 1
   var ObjTosend = {
     Message: "Synchronizing stockX prices",
     Section: "Inventory/Sale",
@@ -460,6 +461,8 @@ ipcMain.on("RequestedShoeDetailsArray",async (event,arg) => {
     await stockX.fetchProductDetails('https://stockx.com/' + SingleShoe.Url)
     .then(async product => {Res = await GetPrice(product,SingleShoe.Size); ArrRes.push({Id: SingleShoe.Id,Price: Res})})
     .catch(err => console.log(`Error scraping product details: ${err.message}`));
+    event.sender.send("NewSyncReceived",k)
+    k+=1
   }
   console.log("RES")
   console.log(ArrRes)
@@ -926,5 +929,6 @@ ipcMain.on("StoreSavedMonthFilter",(event,arg)=>{
 })
 
 ipcMain.on("RequestedMonthFilter",(event,arg)=>{
+  console.log("Requested a new month filter from home.js")
   event.sender.send("ReturnedMonthFilter",FilterMonth)
 })

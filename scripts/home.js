@@ -12,6 +12,7 @@ console.log(UserId)
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
 var Valuta = ""
+var flag = true
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
@@ -64,22 +65,31 @@ function GetDateRightFormat(DateToChange){
 }
 
 $(document).ready(async () => {
+    console.log("Documento Pronto")
     ipc.send("ReturnStripeSub")
-    ipc.on("ReturnedSub",(event,arg) => {
-        console.log("Stripe subscription")
+})
+
+ipc.on("ReturnedSub",(event,arg) => {
+    console.log("Stripe subscription")
+    console.log(arg)
+    document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
+    ipc.send("RequestedMonthFilter")
+})
+ipc.on("ReturnedMonthFilter",(event,arg)=>{
+    if(flag == true){
+        flag = false
+        console.log("MESE RITORNATO DAL MAIN")
         console.log(arg)
-        document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
-        ipc.send("RequestedMonthFilter")
-    })
-    ipc.on("ReturnedMonthFilter",(event,arg)=>{
-        console.log("Mese tornato dal main")
-        console.log(arg)
-        $("#FilterDate").val(parseInt(arg))
+        if(arg == "Year"){
+            $("#FilterDate").val("Year")
+        }else{
+            $("#FilterDate").val(parseInt(arg))
+        }
         console.log("Mese scelto")
         console.log($("#FilterDate").val())
         LoadStats(arg)
         ChangeLog()
-    })
+    }
 })
 /*
 ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"OnLoad"})
@@ -108,12 +118,14 @@ async function Changed(){
 }
 
 async function LoadStats(Filter){
+    console.log("Funzione Load stats")
     GlobalFilter = Filter
     console.log(GlobalFilter)
     ChangeValues()
 }
 
 function ChangeValues(){
+    console.log("Sto cambiando i valori")
     if(Done == false){
         Done = true
         var EntireInv
@@ -211,6 +223,7 @@ function ChangeValues(){
 }
 
 function ChangeLog(){
+    console.log("Cambio del change log")
     console.log(UserId)
     connection.query("SELECT * FROM inventario WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
         if(error)console.log(error)
