@@ -1,4 +1,6 @@
 //@ts-ignore
+const remote1 = require("electron").remote
+var Dialog = require("electron").dialog
 const fetch = require("node-fetch")
 const request = require("request")
 var moment = require('moment')
@@ -49,6 +51,7 @@ var FilterMonth = GetTodaysMonth()
 var DEBUGGER_MODE
 
 const Logger = require("electron-log")
+const { dialog } = require("electron")
 autoUpdater.logger = Logger
 autoUpdater.logger.transports.file.level = "debug"
 
@@ -519,104 +522,125 @@ ipcMain.on("CheckConnection",(event,arg)=>{
   });
 })
 
-ipcMain.on("RequestedExportInventory",(event,arg) => {
-  console.log("ExportRequested")
-  var TotalInventory = {Full_Inventory:[]}
-  var Inventory = {Inventory:[]}
-  var InventoryCustom = {Inventory_Custom:[]}
-  var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1"
-  connection.query(Query,userId,function(error,results){
-    if(error) console.log(error)
-    for(var i = 0; i < results.length; i++){
-      var SingleItem = {
-        "Type": "StockX Item",
-        "Product Name":results[i].NomeProdotto,
-        "Price": results[i].PrezzoProdotto,
-        "Release Date" : results[i].ReleaseDate,
-        "Added Date" : results[i].DataAggiunta,
-        "Size": results[i].Taglia,
-        "Average StockX Price": results[i].prezzoMedioResell,
-        "Notes": results.Note
-      }
-      Inventory.Inventory.push(SingleItem)
-    }
-    connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,function(error,results){
+let FileSavesOption = {
+  title: "Save your exported inventory",
+  defaultPath: app.getPath("desktop"),
+  buttonLabel: "Save Inventory",
+  filters:[
+    {name:"Json File",extensions:["json"]}
+  ]
+}
+
+ipcMain.on("RequestedExportInventory",async (event,arg) => {
+  var Path = await dialog.showSaveDialog(win,FileSavesOption)
+  console.log(Path)
+  if(Path.canceled == false){
+    console.log("ExportRequested")
+    var TotalInventory = {Full_Inventory:[]}
+    var Inventory = {Inventory:[]}
+    var InventoryCustom = {Inventory_Custom:[]}
+    var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1"
+    connection.query(Query,userId,function(error,results){
       if(error) console.log(error)
       for(var i = 0; i < results.length; i++){
-        var SingleItemCustom = {
-          "Type":"Custom Item",
+        var SingleItem = {
+          "Type": "StockX Item",
           "Product Name":results[i].NomeProdotto,
           "Price": results[i].PrezzoProdotto,
           "Release Date" : results[i].ReleaseDate,
           "Added Date" : results[i].DataAggiunta,
           "Size": results[i].Taglia,
-          "Notes": results[i].Note
+          "Average StockX Price": results[i].prezzoMedioResell,
+          "Notes": results.Note
         }
-        InventoryCustom.Inventory_Custom.push(SingleItemCustom)
+        Inventory.Inventory.push(SingleItem)
       }
-      TotalInventory.Full_Inventory.push(Inventory)
-      TotalInventory.Full_Inventory.push(InventoryCustom)
-      var FileName = "Inventory_" + GetTodaysDateDashFormat().toString() + ".json"
-      var FileDir = "/InventoryExported/" + FileName
-      var FullPath = path.join(DirectoryLog,FileDir)
-      console.log("Full path")
-      console.log(FullPath)
-      console.log("Full inventory")
-      console.log(JSON.stringify(TotalInventory))
-      fs.writeFileSync(path.join(FullPath),JSON.stringify(TotalInventory),() => {console.log("Writing new file")})
+      connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,function(error,results){
+        if(error) console.log(error)
+        for(var i = 0; i < results.length; i++){
+          var SingleItemCustom = {
+            "Type":"Custom Item",
+            "Product Name":results[i].NomeProdotto,
+            "Price": results[i].PrezzoProdotto,
+            "Release Date" : results[i].ReleaseDate,
+            "Added Date" : results[i].DataAggiunta,
+            "Size": results[i].Taglia,
+            "Notes": results[i].Note
+          }
+          InventoryCustom.Inventory_Custom.push(SingleItemCustom)
+        }
+        TotalInventory.Full_Inventory.push(Inventory)
+        TotalInventory.Full_Inventory.push(InventoryCustom)
+        /*var FileName = "Inventory_" + GetTodaysDateDashFormat().toString() + ".json"
+        var FileDir = "/InventoryExported/" + FileName
+        var FullPath = path.join(DirectoryLog,FileDir)*/
+        console.log("Full path")
+        console.log(Path.filePath)
+        console.log("Full inventory")
+        console.log(JSON.stringify(TotalInventory))
+        fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventory,null,4),() => {console.log("Writing new file")})
+      })
     })
-  })
+  }else{
+    console.log("Non hai salvato il file")
+  }
+  //fs.writeFileSync(path.join(FullPath),JSON.stringify(TotalInventorySold),() => {console.log("Writing new file")})
 })
 
-ipcMain.on("RequestedExportInventorySold",(event,arg) => {
-  console.log("ExportRequested")
-  var TotalInventorySold = {Full_Inventory_Sold:[]}
-  var InventorySold = {Inventory_Sold:[]}
-  var InventoryCustomSold = {Inventory_Custom_Sold:[]}
-  var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 0"
-  connection.query(Query,userId,function(error,results){
-    if(error) console.log(error)
-    for(var i = 0; i < results.length; i++){
-      var SingleItem = {
-        "Type": "StockX Item",
-        "Product Name":results.NomeProdotto,
-        "Price": results.PrezzoProdotto,
-        "Release Date" : results.ReleaseDate,
-        "Added Date" : results.DataAggiunta,
-        "Size": results.Taglia,
-        "Average StockX Price": results.prezzoMedioResell,
-        "Notes": results.Note,
-        "Date Sold": results.DataVendita,
-        "Price Sold": results.PrezzoVendita 
-      }
-      InventorySold.Inventory_Sold.push(SingleItem)
-    }
-    connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
+ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
+  var Path = await dialog.showSaveDialog(win,FileSavesOption)
+  console.log(Path)
+  if(Path.canceled == false){
+    console.log("ExportRequested")
+    var TotalInventorySold = {Full_Inventory_Sold:[]}
+    var InventorySold = {Inventory_Sold:[]}
+    var InventoryCustomSold = {Inventory_Custom_Sold:[]}
+    var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 0"
+    connection.query(Query,userId,function(error,results){
       if(error) console.log(error)
       for(var i = 0; i < results.length; i++){
-        var SingleItemCustom = {
-          "Type":"Custom Item",
-          "Product Name":results.NomeProdotto,
-          "Price": results.PrezzoProdotto,
-          "Release Date" : results.ReleaseDate,
-          "Added Date" : results.DataAggiunta,
-          "Size": results.Taglia,
-          "Notes": results.Note,
-          "Date Sold": results.DataVendita,
-          "Sold  Price": results.PrezzoVendita 
+        var SingleItem = {
+          "Type": "StockX Item",
+          "Product Name":results[i].NomeProdotto,
+          "Price": results[i].PrezzoProdotto,
+          "Release Date" : results[i].ReleaseDate,
+          "Added Date" : results[i].DataAggiunta,
+          "Size": results[i].Taglia,
+          "Average StockX Price": results[i].prezzoMedioResell,
+          "Notes": results[i].Note,
+          "Date Sold": results[i].DataVendita,
+          "Price Sold": results[i].PrezzoVendita 
         }
-        InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
+        InventorySold.Inventory_Sold.push(SingleItem)
       }
-      TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
-      TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)
-      var FileName = "Inventory_Sold_" + GetTodaysDateDashFormat().toString() + ".json"
-      var FileDir = "/InventoryExported/" + FileName
-      var FullPath = path.join(DirectoryLog,FileDir)
-      console.log("Full path")
-      console.log(FullPath)
-      fs.writeFileSync(path.join(FullPath),JSON.stringify(TotalInventorySold),() => {console.log("Writing new file")})
+      connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
+        if(error) console.log(error)
+        for(var i = 0; i < results.length; i++){
+          var SingleItemCustom = {
+            "Type":"Custom Item",
+            "Product Name":results[i].NomeProdotto,
+            "Price": results[i].PrezzoProdotto,
+            "Release Date" : results[i].ReleaseDate,
+            "Added Date" : results[i].DataAggiunta,
+            "Size": results[i].Taglia,
+            "Notes": results[i].Note,
+            "Date Sold": results[i].DataVendita,
+            "Sold  Price": results[i].PrezzoVendita 
+          }
+          InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
+        }
+        TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
+        TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)
+        console.log("Full path")
+        console.log(Path.filePath)
+        console.log("Full inventory")
+        console.log(JSON.stringify(TotalInventorySold))
+        fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
+      })
     })
-  })
+  }else{
+    console.log("Non hai salvato il file venduti")
+  }
 })
 
 ipcMain.on("CheckStripe",async (event,arg) => {
