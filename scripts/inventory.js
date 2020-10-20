@@ -594,7 +594,7 @@ async function Export(){
     ipc.send("RequestedExportInventory")
     await sleep(500)
     ipc.send("SetAlert","Export")
-    location.reload()
+    //location.reload()
 }
 
 /* CUSTOM SECTION */

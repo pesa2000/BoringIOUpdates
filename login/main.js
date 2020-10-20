@@ -530,12 +530,12 @@ ipcMain.on("RequestedExportInventory",(event,arg) => {
     for(var i = 0; i < results.length; i++){
       var SingleItem = {
         "Type": "StockX Item",
-        "Product Name":results.NomeProdotto,
-        "Price": results.PrezzoProdotto,
-        "Release Date" : results.ReleaseDate,
-        "Added Date" : results.DataAggiunta,
-        "Size": results.Taglia,
-        "Average StockX Price": results.prezzoMedioResell,
+        "Product Name":results[i].NomeProdotto,
+        "Price": results[i].PrezzoProdotto,
+        "Release Date" : results[i].ReleaseDate,
+        "Added Date" : results[i].DataAggiunta,
+        "Size": results[i].Taglia,
+        "Average StockX Price": results[i].prezzoMedioResell,
         "Notes": results.Note
       }
       Inventory.Inventory.push(SingleItem)
@@ -545,12 +545,12 @@ ipcMain.on("RequestedExportInventory",(event,arg) => {
       for(var i = 0; i < results.length; i++){
         var SingleItemCustom = {
           "Type":"Custom Item",
-          "Product Name":results.NomeProdotto,
-          "Price": results.PrezzoProdotto,
-          "Release Date" : results.ReleaseDate,
-          "Added Date" : results.DataAggiunta,
-          "Size": results.Taglia,
-          "Notes": results.Note
+          "Product Name":results[i].NomeProdotto,
+          "Price": results[i].PrezzoProdotto,
+          "Release Date" : results[i].ReleaseDate,
+          "Added Date" : results[i].DataAggiunta,
+          "Size": results[i].Taglia,
+          "Notes": results[i].Note
         }
         InventoryCustom.Inventory_Custom.push(SingleItemCustom)
       }
@@ -561,6 +561,8 @@ ipcMain.on("RequestedExportInventory",(event,arg) => {
       var FullPath = path.join(DirectoryLog,FileDir)
       console.log("Full path")
       console.log(FullPath)
+      console.log("Full inventory")
+      console.log(JSON.stringify(TotalInventory))
       fs.writeFileSync(path.join(FullPath),JSON.stringify(TotalInventory),() => {console.log("Writing new file")})
     })
   })
