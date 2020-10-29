@@ -1,0 +1,31 @@
+body{
+    background-color: #061325;
+    font-family: 'Poppins', sans-serif;
+    color: #E3D9D9;
+}
+.center {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    padding-top: 20px;
+    margin: auto;
+    width: 60%;
+}
+.card{
+    margin-top: 10px;
+    background-color: #132238;
+    border-radius: 6px;
+}
+.card-body{
+    margin-left: 15px;
+}
+.card-title{
+    font-weight: bold;
+}
+.card-img{
+    width: 64px;
+    margin-top: 10px;
+    margin-left: 5px;
+}
+.card-subtitle{
+    margin-top:-0.705rem;
+}

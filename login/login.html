@@ -1,165 +1,208 @@
 
-<!DOCTYPE html>
-<html lang="en-US" dir="ltr">
+<!doctype html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Boring | Login</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Theme CSS -->
     <script>window.$ = window.jQuery = require('jquery');</script>
-    <link rel="shortcut icon" href="https://www.boringio.com/src/assets/images/logo.ico"/>
-    <meta name="theme-color" content="#ffffff">
-    <link href="https://prium.github.io/falcon/v2.7.1/dark/assets/css/theme-dark.min.css" rel="stylesheet">
-    <script src="main.js" type = "module"></script>
+    <link rel="stylesheet" href="../assets/css/login.css" id="stylesheetLight">
+    <link rel="stylesheet" href="../assets/css/login.css" id="stylesheetDark">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        display: none;
+      }
+
+    </style>
+    
+    <!-- Title -->
+    <title>Login</title>
   </head>
-  <body>
-    <main class="main" id="top">
-      <div class="container-fluid">
-        <div class="row min-vh-100 flex-center no-gutters">
-          <div class="col-lg-8 col-xxl-5 py-3">
-            <div class="card overflow-hidden z-index-1">
-              <div class="card-body p-0">
-                <div class="row no-gutters h-100">
-                  <div class="col-md-5 text-white text-center bg-card-gradient">
-                    <div class="position-relative p-4 pt-md-5 pb-md-7">
-                      <div class="bg-holder bg-auth-card-shape"></div>
-                      <!--/.bg-holder-->
-                      <div class="z-index-1 position-relative"><a class="text-white mb-4 text-sans-serif font-weight-extra-bold fs-4 d-inline-block">boring</a>
-                        <p class="text-white opacity-75">With Boring, you can now focus only on cop every releases, while leaving the boring stuff to us!</p>
-                      </div>
-                    </div>
-                    <div class="mt-3 mb-4 mt-md-4 mb-md-5">
-                      <p>Don't have an account?<br><a class="text-white text-underline" onclick="CreateWindow('https://www.boringio.com/login/register.php')">Get started!</a></p>
-                    </div>
-                  </div>
-                  <div class="col-md-7 d-flex flex-center">
-                    <div class="p-4 p-md-5 flex-grow-1">
-                      <h3>Account Login</h3>
-                      <div>
-                        <div class="form-group"><label for="card-email">Username</label><input class="form-control" id="username"/></div>
-                        <div class="form-group">
-                          <div class="d-flex justify-content-between"><label for="card-password">Password</label><a class="fs--1" onclick="CreateWindow('https://www.boringio.com/login/ChangePasswordForm.php')">Forgot Password?</a></div><input class="form-control" id="password" type="password" />
-                        </div>
-                        <div class="form-group"><button class="btn btn-primary btn-block mt-3" id = "loginBtn" onclick="Login()">Log in</button></div>
-                        <h4 class = "form-group" style ="color:crimson;" id = "ErrorLabel"></h4>
-                      </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+  <body class="d-flex align-items-center bg-auth border-top border-top-2" style=" -webkit-user-select: none; -webkit-app-region: drag;">
+
+    <!-- CONTENT
+    ================================================== -->
+    <div class="container" style="-webkit-app-region: no-drag;">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-5 col-xl-4 my-5">
+          
+          <!-- Heading -->
+          <h1 class="display-4 text-center mb-3">
+            Sign in
+          </h1>
+          
+          <!-- Subheading -->
+          <p class="text-muted text-center mb-5">
+            Automating Boring Stuff
+          </p>
+          
+          <!-- Form -->
+          <div>
+
+            <!-- Email address -->
+            <div class="form-group">
+
+              <!-- Label -->
+              <label>Username</label>
+
+              <!-- Input -->
+              <input type="text" class="form-control" placeholder="Enter your username" id="username">
+
             </div>
+
+            <!-- Password -->
+            <div class="form-group">
+
+              <div class="row">
+                <div class="col">
+                      
+                  <!-- Label -->
+                  <label>Password</label>
+
+                </div>
+                <div class="col-auto">
+                  
+                  <!-- Help text -->
+                  <a onclick='CreateWindow("https://www.boringio.com/login/ChangePasswordForm.php")' style="cursor: pointer;" target="_blank" class="form-text small text-muted">
+                    Forgot password?
+                  </a>
+
+                </div>
+              </div> <!-- / .row -->
+
+              <!-- Input group -->
+              <input type="password" id="password" class="form-control" placeholder="Enter your password">
+
+            </div>
+
+            <!-- Submit -->
+            <button class="btn btn-lg btn-block btn-primary mb-3" id = "loginBtn" onclick="Login()">
+              Sign in
+            </button>
+
+            <!-- Link -->
+            <div class="text-center">
+              <small class="text-muted text-center">
+                Don't have an account yet? <a onclick="CreateWindow('https://www.boringio.com/login/register.php')" target="blank" style="color: #f1743b; cursor: pointer;">Sign up</a>.
+              </small>
+            </div>
+            <div class="text-center" id="ErrorLabel" style="color: rgb(185, 40, 40); font-size: 20px;">
+              
+            </div>
+            
           </div>
+
         </div>
-      </div>
-    </main>
+      </div> <!-- / .row -->
+    </div> <!-- / .container -->
     <script>
-    const fs = require('fs')
-    const ipc = require('electron').ipcRenderer
-    const app = require("electron").remote.app
-    var mysql = require('mysql')
-    const path = require("path")
-    const bcrypt = require('bcrypt')
-    let $ = require('jquery')
-    var AccountSavedDirectory = path.join(app.getPath("userData"),"/AccountSaved.txt")
-    var UsernameSaved
-    var PasswordSaved
-    var BETA_MODE = true
-    var connection = require("electron").remote.getGlobal('conn')
+      const fs = require('fs')
+      const ipc = require('electron').ipcRenderer
+      const app = require("electron").remote.app
+      var mysql = require('mysql')
+      const path = require("path")
+      const bcrypt = require('bcrypt')
+      let $ = require('jquery')
+      var AccountSavedDirectory = path.join(app.getPath("userData"),"/AccountSaved.txt")
+      var UsernameSaved
+      var PasswordSaved
+      var BETA_MODE = true
+      var connection = require("electron").remote.getGlobal('conn')
+  
+      function Minimize(){
+          ipc.send("Minimize","login")
+      }
+  
+      function Maximize(){
+          ipc.send("Maximize","login")
+      }
+  
+      function Close(){
+          ipc.send("Close","login")
+      }
+  
+      function CreateWindow(Type){
+        console.log(Type)
+        ipc.send("CreateWindow",Type)
+      }
+  
+      async function Login(){
+        var Username = document.getElementById('username').value
+        var Password = document.getElementById('password').value
+        connection.query('SELECT * FROM utenti WHERE Username like ?', Username, async function (error, results, fields) {
+        if (error) throw error;
+            console.log(results)
+            if(results.length == 1){
+                var PasswordHashed = results[0].Password
+                PassTemp = PasswordHashed
+                PasswordHashed = PasswordHashed.replace(/^\$2y(.+)$/i, '$2a$1')
+                bcrypt.compare(Password, PasswordHashed, async function(err, res) {
+                    if(res == true){
+                      console.log("Password Uguali")
+                          if(BETA_MODE == true){
+                            ipc.invoke('setUserId', results[0].UserId)
+                            ipc.invoke('setAttachedInventory',results[0].AccountAttached)
+                            ipc.invoke('setUsername', results[0].Username)
+                            ipc.invoke('setEmail', results[0].Email)
+                            ipc.invoke('setRenew', results[0].TypeSubscription)
+                            ipc.invoke('setRenewDays', results[0].NextDate)
+                            ipc.invoke('setImg', results[0].Immagine)
+                            ipc.invoke('setValuta', results[0].Valuta)
+                            fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
+                            if (err) throw err;
+                                console.log('Saved!');
+                            });
+                            ipc.send('entry-accepted', 'start')
+                          }else{
+                            ipc.send("CheckStripe",results)
+                            ipc.on("ReturnedStripeLogin",(event,arg)=>{
+                              if(arg){
+                                ipc.invoke('setUserId', results[0].UserId)
+                                ipc.invoke('setAttachedInventory',results[0].AccountAttached)
+                                ipc.invoke('setUsername', results[0].Username)
+                                ipc.invoke('setEmail', results[0].Email)
+                                ipc.invoke('setRenew', results[0].TypeSubscription)
+                                ipc.invoke('setRenewDays', results[0].NextDate)
+                                ipc.invoke('setImg', results[0].Immagine)
+                                ipc.invoke('setValuta', results[0].Valuta)
+                                fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
+                                if (err) throw err;
+                                    console.log('Saved!');
+                                });
+                                ipc.send('entry-accepted', 'start')
+                              }else{
+                                console.log("Non hai pagato")
+                              }
+                            })
+                          }
+                          /*if(arg){
+  
+                          }else{
+                            console.log("NON HAI PAGATO")
+                          }*/
+                    }else{
+                        document.getElementById('ErrorLabel').innerText = "       Wrong username or password"
+                    }
+                });
+            }else{
+                document.getElementById('ErrorLabel').innerText = "      Wrong username or password"
+            }
+        });
+      }
+      </script>
 
-    function Minimize(){
-        ipc.send("Minimize","login")
-    }
-
-    function Maximize(){
-        ipc.send("Maximize","login")
-    }
-
-    function Close(){
-        ipc.send("Close","login")
-    }
-
-    function CreateWindow(Type){
-      console.log(Type)
-      ipc.send("CreateWindow",Type)
-    }
-
-    async function Login(){
-      var Username = document.getElementById('username').value
-      var Password = document.getElementById('password').value
-      connection.query('SELECT * FROM utenti WHERE Username like ?', Username, async function (error, results, fields) {
-      if (error) throw error;
-          console.log(results)
-          if(results.length == 1){
-              var PasswordHashed = results[0].Password
-              PassTemp = PasswordHashed
-              PasswordHashed = PasswordHashed.replace(/^\$2y(.+)$/i, '$2a$1')
-              bcrypt.compare(Password, PasswordHashed, async function(err, res) {
-                  if(res == true){
-                    console.log("Password Uguali")
-                        if(BETA_MODE == true){
-                          ipc.invoke('setUserId', results[0].UserId)
-                          ipc.invoke('setUsername', results[0].Username)
-                          ipc.invoke('setEmail', results[0].Email)
-                          ipc.invoke('setRenew', results[0].TypeSubscription)
-                          ipc.invoke('setRenewDays', results[0].NextDate)
-                          ipc.invoke('setImg', results[0].Immagine)
-                          ipc.invoke('setValuta', results[0].Valuta)
-                          fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
-                          if (err) throw err;
-                              console.log('Saved!');
-                          });
-                          ipc.send('entry-accepted', 'start')
-                        }else{
-                          ipc.send("CheckStripe",results)
-                          ipc.on("ReturnedStripeLogin",(event,arg)=>{
-                            if(arg){
-                              ipc.invoke('setUserId', results[0].UserId)
-                              ipc.invoke('setUsername', results[0].Username)
-                              ipc.invoke('setEmail', results[0].Email)
-                              ipc.invoke('setRenew', results[0].TypeSubscription)
-                              ipc.invoke('setRenewDays', results[0].NextDate)
-                              ipc.invoke('setImg', results[0].Immagine)
-                              ipc.invoke('setValuta', results[0].Valuta)
-                              fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
-                              if (err) throw err;
-                                  console.log('Saved!');
-                              });
-                              ipc.send('entry-accepted', 'start')
-                            }else{
-                              console.log("Non hai pagato")
-                            }
-                          })
-                        }
-                        /*if(arg){
-
-                        }else{
-                          console.log("NON HAI PAGATO")
-                        }*/
-                  }else{
-                      document.getElementById('ErrorLabel').innerText = "       Wrong username or password"
-                  }
-              });
-          }else{
-              document.getElementById('ErrorLabel').innerText = "      Wrong username or password"
-          }
-      });
-    }
-    </script>
+    <!-- JAVASCRIPT
+    ================================================== -->
+    <!-- Libs JS -->
     <script>if (typeof module === 'object') 
-    {window.module = module; 
-    module = undefined;}</script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/jquery.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/popper.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/bootstrap.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/@fortawesome/all.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/stickyfilljs/stickyfill.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/sticky-kit/sticky-kit.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/is_js/is.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/lodash/lodash.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
-    <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/theme.min.js"></script>
+      {window.module = module; 
+      module = undefined;}</script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script>if(window.module){module = window.module;}</script>
   </body>
 </html>

@@ -232,12 +232,60 @@
                     <div class="form-row">
                       <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
                         <input class="form-control" id = "newShoe" oninput="SearchNewShoes();">
+                        <div id="ShoesList" style="background-color:rgb(19, 34,56);height: auto;width: 100%; display: none;">
+                          <div style="height: 10px;"></div>
+                          <div id="Div1" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                            <input type="hidden" id="Url1" value = "">
+                            <div class="file-thumbnail">
+                            <img id="Img1" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                            </div>
+                            <div class="media-body ml-3">
+                              <h6 style="margin-left: 12px;" class="mb-1" id="Name1"></h6>
+                              <div class="fs--1"><span class="font-weight-medium text-600" id="Date1"></span></div>
+                            </div>
+                        </div>
+                        <div id="Div2" style = "cursor: pointer;"  class="media mb-3 hover-actions-trigger align-items-center">
+                          <input type="hidden" id="Url2" value = "">
+                          <div class="file-thumbnail">
+                          <img id="Img2" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                          </div>
+                          <div class="media-body ml-3">
+                            <h6 style="margin-left: 12px;" class="mb-1" id="Name2"></h6>
+                            <div class="fs--1"><span class="font-weight-medium text-600" id="Date2"></span></div>
+                          </div>
                       </div>
-                      <div class="form-group col-12"><label for="modal-auth-password">Search</label>
-                        <select id = "productsScraped" class="form-control" onchange= "LoadShoesModal()">
-                          <option value = 'NoProd'>No products searched</option>
-                        </select>
+                      <div id="Div3" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                        <input type="hidden" id="Url3" value = "">
+                        <div class="file-thumbnail">
+                        <img id="Img3" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                        </div>
+                        <div class="media-body ml-3">
+                          <h6 style="margin-left: 12px;" class="mb-1" id="Name3"></h6>
+                          <div class="fs--1"><span class="font-weight-medium text-600" id="Date3"></span></div>
+                        </div>
+                    </div>
+                    <div id="Div4" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                      <input type="hidden" id="Url4" value = "">
+                      <div class="file-thumbnail">
+                      <img id="Img4" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
                       </div>
+                      <div class="media-body ml-3">
+                        <h6 style="margin-left: 12px;" class="mb-1" id="Name4"></h6>
+                        <div class="fs--1"><span class="font-weight-medium text-600" id="Date4"></span></div>
+                      </div>
+                  </div>
+                  <div id="Div5" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                    <input type="hidden" id="Url5" value = "">
+                    <div class="file-thumbnail">
+                    <img id="Img5" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                    </div>
+                    <div class="media-body ml-3">
+                      <h6 style="margin-left: 12px;" class="mb-1" id="Name5"></h6>
+                      <div class="fs--1"><span class="font-weight-medium text-600" id="Date5"></span></div>
+                    </div>
+                </div>
+              </div>
+            </div>
                       <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "prodPrice" /></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Size</label>
                         <select class="form-control" type="text"  id = "prodSize" >
@@ -261,8 +309,33 @@
               </div>
             </div>
           </div>
-        </div>
 
+        <div class="modal fade" id="editCustomImg" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog mt-6" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Edit image url</h4>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-row">
+                    <div class="form-group col-12">
+                      <input type="hidden" id="IdToChangeImg" value = "">
+                      <label for="modal-auth-password">Url Image</label>
+                      <input class="form-control" type="text" id = "prodImgCustomToEdit"/>
+                    </div>
+                  </div>
+                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="ChangedImg()">Add</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
         <div class="modal fade" id="newCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
           <div class="modal-dialog mt-6" role="document">

@@ -1,6 +1,7 @@
 //@ts-ignore
 const remote1 = require("electron").remote
 var Dialog = require("electron").dialog
+var WinUpdate
 const fetch = require("node-fetch")
 const request = require("request")
 var moment = require('moment')
@@ -93,6 +94,7 @@ function CheckLogFile(){
   }else{
     console.log("Is not Packaged")
     DEBUGGER_MODE = true
+    //CreateUpdateWindows()
     createWindows()
   }
 }
@@ -197,6 +199,7 @@ async function createWindows() {
                     if(BOUGHT == true){
                       LOGGEDIN = true
                       setUserId(results[0].UserId)
+                      setUserIdAttached(results[0].AccountAttached)
                       setUsername(results[0].Username)
                       setEmail(results[0].Email)
                       setRenew(results[0].TypeSubscription)
@@ -278,6 +281,9 @@ function setValuta(input){
   Valuta = input
   global.ValutaAcc = Valuta
 }
+function setUserIdAttached(input){
+  global.UserIdAttached = input
+}
 
 function setUserId(input){
   global.UserId = input
@@ -324,18 +330,18 @@ ipcMain.on("LogOut",function (){
     if (err) throw err;
         console.log('Saved!');
     });
-    connection.end()
-    app.removeAllListeners()
-    //app.relaunch()
-    //app.exit()
-    app.quit()
-    
+    app.exit()
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
   console.log(arg)
   GlobalIdUtente = arg
   setUserId(arg)
+})
+
+ipcMain.handle("setAttachedInventory", async(event,arg) => {
+  console.log(arg)
+  setUserIdAttached(arg)
 })
 
 ipcMain.handle("setUsername", async(event,arg) => {
@@ -434,7 +440,7 @@ ipcMain.on("WindowTracking",(event,arg) => {
 
 ipcMain.on("SearchProducts",(event,arg) => {
   stockX.newSearchProducts(arg, {
-      limit: 8
+      limit: 5
   })
   .then(products => (/*console.log(products),*/event.sender.send("ReturnedProducts",products)))
   .catch(err => console.log(`Error searching: ${err.message}`));
@@ -527,7 +533,9 @@ let FileSavesOption = {
   defaultPath: app.getPath("desktop"),
   buttonLabel: "Save Inventory",
   filters:[
-    {name:"Json File",extensions:["json"]}
+    {name:"Json File",extensions:["json"]},
+    {name:"Txt File",extensions:["txt"]},
+    {name:"Csv File",extensions:["csv"]}
   ]
 }
 
@@ -542,44 +550,60 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
     var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1"
     connection.query(Query,userId,function(error,results){
       if(error) console.log(error)
-      for(var i = 0; i < results.length; i++){
-        var SingleItem = {
-          "Type": "StockX Item",
-          "Product Name":results[i].NomeProdotto,
-          "Price": results[i].PrezzoProdotto,
-          "Release Date" : results[i].ReleaseDate,
-          "Added Date" : results[i].DataAggiunta,
-          "Size": results[i].Taglia,
-          "Average StockX Price": results[i].prezzoMedioResell,
-          "Notes": results.Note
-        }
-        Inventory.Inventory.push(SingleItem)
-      }
+      var StockXInv = results
       connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,function(error,results){
         if(error) console.log(error)
-        for(var i = 0; i < results.length; i++){
-          var SingleItemCustom = {
-            "Type":"Custom Item",
-            "Product Name":results[i].NomeProdotto,
-            "Price": results[i].PrezzoProdotto,
-            "Release Date" : results[i].ReleaseDate,
-            "Added Date" : results[i].DataAggiunta,
-            "Size": results[i].Taglia,
-            "Notes": results[i].Note
+        var CustomInv = results
+        if(Path.filePath.includes(".json")){
+          for(var i = 0; i < StockXInv.length; i++){
+            var SingleItem = {
+              "Type":"StockX Item",
+              "Product Name":StockXInv[i].NomeProdotto,
+              "Price": StockXInv[i].PrezzoProdotto,
+              "Release Date" : StockXInv[i].ReleaseDate,
+              "Added Date" : StockXInv[i].DataAggiunta,
+              "Size": StockXInv[i].Taglia,
+              "Notes": StockXInv[i].Note
+            }
+            Inventory.Inventory.push(SingleItem)
           }
-          InventoryCustom.Inventory_Custom.push(SingleItemCustom)
+          for(var i = 0; i < CustomInv.length; i++){
+            var SingleItemCustom = {
+              "Type":"Custom Item",
+              "Product Name":CustomInv[i].NomeProdotto,
+              "Price": CustomInv[i].PrezzoProdotto,
+              "Release Date" : CustomInv[i].ReleaseDate,
+              "Added Date" : CustomInv[i].DataAggiunta,
+              "Size": CustomInv[i].Taglia,
+              "Notes": CustomInv[i].Note
+            }
+            InventoryCustom.Inventory_Custom.push(SingleItemCustom)
+          }
+          TotalInventory.Full_Inventory.push(Inventory)
+          TotalInventory.Full_Inventory.push(InventoryCustom)
+          fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventory,null,4),() => {console.log("Writing new file")})
         }
-        TotalInventory.Full_Inventory.push(Inventory)
-        TotalInventory.Full_Inventory.push(InventoryCustom)
-        /*var FileName = "Inventory_" + GetTodaysDateDashFormat().toString() + ".json"
-        var FileDir = "/InventoryExported/" + FileName
-        var FullPath = path.join(DirectoryLog,FileDir)*/
-        console.log("Full path")
-        console.log(Path.filePath)
-        console.log("Full inventory")
-        console.log(JSON.stringify(TotalInventory))
-        fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventory,null,4),() => {console.log("Writing new file")})
-      })
+        if(Path.filePath.includes(".txt")){
+          var Txt = "Type Name Price Release-Date Added Size Notes \n"
+          for(var i = 0; i < StockXInv.length; i++){
+            Txt += "StockX Item " + StockXInv[i].NomeProdotto + " " + StockXInv[i].PrezzoProdotto + " " + StockXInv[i].ReleaseDate + " " + StockXInv[i].DataAggiunta + " " +StockXInv[i].Taglia + " " +StockXInv[i].Note + "\n"
+          }
+          for(var i = 0; i < CustomInv.length; i++){
+            Txt += "Custom Item " + CustomInv[i].NomeProdotto + " " + CustomInv[i].PrezzoProdotto + " " + CustomInv[i].ReleaseDate + " " + CustomInv[i].DataAggiunta + " " +CustomInv[i].Taglia + " " +CustomInv[i].Note + "\n"
+          }
+          fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
+        }
+        if(Path.filePath.includes(".csv")){
+          var Csv = "Type;Name;Price;Release Date;Added;Size;Notes \n"
+          for(var i = 0; i < StockXInv.length; i++){
+            Csv += "StockX Item;" + StockXInv[i].NomeProdotto + ";" + StockXInv[i].PrezzoProdotto + ";" + StockXInv[i].ReleaseDate + ";" + StockXInv[i].DataAggiunta + ";" +StockXInv[i].Taglia + ";" +StockXInv[i].Note + "\n"
+          }
+          for(var i = 0; i < CustomInv.length; i++){
+            Csv += "Custom Item;" + CustomInv[i].NomeProdotto + ";" + CustomInv[i].PrezzoProdotto + ";" + CustomInv[i].ReleaseDate + ";" + CustomInv[i].DataAggiunta + ";" +CustomInv[i].Taglia + ";" +CustomInv[i].Note + "\n"
+          }
+          fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
+        }
+      })  
     })
   }else{
     console.log("Non hai salvato il file")
@@ -588,58 +612,82 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
 })
 
 ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
-  var Path = await dialog.showSaveDialog(win,FileSavesOption)
-  console.log(Path)
-  if(Path.canceled == false){
-    console.log("ExportRequested")
-    var TotalInventorySold = {Full_Inventory_Sold:[]}
-    var InventorySold = {Inventory_Sold:[]}
-    var InventoryCustomSold = {Inventory_Custom_Sold:[]}
-    var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 0"
-    connection.query(Query,userId,function(error,results){
-      if(error) console.log(error)
-      for(var i = 0; i < results.length; i++){
-        var SingleItem = {
-          "Type": "StockX Item",
-          "Product Name":results[i].NomeProdotto,
-          "Price": results[i].PrezzoProdotto,
-          "Release Date" : results[i].ReleaseDate,
-          "Added Date" : results[i].DataAggiunta,
-          "Size": results[i].Taglia,
-          "Average StockX Price": results[i].prezzoMedioResell,
-          "Notes": results[i].Note,
-          "Date Sold": results[i].DataVendita,
-          "Price Sold": results[i].PrezzoVendita 
-        }
-        InventorySold.Inventory_Sold.push(SingleItem)
-      }
-      connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
+  try {
+    var Path = await dialog.showSaveDialog(win,FileSavesOption)
+    console.log(Path)
+    if(Path.canceled == false){
+      console.log("ExportRequested")
+      var TotalInventorySold = {Full_Inventory_Sold:[]}
+      var InventorySold = {Inventory_Sold:[]}
+      var InventoryCustomSold = {Inventory_Custom_Sold:[]}
+      var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 0"
+      connection.query(Query,userId,function(error,results){
         if(error) console.log(error)
-        for(var i = 0; i < results.length; i++){
-          var SingleItemCustom = {
-            "Type":"Custom Item",
-            "Product Name":results[i].NomeProdotto,
-            "Price": results[i].PrezzoProdotto,
-            "Release Date" : results[i].ReleaseDate,
-            "Added Date" : results[i].DataAggiunta,
-            "Size": results[i].Taglia,
-            "Notes": results[i].Note,
-            "Date Sold": results[i].DataVendita,
-            "Sold  Price": results[i].PrezzoVendita 
+        var InventorySoldRes = results
+        connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
+          if(error) console.log(error)
+          var InvetoryCustomSoldRes = results
+          if(Path.filePath.includes(".json")){
+            for(var i = 0; i < InventorySoldRes.length; i++){
+              var SingleItem = {
+                "Type":"StockX Item",
+                "Product Name":InventorySoldRes[i].NomeProdotto,
+                "Price": InventorySoldRes[i].PrezzoProdotto,
+                "Release Date" : InventorySoldRes[i].ReleaseDate,
+                "Added Date" : InventorySoldRes[i].DataAggiunta,
+                "Size": InventorySoldRes[i].Taglia,
+                "Notes": InventorySoldRes[i].Note,
+                "Date Sold": InventorySoldRes[i].DataVendita,
+                "Sold  Price": InventorySoldRes[i].PrezzoVendita 
+              }
+              InventorySold.Inventory_Sold.push(SingleItem)
+            }
+            for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
+              var SingleItemCustom = {
+                "Type":"Custom Item",
+                "Product Name":InvetoryCustomSoldRes[i].NomeProdotto,
+                "Price": InvetoryCustomSoldRes[i].PrezzoProdotto,
+                "Release Date" : InvetoryCustomSoldRes[i].ReleaseDate,
+                "Added Date" : InvetoryCustomSoldRes[i].DataAggiunta,
+                "Size": InvetoryCustomSoldRes[i].Taglia,
+                "Notes": InvetoryCustomSoldRes[i].Note,
+                "Date Sold": InvetoryCustomSoldRes[i].DataVendita,
+                "Sold  Price": InvetoryCustomSoldRes[i].PrezzoVendita 
+              }
+              InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
+            }
+            TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
+            TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)
+            fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
           }
-          InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
-        }
-        TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
-        TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)
-        console.log("Full path")
-        console.log(Path.filePath)
-        console.log("Full inventory")
-        console.log(JSON.stringify(TotalInventorySold))
-        fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
+          if(Path.filePath.includes(".txt")){
+            var Txt = "Type Name Price Release-Date Added Size Notes Date-Sold Price-Sold \n"
+            for(var i = 0; i < InventorySoldRes.length; i++){
+              Txt += "StockX Item " + InventorySoldRes[i].NomeProdotto + " " + InventorySoldRes[i].PrezzoProdotto + " " + InventorySoldRes[i].ReleaseDate + " " + InventorySoldRes[i].DataAggiunta + " " +InventorySoldRes[i].Taglia + " " +InventorySoldRes[i].Note + " " +InventorySoldRes[i].DataVendita + " " +InventorySoldRes[i].PrezzoVendita +"\n"
+            }
+            for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
+              Txt += "Custom Item " + InvetoryCustomSoldRes[i].NomeProdotto + " " + InvetoryCustomSoldRes[i].PrezzoProdotto + " " + InvetoryCustomSoldRes[i].ReleaseDate + " " + InvetoryCustomSoldRes[i].DataAggiunta + " " +InvetoryCustomSoldRes[i].Taglia + " " +InvetoryCustomSoldRes[i].Note + " " +InvetoryCustomSoldRes[i].DataVendita + " " + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+            }
+            fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
+          }
+          if(Path.filePath.includes(".csv")){
+            var Csv = "Type;Name;Price;Release Date;Added;Size;Notes;Date Sold;Price Sold \n"
+            for(var i = 0; i < InventorySoldRes.length; i++){
+              Csv += "StockX Item;" + InventorySoldRes[i].NomeProdotto + ";" + InventorySoldRes[i].PrezzoProdotto + ";" + InventorySoldRes[i].ReleaseDate + ";" + InventorySoldRes[i].DataAggiunta + ";" +InventorySoldRes[i].Taglia + ";" +InventorySoldRes[i].Note + ";" +InventorySoldRes[i].DataVendita + ";" +InventorySoldRes[i].PrezzoVendita +"\n"
+            }
+            for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
+              Csv += "Custom Item;" + InvetoryCustomSoldRes[i].NomeProdotto + ";" + InvetoryCustomSoldRes[i].PrezzoProdotto + ";" + InvetoryCustomSoldRes[i].ReleaseDate + ";" + InvetoryCustomSoldRes[i].DataAggiunta + ";" +InvetoryCustomSoldRes[i].Taglia + ";" +InvetoryCustomSoldRes[i].Note + ";" +InvetoryCustomSoldRes[i].DataVendita + ";" + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+            }
+            fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
+          }
+          //fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
+        })
       })
-    })
-  }else{
-    console.log("Non hai salvato il file venduti")
+    }else{
+      console.log("Non hai salvato il file venduti")
+    }
+  }catch(err){
+    Logger.log(err)
   }
 })
 
@@ -649,7 +697,7 @@ ipcMain.on("CheckStripe",async (event,arg) => {
 })
 
 async function CheckStripeBeforeStart(User1){
-  await fetch("https://www.boringio.com:5000/CheckStripeUser", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({User:User1}) })
+  await fetch("https://www.boringio.com:5001/CheckStripeUser", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({User:User1}) })
   .then(async res => res.json())
   .then(async json => {console.log(json.Res);await SetBought(json.Res)});
 }
@@ -672,7 +720,7 @@ async function ChangePaymentMethods(IdCustomer,IdSubscription,Card){
   }
   console.log(IdSubscription)
   console.log(card)
-  await fetch("https://www.boringio.com:5000/ModifyStripePayment", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: IdSubscription,Card:card}) })
+  await fetch("https://www.boringio.com:5001/ModifyStripePayment", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: IdSubscription,Card:card}) })
   .then(async res => res.json())
   .then(async json => {console.log(json);await SetNewPm(json)});
 }
@@ -704,13 +752,13 @@ ipcMain.on("ChangePassword",(event,arg) => {
 ipcMain.on("DeleteSubscription",async (event,arg) => {
   console.log("Id da mandare")
   console.log(SubscriptionId)
-  await fetch("https://www.boringio.com:5000/DeleteStripeSubscription", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: SubscriptionId})})
+  await fetch("https://www.boringio.com:5001/DeleteStripeSubscription", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: SubscriptionId})})
   .then(async res => res.json())
   .then(async json =>  event.sender.send("SubscriptionDeleted",json));
 })
 
 ipcMain.on("ReturnStripeSub",async (event,arg) => {
-  await fetch("https://www.boringio.com:5000/GetSub", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: SubscriptionId})})
+  await fetch("https://www.boringio.com:5001/GetSub", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: SubscriptionId})})
   .then(async res => res.json())
   .then(async json => event.sender.send("ReturnedSub",json));
 })
@@ -921,20 +969,40 @@ ipcMain.on("RequestedShoeDetailsServer",async (event,arg) => {
   event.sender.send("ReturnedProductDetailsServer",res1.body)
 })
 
-
 autoUpdater.on("checking-for-update", () =>{
   console.log("Checking for updates")
 })
-autoUpdater.on("update-available", (info) =>{
+
+autoUpdater.on("update-available", (info) => {
   Logger.log("New Update found in the main process")
   Logger.log(info)
+  CreateUpdateWindows()
   //console.log("Update available")
 })
+
 autoUpdater.on("update-not-available", () =>{
   //console.log("Update not available")
   Logger.log("This is the new version")
   createWindows()
+  //CreateUpdateWindows()
 })
+
+async function CreateUpdateWindows(){
+  var UpdateWin = new BrowserWindow({
+    height: 500,
+    width: 800,
+    frame: false
+  })
+  UpdateWin.loadURL(url.format({
+    pathname:path.join(__dirname,'../NewVersion.html'),
+    protocol:'file',
+    slashes:true
+  }))
+  UpdateWin.removeMenu()
+  await sleep(1000)
+  UpdateWin.show()
+}
+
 autoUpdater.on("error", err => {
   Logger.log("Error")
   Logger.log(err.toString())
@@ -958,3 +1026,21 @@ ipcMain.on("RequestedMonthFilter",(event,arg)=>{
   console.log("Requested a new month filter from home.js")
   event.sender.send("ReturnedMonthFilter",FilterMonth)
 })
+
+
+/*for(var i = 0; i < results.length; i++){
+          var SingleItemCustom = {
+            "Type":"Custom Item",
+            "Product Name":results[i].NomeProdotto,
+            "Price": results[i].PrezzoProdotto,
+            "Release Date" : results[i].ReleaseDate,
+            "Added Date" : results[i].DataAggiunta,
+            "Size": results[i].Taglia,
+            "Notes": results[i].Note,
+            "Date Sold": results[i].DataVendita,
+            "Sold  Price": results[i].PrezzoVendita 
+          }
+          InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
+        }
+        TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
+        TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)*/

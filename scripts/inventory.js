@@ -10,16 +10,48 @@ var path = require('path')
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_inventory.js"))
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
+var UserAttachedInventory = require('electron').remote.getGlobal('UserIdAttached')
+
+var Urls = []
+
+if(UserAttachedInventory != null){
+    UserId = UserAttachedInventory
+}
+
+var Conversion = 1
+var Flag = false
+
+console.log("User attached") 
+console.log(UserAttachedInventory)
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-        if(error)console.log(error)
-        console.log(results[0].Valuta1)
-        Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-        console.log(Valuta)
-    })
+    if(Flag == false){
+        console.log("Entrato nella funzione")
+        Flag = true
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+            if(error)console.log(error)
+            console.log(results[0].Valuta1)
+            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+            console.log(Valuta)
+            switch(Valuta){
+                case "$":
+                    Conversion = 1
+                break;
+                case "€":
+                    Conversion = 0.86
+                break;
+                case "£":
+                    Conversion = 0.78
+                break;
+            }
+            console.log("Coversione valuta")
+            console.log(Conversion)
+            LoadShoes()
+        })
+    }
 }
+
 
 function sleep(ms) {
     try{
@@ -74,42 +106,10 @@ async function SwitchAlert(){
 
 function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo){
     if(Site == ""){Site = "No Site"}
-    Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
-    return `<tr id = "${ProductName}" >` +
-    "<td>" +
-    "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
-    "<div class='media-body ml-3'>" +
-      "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
-      "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
-    "</div>" +
-  "</div>" +
-"</td>" +
-    "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " + Value + "</span></td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
-    "<td></td>" +
-    "<td class='align-middle'>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEdit(" + Id +")'>" +
-            "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
-        "</button>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareSale("+ Id +")'>" +
-            "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span> " +
-        "</button>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Duplicate("+ Id +")'>" +
-            "<span class='fas fa-clone' data-fa-transform='shrink-3 down-2'></span>" +
-        "</button>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Delete("+ Id +")'>" +
-            "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
-        "</button>" +
-      "</td>" +
-  "</tr>"
-}
-
-function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
-    if(Site == ""){Site = "No Site"}
-    return `<tr id = "${ProductName}" >` +
-    "<td>" +
+    if(UserAttachedInventory != null){
+        Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
+        return `<tr id = "${ProductName}" >` +
+        "<td>" +
         "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
         "<div class='media-body ml-3'>" +
         "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
@@ -117,29 +117,143 @@ function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
         "</div>" +
     "</div>" +
     "</td>" +
-    "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " +"?</span></td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
-    "<td></td>" +
-    "<td class='align-middle'>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEditCustom(" + Id +")'>" +
-            "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
-        "</button>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareSaleCustom("+ Id +")'>" +
-            "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span> " +
-        "</button>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DuplicateCustom("+ Id +")'>" +
-            "<span class='fas fa-clone' data-fa-transform='shrink-3 down-2'></span>" +
-        "</button>" +
-        "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DeleteCustom("+ Id +")'>" +
-            "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
-        "</button>" +
-      "</td>" +
-  "</tr>"
+        "<td class='align-middle font-weight-semi-bold'>?</td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " ?</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " ?</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
+        "<td></td>" +
+        "<td class='align-middle'>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEdit(" + Id +")'>" +
+                "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareSale("+ Id +")'>" +
+                "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span> " +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Duplicate("+ Id +")'>" +
+                "<span class='fas fa-clone' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Delete("+ Id +")'>" +
+                "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+        "</td>" +
+    "</tr>"
+    }else{
+        Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
+        return `<tr id = "${ProductName}" >` +
+        "<td>" +
+        "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+        "<div class='media-body ml-3'>" +
+        "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+        "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
+        "</div>" +
+    "</div>" +
+    "</td>" +
+        "<td class='align-middle font-weight-semi-bold'>" + Site + "</td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price +"</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " + parseFloat(Conversion * Value).toFixed(2) + "</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
+        "<td></td>" +
+        "<td class='align-middle'>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEdit(" + Id +")'>" +
+                "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareSale("+ Id +")'>" +
+                "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span> " +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Duplicate("+ Id +")'>" +
+                "<span class='fas fa-clone' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Delete("+ Id +")'>" +
+                "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+        "</td>" +
+    "</tr>"
+    }
 }
 
-var UserId = 0
+function EditCustomImg(Id){
+    $("#editCustomImg").modal('toggle')
+    $("#IdToChangeImg").val(Id)
+}
+
+function ChangedImg(){
+    var ImgUrl = $("#prodImgCustomToEdit").val()
+    var IdCustomToChange = $("#IdToChangeImg").val()
+    console.log("New url")
+    console.log(ImgUrl)
+    console.log("Id")
+    console.log(IdCustomToChange)
+    connection.query("UPDATE inventariocustom SET ImmagineProdotto = ? WHERE IdProdotto = ?",[ImgUrl,IdCustomToChange],function(error,results,fields){
+        if(error)console.log(error)
+        location.reload()
+    })
+}
+
+function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
+    if(Site == ""){Site = "No Site"}
+    if(UserAttachedInventory != null){
+        return `<tr id = "${ProductName}" >` +
+        "<td>" +
+        "<div class='media align-items-center position-relative' onclick='EditCustomImg(" + Id +")'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+            "<div class='media-body ml-3'>" +
+            "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+            "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
+            "</div>" +
+        "</div>" +
+        "</td>" +
+        "<td class='align-middle font-weight-semi-bold'> ? </td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " ?</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " ?</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span data-fa-transform='shrink-2'></span></span></td>" +
+        "<td></td>" +
+        "<td class='align-middle'>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEditCustom(" + Id +")'>" +
+                "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareSaleCustom("+ Id +")'>" +
+                "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span> " +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DuplicateCustom("+ Id +")'>" +
+                "<span class='fas fa-clone' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DeleteCustom("+ Id +")'>" +
+                "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+        "</td>" +
+    "</tr>"
+    }else{
+        return `<tr id = "${ProductName}" >` +
+        "<td>" +
+            "<div class='media align-items-center position-relative' onclick='EditCustomImg(" + Id +")'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+            "<div class='media-body ml-3'>" +
+            "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+            "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
+            "</div>" +
+        "</div>" +
+        "</td>" +
+        "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " +"?</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
+        "<td></td>" +
+        "<td class='align-middle'>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEditCustom(" + Id +")'>" +
+                "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareSaleCustom("+ Id +")'>" +
+                "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span> " +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DuplicateCustom("+ Id +")'>" +
+                "<span class='fas fa-clone' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+            "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DeleteCustom("+ Id +")'>" +
+                "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
+            "</button>" +
+        "</td>" +
+    "</tr>"
+    }
+}
+
 var ShoesList = []
 var CustomList = []
 var Index = 0
@@ -159,9 +273,9 @@ function quit(){
     ipc.send("AppQuit")
 }
 
-$(document).ready(() => {
+/*$(document).ready(() => {
     LoadShoes()
-})
+})*/
 
 function Searching(){
     var ShoesToSearch = $('#newShoe');
@@ -229,24 +343,56 @@ function ClearModal(){
 
 function PrintSearchedProducts(Products){
     GlobalProducts = Products
-    document.getElementById("productsScraped").innerHTML = "<option value = '0' disabled selected>Select a Product</option>"
+    /*document.getElementById("productsScraped").innerHTML = "<option value = '0' disabled selected>Select a Product</option>"
+    */
+    var c = 1
     for(var Prod of Products){
-        document.getElementById("productsScraped").innerHTML += "<option value ='"+Prod.url+"'>"+Prod.name+"</option>"
+        console.log(Prod)
+        //document.getElementById("productsScraped").innerHTML += "<option value ='"+Prod.url+"'>"+Prod.name+"</option>"
+        $("#Img" + c).attr("src",Prod.media.imageUrl)
+        console.log(Prod.media.imageUrl)
+        $("#Name" + c).text(Prod.name)
+        Urls[c] = Prod.url
+        $("#Div" + c).show()
+        c+=1
     }
+    document.getElementById("Div1").addEventListener("click",function(){
+        LoadShoesModal(Urls[1])
+    })
+    document.getElementById("Div2").addEventListener("click",function(){
+        LoadShoesModal(Urls[2])
+    })
+    document.getElementById("Div3").addEventListener("click",function(){
+        LoadShoesModal(Urls[3])
+    })
+    document.getElementById("Div4").addEventListener("click",function(){
+        LoadShoesModal(Urls[4])
+    })
+    document.getElementById("Div5").addEventListener("click",function(){
+        LoadShoesModal(Urls[5])
+    })
+    $("#ShoesList").show()
 }
 
-function LoadShoesModal(){
-    var ProductChosen = $("#productsScraped option:selected").val()
-    console.log(ProductChosen)
-    if(ProductChosen != 0){
+function LoadShoesModal(SelectedUrl){
+    console.log("Selected Url")
+    console.log(SelectedUrl)
+    var ProductChosen = SelectedUrl
+    var c = 1
+    for(c = 1;c < 6; c+=1){
+        if(Urls[c] != SelectedUrl){
+            $("#Div" + c).hide()
+        }
+    }
+    if(ProductChosen != ""){
         ipc.send("RequestedShoeDetails",ProductChosen)
         //ipc.send("RequestedShoeDetailsServer",ProductChosen)
-        windowStats.webContents.send("open")
+        //windowStats.webContents.send("open")
         var SelectedProd = GlobalProducts.filter(function(prod){
             return prod.url == ProductChosen
         })
         console.log(SelectedProd)
-        windowStats.webContents.send("fillProductStats",SelectedProd)
+        //windowStats.webContents.send("fillProductStats",SelectedProd)
         document.getElementById("prodPrice").value = SelectedProd[0].searchable_traits["Retail Price"]
         if(SelectedProd[0].release_date){
             document.getElementById("wizard-datepicker").value = FlipDate(SelectedProd[0].release_date)
@@ -265,29 +411,23 @@ function SearchNewShoes(){
 
 function LoadShoes(){
     Index = 0
-        ipc.send("getUserId")
-        ipc.on("ReturnedId",async (event,arg) => {
-            console.log(arg)
-            UserId = arg
-            connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-                if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-                ShoesList = results
-                console.log(ShoesList)
-                PopulateTable()
-                Util.StockXItems(ShoesList,Valuta)
-            })
-            connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-                if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-                CustomList = results
-                console.log(CustomList)
-                PopulateTableCustom()
-                Util.CustomItems(CustomList,Valuta)
-                Util.Retail(ShoesList,CustomList,Valuta)
-                Util.Average(ShoesList,Valuta)
-            })
-        })
+    connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+        if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
+        ShoesList = results
+        console.log(ShoesList)
+        PopulateTable()
+        Util.StockXItems(ShoesList,Valuta)
+    })
+    connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+        if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
+        CustomList = results
+        console.log(CustomList)
+        PopulateTableCustom()
+        Util.CustomItems(CustomList,Valuta)
+        Util.Retail(ShoesList,CustomList,Valuta)
+        Util.Average(ShoesList,Valuta)
+    })
     console.log("Loaded")
-
 }
 /* UTILITY METHODS */
 function FlipDateAndChange(DateToChange){
@@ -558,6 +698,8 @@ async function SyncAvgPrice(){
 }
 
 ipc.on("ReturnedProductDetailsArr",async function(event,arg){
+    console.log("Returned Product new Array")
+    console.log(arg)
     for(var ShoeToUpdate of arg){
         await EditPriceDeadStock(ShoeToUpdate.Id,ShoeToUpdate.Price)
     }
@@ -729,7 +871,6 @@ function EditCustom(){
             NameProdEdited = Custom.NomeProdotto
         }
     }
-
     var PrezzoProdotto = $("#PriceToModifyCustom").val()
     var D = $("#ProdDateToModifyCustom").val().split('/')
     var ReleaseDate = D[2] + "-" + D[1] + "-" + D[0]
