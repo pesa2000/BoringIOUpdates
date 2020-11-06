@@ -133,13 +133,10 @@ function DetailsBrand(Brand) {
   for (var Bot of FilteredArr) {
     document.getElementById("keysList").innerHTML +=
     "<div class='form-group col-12'>" +
-    `<label for='modal-auth-confirm-password'><span class="badge badge-soft-success rounded-capsule">${Bot.Created}</span></label>` +
+    `<label for='modal-auth-confirm-password'><span class="badge badge-soft-success rounded-capsule">${Bot.Created}</span><span class='badge badge-soft-danger rounded-capsule' style='float:right; margin-left:7px; cursor: pointer;' onclick='DeleteBot("${Bot.BotKey}")'>`+"Delete" +"</span></label>" +
     "<h4>" +
     Bot.BotKey + 
     "</h4>" +
-    `<span class='badge badge-soft-danger rounded-capsule' style='float:right; cursor: pointer;' onclick='DeleteBot("${Bot.BotKey}")'>`+
-      "Delete" +
-      "</span>" +
     "</div>";
   }
   console.log(Brand);

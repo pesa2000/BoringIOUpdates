@@ -1,7 +1,7 @@
 var mysql = require('mysql')
 var moment = require('moment')
 var config = require('electron').remote.getGlobal('configuration')
-var connection = require('electron').remote.getGlobal('conn')
+var pool = require('electron').remote.getGlobal('pool')
 var UserId = require('electron').remote.getGlobal('UserId')
 
 window.setInterval(CheckConnection,5000)
@@ -70,24 +70,27 @@ function ChangeDate(DateToChange){
 }
 
 function LoadTrackings(){
-    document.getElementById("ShoesListModal").innerHTML = ""
-    document.getElementById("TrackingTable").innerHTML = ""
-    connection.query("SELECT * FROM spedizioni INNER JOIN inventario on inventario.IdProdotto = spedizioni.IdProdotto WHERE spedizioni.IdUtente = ?",UserId,  function (error, results, fields) {
-        if(error) console.log(error)
-        TrackingList = results
-        console.log(TrackingList)
-        for(var Track of TrackingList){
-            document.getElementById("TrackingTable").innerHTML += TemplateTracking(Track.IdSpedizione,Track.ImmagineProdotto,Track.UrlKey,Track.NomeProdotto,Track.TrackingCode,FlipDateAndChange(Track.DataAggiunta),Track.Corriere,Track.Taglia)
-        }
-        $("#Preloader1").css("display","none")
-    })
-    connection.query("SELECT * FROM inventario WHERE IdUtente = ?",UserId,function(error,results,fields){
-        if(error) console.log(error)
-        ShoesList = results
-        for(var Shoe of ShoesList){
-            console.log(Shoe)
-            document.getElementById("ShoesListModal").innerHTML += "<option value = '" + Shoe.IdProdotto + "'>"+Shoe.NomeProdotto+" " + Shoe.Taglia + "</option>"
-        }
+    pool.getConnection(function(err,connection){
+        document.getElementById("ShoesListModal").innerHTML = ""
+        document.getElementById("TrackingTable").innerHTML = ""
+        connection.query("SELECT * FROM spedizioni INNER JOIN inventario on inventario.IdProdotto = spedizioni.IdProdotto WHERE spedizioni.IdUtente = ?",UserId,  function (error, results, fields) {
+            if(error) console.log(error)
+            TrackingList = results
+            console.log(TrackingList)
+            for(var Track of TrackingList){
+                document.getElementById("TrackingTable").innerHTML += TemplateTracking(Track.IdSpedizione,Track.ImmagineProdotto,Track.UrlKey,Track.NomeProdotto,Track.TrackingCode,FlipDateAndChange(Track.DataAggiunta),Track.Corriere,Track.Taglia)
+            }
+            $("#Preloader1").css("display","none")
+        })
+        connection.query("SELECT * FROM inventario WHERE IdUtente = ?",UserId,function(error,results,fields){
+            if(error) console.log(error)
+            ShoesList = results
+            for(var Shoe of ShoesList){
+                console.log(Shoe)
+                document.getElementById("ShoesListModal").innerHTML += "<option value = '" + Shoe.IdProdotto + "'>"+Shoe.NomeProdotto+" " + Shoe.Taglia + "</option>"
+            }
+            connection.release()
+        })
     })
     //ipc.send("getUserId")
 }
@@ -121,10 +124,13 @@ function Add(){
         var Values = [
             [Obj.UrlPhoto,TrackingCodeChosen,Obj.NameCourier,"CreatedWithDesktopApp",Obj.Url,RegularDate,ItemIdChosen,UserId]
         ]
-        connection.query(Query,Values,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog(`Added a tracking to ${ShoeName}`,"Track","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            location.reload()
+        pool.getConnection(function(err,connection){
+            connection.query(Query,Values,function(error,results,fields){
+                if(error) console.log(error)
+                CreateLog(`Added a tracking to ${ShoeName}`,"Track","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                connection.release()
+                location.reload()
+            })
         })
     }else{
         $("#errorLabel").text("You need to add every field before continuing")
@@ -132,16 +138,19 @@ function Add(){
 }
 
 function Delete(Id){
-    var ShoeName = ""
-    for(var Shoe of ShoesList){
-        if(Shoe.IdProdotto == Id){
-            ShoeName = Shoe.NomeProdotto
+    pool.getConnection(function(err,connection){
+        var ShoeName = ""
+        for(var Shoe of ShoesList){
+            if(Shoe.IdProdotto == Id){
+                ShoeName = Shoe.NomeProdotto
+            }
         }
-    }
-    connection.query("DELETE FROM spedizioni WHERE IdSpedizione = ?",Id,function(error,results,fields){
-        if(error) console.log(error)
-        CreateLog(`Deleted a tracking of ${ShoeName}`,"Track","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        location.reload()
+        connection.query("DELETE FROM spedizioni WHERE IdSpedizione = ?",Id,function(error,results,fields){
+            if(error) console.log(error)
+            CreateLog(`Deleted a tracking of ${ShoeName}`,"Track","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            connection.release()
+            location.reload()
+        })
     })
 }
 

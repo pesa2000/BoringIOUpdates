@@ -57,7 +57,7 @@ function SetThisYearExpenses(ExpensesList){
     var TotalProxies = 0
     var TotalShips = 0
     for(var Expense of ExpensesList){
-        console.log(Expense)
+        //console.log(Expense)
         var Total = 0
         var ArrMonths = Expense.PagamentoMesi.split(" ")
         if(parseInt(GetYear(Expense.DataCosto)) == parseInt(GetTodaysYear())){
@@ -93,13 +93,13 @@ function SetThisYearExpenses(ExpensesList){
             break;
         }
     }
-    console.log(TotalBots)
+    /*console.log(TotalBots)
     console.log(TotalCookGroups)
     console.log(TotalShips)
     console.log(TotalProxies)
-    console.log(TotalOthers)
+    console.log(TotalOthers)*/
     var Res = {
-        TotalBots: TotalBots,
+        TotalBots: TotalBots, 
         TotalCookGroups: TotalCookGroups,
         TotalShips: TotalShips,
         TotalProxies: TotalProxies,
@@ -115,7 +115,7 @@ function SetThisMonthExpenses(ExpensesList,FilteredMonth){
     var TotalProxies = 0
     var TotalShips = 0
     for(var Expense of ExpensesList){
-        console.log(Expense)
+        //console.log(Expense)
         var Total = 0
         var ArrMonths = Expense.PagamentoMesi.split(" ") 
         //console.log(ArrMonths)
@@ -123,12 +123,12 @@ function SetThisMonthExpenses(ExpensesList,FilteredMonth){
             if(Expense.MesiRicorrenza == 0){
                 var Date1 = GetDateFormat2(Expense.DataCosto).split("-")
                 var Date2 = GetTodaysYear() + "-" +  $("#FilterDate").val()
-                console.log("Data costo")
+                /*console.log("Data costo")
                 console.log(Date1[0] + "-" + Date1[1])
                 console.log("Data filtrata")
-                console.log(Date2)
+                console.log(Date2)*/
                 if(Date1[0] + "-" + Date1[1] == Date2){
-                    console.log("Il mese e l'anno coincidono")
+                    //console.log("Il mese e l'anno coincidono")
                     Total += parseInt(Expense.PrezzoCosto)
                 }
             }else{

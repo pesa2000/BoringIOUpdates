@@ -1,6 +1,9 @@
 var moment = require('moment')
 var config = require('electron').remote.getGlobal('configuration')
-var connection = require('electron').remote.getGlobal('conn')
+var pool = require('electron').remote.getGlobal('pool')
+console.log("All connections: " + pool._allConnections.length)
+console.log("Free connections: " + pool._freeConnections.length)
+console.log(pool)
 var windowStats = require('electron').remote.getGlobal('windowStats')
 var LatestAlert = require('electron').remote.getGlobal("AlertInventory")
 var Valuta = require('electron').remote.getGlobal("ValutaAcc")
@@ -11,6 +14,8 @@ var Util = require(path.join(__dirname,"/utilityScripts/query_stats_inventory.js
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
 var UserAttachedInventory = require('electron').remote.getGlobal('UserIdAttached')
+
+var ContSaved = 0
 
 var Urls = []
 
@@ -29,25 +34,28 @@ function GetValutaAsUtf8(Id){
     if(Flag == false){
         console.log("Entrato nella funzione")
         Flag = true
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            console.log(Valuta)
-            switch(Valuta){
-                case "$":
-                    Conversion = 1
-                break;
-                case "€":
-                    Conversion = 0.86
-                break;
-                case "£":
-                    Conversion = 0.78
-                break;
-            }
-            console.log("Coversione valuta")
-            console.log(Conversion)
-            LoadShoes()
+        pool.getConnection(function(err,connection){
+            connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+                if(error)console.log(error)
+                console.log(results[0].Valuta1)
+                Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+                console.log(Valuta)
+                switch(Valuta){
+                    case "$":
+                        Conversion = 1
+                    break;
+                    case "€":
+                        Conversion = 0.86
+                    break;
+                    case "£":
+                        Conversion = 0.78
+                    break;
+                }
+                console.log("Coversione valuta")
+                console.log(Conversion)
+                connection.release()
+                LoadShoes()
+            })
         })
     }
 }
@@ -103,14 +111,17 @@ async function SwitchAlert(){
     }
 }
 
+function CreatePageStockX(url){
+    ipc.send("WindowTracking","https://stockx.com/" + url)
+}
 
-function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo){
+function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo,Url){
     if(Site == ""){Site = "No Site"}
     if(UserAttachedInventory != null){
         Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
         return `<tr id = "${ProductName}" >` +
         "<td>" +
-        "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+        `<div class='media align-items-center position-relative'><img style = 'cursor: pointer;' class='rounded border border-200' src='${Photo}' width='60' alt='' onclick='CreatePageStockX("${Url}")'/>` +
         "<div class='media-body ml-3'>" +
         "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
         "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
@@ -141,7 +152,7 @@ function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo){
         Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
         return `<tr id = "${ProductName}" >` +
         "<td>" +
-        "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+        `<div class='media align-items-center position-relative'><img style = 'cursor: pointer;' class='rounded border border-200' src='${Photo}' width='60' alt='' onclick='CreatePageStockX("${Url}")'/>` +
         "<div class='media-body ml-3'>" +
         "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
         "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
@@ -183,9 +194,12 @@ function ChangedImg(){
     console.log(ImgUrl)
     console.log("Id")
     console.log(IdCustomToChange)
-    connection.query("UPDATE inventariocustom SET ImmagineProdotto = ? WHERE IdProdotto = ?",[ImgUrl,IdCustomToChange],function(error,results,fields){
-        if(error)console.log(error)
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query("UPDATE inventariocustom SET ImmagineProdotto = ? WHERE IdProdotto = ?",[ImgUrl,IdCustomToChange],function(error,results,fields){
+            if(error)console.log(error)
+            connection.release()
+            location.reload()
+        })
     })
 }
 
@@ -194,7 +208,7 @@ function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
     if(UserAttachedInventory != null){
         return `<tr id = "${ProductName}" >` +
         "<td>" +
-        "<div class='media align-items-center position-relative' onclick='EditCustomImg(" + Id +")'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+        "<div class='media align-items-center position-relative' onclick='EditCustomImg(" + Id +")'><img style = 'cursor: pointer;' class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
             "<div class='media-body ml-3'>" +
             "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
             "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
@@ -224,7 +238,7 @@ function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
     }else{
         return `<tr id = "${ProductName}" >` +
         "<td>" +
-            "<div class='media align-items-center position-relative' onclick='EditCustomImg(" + Id +")'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+            "<div class='media align-items-center position-relative' onclick='EditCustomImg(" + Id +")'><img style = 'cursor: pointer;' class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
             "<div class='media-body ml-3'>" +
             "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
             "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
@@ -314,14 +328,6 @@ ipc.on("ReturnedProducts",async (event,arg) => {
     PrintSearchedProducts(arg)
 })
 
-ipc.on("ReturnedProductDetails", async(event,arg) => {
-    windowStats.webContents.send("fillVariantStats",arg)
-    for(var Variant of arg.variants){
-        console.log(Variant)
-        document.getElementById("prodSize").innerHTML += "<option value = '"+Variant.market.averageDeadstockPrice+"'>"+Variant.size+"</option>"
-    }
-})
-
 ipc.on("ReturnedProductDetailsServer", async(event,arg) => {
     arg = JSON.parse(arg)
     windowStats.webContents.send("fillVariantStats",arg)
@@ -332,75 +338,212 @@ ipc.on("ReturnedProductDetailsServer", async(event,arg) => {
 })
 
 $("#new").on("hidden.bs.modal",() => {
-    ClearModal()
-    windowStats.webContents.send("close")
+    //ClearModal()
+    //windowStats.webContents.send("close")
 })
 
-function ClearModal(){
+/*function ClearModal(){
     $("input").val("")
     document.getElementById("productsScraped").innerHTML = "<option value = 'NoProd'>No products searched</option>"
-}
+}*/
 
 function PrintSearchedProducts(Products){
     GlobalProducts = Products
-    /*document.getElementById("productsScraped").innerHTML = "<option value = '0' disabled selected>Select a Product</option>"
-    */
     var c = 1
     for(var Prod of Products){
-        console.log(Prod)
-        //document.getElementById("productsScraped").innerHTML += "<option value ='"+Prod.url+"'>"+Prod.name+"</option>"
         $("#Img" + c).attr("src",Prod.media.imageUrl)
-        console.log(Prod.media.imageUrl)
         $("#Name" + c).text(Prod.name)
-        Urls[c] = Prod.url
         $("#Div" + c).show()
+        console.log(Prod.name)
+        console.log(Prod.url)
+        Urls[c] = Prod.url
         c+=1
     }
-    document.getElementById("Div1").addEventListener("click",function(){
-        LoadShoesModal(Urls[1])
-    })
-    document.getElementById("Div2").addEventListener("click",function(){
-        LoadShoesModal(Urls[2])
-    })
-    document.getElementById("Div3").addEventListener("click",function(){
-        LoadShoesModal(Urls[3])
-    })
-    document.getElementById("Div4").addEventListener("click",function(){
-        LoadShoesModal(Urls[4])
-    })
-    document.getElementById("Div5").addEventListener("click",function(){
-        LoadShoesModal(Urls[5])
-    })
+    $("#Div1").on("click",() => {LoadShoesModal(Urls[1])})
+    $("#Div2").on("click",() => {LoadShoesModal(Urls[2])})
+    $("#Div3").on("click",() => {LoadShoesModal(Urls[3])})
+    $("#Div4").on("click",() => {LoadShoesModal(Urls[4])})
+    $("#Div5").on("click",() => {LoadShoesModal(Urls[5])})
     $("#ShoesList").show()
 }
+var SavedProd = []
+var ReadyToAdd = []
 
-function LoadShoesModal(SelectedUrl){
-    console.log("Selected Url")
-    console.log(SelectedUrl)
-    var ProductChosen = SelectedUrl
-    var c = 1
-    for(c = 1;c < 6; c+=1){
-        if(Urls[c] != SelectedUrl){
-            $("#Div" + c).hide()
-        }
+function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
+    return `<div class="col-md-6 col-lg-12" >` +
+    `<img class="card-img-top"/>`+ 
+    `<div id='DivShoe${ActualCont}' class='card-body' style='background-color: #132238;border-radius: 4px;cursor: pointer;'>` +
+    "<div class='row justify-content-between align-items-center'>" +
+      "<div class='col'>" +
+        "<div class='media'>" +
+          "<div class='mr-2'>" +
+          `<img id = 'ImgSingle${ActualCont}' src='${Img}' style='width: 64px;border-radius: .25rem !important;'>` +
+          "</div>" +
+          "<div class='media-body fs--1'>" +
+            `<input type='hidden' id='UrlSingle${ActualCont}' value='${Url}'>` +
+            `<input type='hidden' id='Value${ActualCont}'>` +
+            `<input type='hidden' id='NameSingle${ActualCont}'>` +
+            "<h6 class='fs-0'>"+Name+" &nbsp&nbsp</h6>" + 
+            "<br>" +
+            "<span id='BadgeSize"+ActualCont +"' class='badge badge rounded-capsule badge-soft-success'>?</span>" +
+            "&nbsp<span id='BadgeDate"+ActualCont +"' class='badge badge rounded-capsule badge-soft-warning'>"+Date+"</span>" +
+            "&nbsp<span id='BadgePrice"+ActualCont +"' class='badge badge rounded-capsule badge-soft-info'>$"+Price+"</span>" +
+            "&nbsp<span id='BadgeSite"+ActualCont +"' class='badge badge rounded-capsule badge-soft-dark'>?</span>" +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+      "<div class='col-md-auto mt-4 mt-md-0'>" +
+      `<button id='Edit${ActualCont}' onclick = 'OpenEdit(${ActualCont})'class='btn btn-info btn-sm mr-2' style='background-color: #6C63FF !important;color: #fff;border: none;' type='button' data-toggle='collapse' data-target='#collapseSingleShoe${ActualCont}' aria-expanded='false' aria-controls='collapseSingleShoe'>Edit</button>` +
+      `<button id='Remove${ActualCont}' onclick = 'RemoveSaved(${ActualCont})' class='btn btn-info btn-sm mr-2' style='background-color: #e63757 !important;color: #fff;border: none;' type='button'>Remove</button>` +
+      `<button id='Save${ActualCont}' onclick= 'Save(${ActualCont})'class='btn btn-info btn-sm mr-2' style='background-color: #00d27a !important;color: #fff;border: none;' type='button'>Save</button>` +
+      `<span id='Green${ActualCont}' style="color:#00d27a;" class="fas fa-check" data-fa-transform="shrink-3 down-2"></span>`+
+      `<span id='Red${ActualCont}' style="color:#e63757;" class="fas fa-exclamation" data-fa-transform="shrink-3 down-2"></span>`+  
+      "</div>" +
+      "<div class='form-row collapse' id='collapseSingleShoe"+ActualCont+"' style='padding-top: 20px'>" +                       
+        "<div class='form-group col-3'>" +
+          "<label for='modal-auth-password'>Size</label>" +
+          "<select class='form-control' type='text' id = 'prodSize"+ActualCont+"' ></select>" +
+        "</div>" +
+        "<div class='form-group col-3'>" +
+          "<label for='modal-auth-password'>Date</label>" +
+          "<input class='form-control datetimepicker' id='prodDate"+ActualCont+"' type='text' data-options='{'dateFormat':'d/m/Y'}' />" +
+        "</div>" +
+        "<div class='form-group col-3'>" +
+          "<label for='modal-auth-password'>Price</label>" + 
+          "<input class='form-control' type='text' id = 'prodPrice"+ActualCont+"' />" +
+        "</div>" +
+        "<div class='form-group col-3'>" + 
+          "<label for='modal-auth-password'>Site</label>" +
+          "<input class='form-control' type='text'  id = 'prodSite"+ActualCont+"'/>" +
+        "</div>" + 
+        "<div class='col-12' style = 'margin-left:5px;color:#e63757;' id='prodError"+ActualCont+"'>" + 
+        "</div>" +
+      "</div>" +  
+    "</div>" +
+  "</div>" +
+  "</div>"
+}
+
+ipc.on("ReturnedProductDetails", async(event,arg) => {
+    for(var Variant of arg.Prod.variants){
+        console.log(Variant)
+        document.getElementById("prodSize"+arg.Index).innerHTML += "<option value = '"+Variant.market.averageDeadstockPrice+"'>"+Variant.size+"</option>"
     }
-    if(ProductChosen != ""){
-        ipc.send("RequestedShoeDetails",ProductChosen)
-        //ipc.send("RequestedShoeDetailsServer",ProductChosen)
-        //windowStats.webContents.send("open")
+    console.log("Size selezionata")
+    console.log(arg.Prod.variants[0].size)
+    $("#BadgeSize"+arg.Index).text(arg.Prod.variants[0].size)
+    $("#BadgeSite"+arg.Index).text("No Site")
+    $("#Value"+arg.Index).val(arg.Prod.variants[0].market.averageDeadstockPrice)
+    ReadyToAdd[arg.Index] = true
+})
+
+function ClearResearch(){
+    GlobalProducts = []
+    $("#ShoesList").hide()
+    for(var k = 1; k < 6; k+=1){
+        $("#Div"+k).off("click")
+    }
+    $("#newShoe").text("")
+    $("#newShoe").val("")
+}
+
+function RemoveSaved(Cont){
+    SavedProd[Cont] = []
+    ReadyToAdd[Cont] = false
+    $("#DivShoe"+Cont).remove()
+}
+
+function OpenEdit(Cont){
+    $("#Edit" + Cont).hide()
+    $("#Remove" + Cont).hide()
+    $("#Save" + Cont).show()
+}
+
+function Save(Cont){
+    if($("#prodPrice"+Cont).val() == ""){
+        $("#Red"+Cont).show() 
+        $("#Green"+Cont).hide()
+        console.log("Il prezzo è vuoto")
+        ReadyToAdd[Cont] = false
+        $("#prodError"+Cont).text("The field 'Price' cannot be empty")
+    }else{
+        if(isNaN($("#prodPrice"+Cont).val())){
+            $("#Red"+Cont).show() 
+            $("#Green"+Cont).hide()
+            console.log("Il prezzo non è un numero")
+            ReadyToAdd[Cont] = false
+            $("#prodError"+Cont).text("The field 'Price' must be a number")
+        }else{
+            if($("#prodSize"+Cont).val() == ""){
+                $("#Red"+Cont).show()
+                $("#Green"+Cont).hide()
+                console.log("Deve esserci una taglia")
+                ReadyToAdd[Cont] = false
+                $("#prodError"+Cont).text("The field 'Size' need to be selected")
+            }else{
+                if(CheckValidDate($("#prodDate"+Cont).val())){
+                    $("#BadgePrice"+ Cont).text("$ " + $("#prodPrice" + Cont).val())
+                    $("#BadgeSite"+ Cont).text($("#prodSite" + Cont).val())
+                    $("#BadgeSize"+ Cont).text($("#prodSize"+Cont +" option:selected").text())
+                    $("#Value"+ Cont).text($("prodSize"+ Cont).val())
+                    $("#BadgeDate"+ Cont).text($("#prodDate" + Cont).val())
+                    $("#Green"+Cont).show()
+                    $("#Red"+Cont).hide()
+                    ReadyToAdd[Cont] = true
+                    $("#collapseSingleShoe"+Cont).collapse("hide")
+                    $("#Edit" + Cont).show()
+                    $("#Remove" + Cont).show()
+                    $("#Save" + Cont).hide()
+                }else{
+                    $("#Red"+Cont).show()
+                    $("#Green"+Cont).hide()
+                    console.log("Wrong date format")
+                    ReadyToAdd[Cont] = false
+                    $("#prodError"+Cont).text("The field 'Date' need to be in the correct format (dd/mm/yyyy)")
+                }
+            }
+        }  
+    }   
+}
+function CheckValidDate(Date){
+    try{
+        var Splitted = Date.split("/")
+        if((Splitted[0].length == 2 || Splitted[0].length == 1) && (Splitted[0] != "0" && Splitted[1] != "0")){
+            if((Splitted[1].length == 2 || Splitted[1].length == 2) && (Splitted[0] != "00" && Splitted[1] != "00")){
+                if(Splitted[2].length == 4 && Splitted[0] != "0"){
+                    return true
+                }
+                return false
+            }
+            return false
+        }
+        return false
+    }catch(err){
+        return false
+    }
+}
+
+var LoadShoesModal = function(SelectedUrl){
+    console.log("Hai selezionato: " + SelectedUrl)
+    var ProductChosen = SelectedUrl
+    if(ProductChosen != "" && ProductChosen != false){
+        ipc.send("RequestedShoeDetails",{Prod: ProductChosen,Index: ContSaved})
         var SelectedProd = GlobalProducts.filter(function(prod){
             return prod.url == ProductChosen
         })
-        console.log(SelectedProd)
-        //windowStats.webContents.send("fillProductStats",SelectedProd)
-        document.getElementById("prodPrice").value = SelectedProd[0].searchable_traits["Retail Price"]
-        if(SelectedProd[0].release_date){
-            document.getElementById("wizard-datepicker").value = FlipDate(SelectedProd[0].release_date)
-        }
-        document.getElementById("prodImg").value = SelectedProd[0].media.imageUrl
-        document.getElementById("prodPid").value = GenerateRandomNumber(10000000,99999999)
-        document.getElementById("prodName").value = SelectedProd[0].name
-        document.getElementById("prodUrl").value = SelectedProd[0].url
+        console.log("Selected product")
+        console.log(SelectedProd[0])
+        var ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].media.imageUrl,SelectedProd[0].name,SelectedProd[0].searchable_traits["Retail Price"],FlipDate(SelectedProd[0].release_date),ContSaved)
+        $("#ContainerSaved").append(ShoeToSave)
+        $("#Save"+ContSaved).hide()
+        $("#prodPrice"+ContSaved).val(SelectedProd[0].searchable_traits["Retail Price"])
+        $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
+        $("#prodSite"+ContSaved).val("No site")
+        $("#NameSingle"+ContSaved).val(SelectedProd[0].name)
+        $("#Red"+ContSaved).hide()
+        SavedProd.push(SelectedProd[0])
+        ClearResearch()
+        ContSaved+=1
     }
 }
 
@@ -411,21 +554,24 @@ function SearchNewShoes(){
 
 function LoadShoes(){
     Index = 0
-    connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-        if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-        ShoesList = results
-        console.log(ShoesList)
-        PopulateTable()
-        Util.StockXItems(ShoesList,Valuta)
-    })
-    connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-        if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-        CustomList = results
-        console.log(CustomList)
-        PopulateTableCustom()
-        Util.CustomItems(CustomList,Valuta)
-        Util.Retail(ShoesList,CustomList,Valuta)
-        Util.Average(ShoesList,Valuta)
+    pool.getConnection(function(err,connection){
+        connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+            if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
+            ShoesList = results
+            console.log(ShoesList)
+            PopulateTable()
+            Util.StockXItems(ShoesList,Valuta)
+        })
+        connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+            if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
+            CustomList = results
+            console.log(CustomList)
+            PopulateTableCustom()
+            Util.CustomItems(CustomList,Valuta)
+            Util.Retail(ShoesList,CustomList,Valuta)
+            Util.Average(ShoesList,Valuta)
+            connection.release()
+        })
     })
     console.log("Loaded")
 }
@@ -436,15 +582,6 @@ function FlipDateAndChange(DateToChange){
 
 function ChangeDate(DateToChange){
     return moment(DateToChange).format('YYYY[-]MM[-]DD')
-}
-
-function RemoveFromList(Id){
-    for(var i = 0; i < ShoesList.length; i++){
-        if(ShoesList[i].IdProdotto == Id){
-            ShoesList.splice(i,1)
-        }
-    }
-    PopulateTable()
 }
 
 function ReturnObjectFromList(Id){
@@ -460,7 +597,7 @@ function PopulateTable(){
     Inventario.innerHTML = ""
     for(var Shoe of ShoesList){
         var NewDate = FlipDateAndChange(Shoe.ReleaseDate)
-        var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto)
+        var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto,Shoe.UrlKey)
         $("#Inventory").append(Shoe)    
     }
     //$("#Preloader1").css("display","none")
@@ -474,8 +611,74 @@ function PopulateTableCustom(){
     $("#Preloader1").css("display","none")
 }
 
+function getRndInteger() {
+    return Math.floor(Math.random() * (9999999, - 1000000 + 1) ) + 1000000;
+}
 
-function Add(){
+async function SendMultipleToDB(){
+    var Values = []
+    var QueryDone = 0
+    var QueryReady = 0
+    for(var k = 0; k < ContSaved; k+=1){
+        if(ReadyToAdd[k] == true){
+            QueryReady +=1
+        }
+    }
+    console.log(ReadyToAdd)
+    for(var k = 0; k < ContSaved; k+=1){
+        console.log("Nuovo ciclo")
+        if(ReadyToAdd[k] == true){
+            var Pid = getRndInteger()
+            var Name = $("#NameSingle" + k).val()
+            var D = $("#BadgeDate" + k).text().split("/")
+            var DateAdd = `${D[2]}-${D[1]}-${D[0]}`
+            var Size = $("#BadgeSize" + k).text()
+            var Value = $("#Value" + k).val()
+            console.log(Value)
+            var Price = parseFloat($("#BadgePrice" + k).text().replace('$',''))
+            var Site = $("#BadgeSite" + k).text()
+            var Img = $("#ImgSingle" + k).attr("src")
+            console.log(Img)
+            var Url = $("#UrlSingle" + k).val()
+            var Prof = 0 - parseFloat($("#BadgePrice" + k).text().replace('$',''))
+            var Today = GetTodaysDate()
+            var Notes = ""
+            var SingleQuery = [
+                Pid,Name,DateAdd,Price,Size,1,1,Site,"",Img,Url,parseInt(Value),0,Prof,Notes,Today,0,UserId
+            ]
+            Values.push(SingleQuery)
+            CreateLog(`Added a pair of ${Name}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+        }
+    }
+    var Query = ("INSERT INTO inventario (PidProdotto,NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,UrlKey,PrezzoMedioResell,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values ?")
+    console.log(Values)
+    pool.getConnection(async function(err,connection){
+        connection.query(Query,[Values],function(error,results,fields){
+            if(err)console.log(err)
+            connection.release()
+            location.reload()
+        })
+    })
+}
+
+/*async function SendToDb(Query,Values,QueryDone,QueryReady,Name){
+    await pool.getConnection(async function(err,connection){
+        await connection.query(Query,Values,function(error,results,fields){
+            if(error)console.log(error)
+            console.log("Fatto")
+            CreateLog(`Added a pair of ${Name}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            connection.release()
+            //QueryDone+=1
+            if(QueryDone == QueryReady){
+                location.reload()
+            }
+            return true
+        })
+    })
+}*/
+
+
+/*function Add(){
     var Notes = ""
     if($("#prodNotes").val() == ""){ Notes = "No notes"}else{ Notes = $("#prodNotes").val()}
     var DateToAdd = ""
@@ -497,16 +700,19 @@ function Add(){
     var Res = CheckValuesBeforeAdd(Values)
     if(Res == true){
         console.log(Values)
-        connection.query(Query,Values,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog(`Added a pair of ${$("#prodName").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Add")
-            location.reload()
+        pool.getConnection(function(err,connection){
+            connection.query(Query,Values,function(error,results,fields){
+                if(error) console.log(error)
+                CreateLog(`Added a pair of ${$("#prodName").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                ipc.send("SetAlert","Add")
+                connection.release()
+                location.reload()
+            })
         })
     }else{
         ErrorCreation("errorLabel",Res)
     }
-}
+}*/
 
 function Delete(IdDelete){
     console.log(IdDelete)
@@ -518,11 +724,14 @@ function Delete(IdDelete){
         }
     }
     console.log(NameProdDeleted)
-    connection.query("DELETE FROM inventario WHERE IdProdotto = ?",IdDelete,function (error,results,fields){
-        if(error) throw error
-        CreateLog(`Deleted a pair of ${NameProdDeleted}`,"Inventory","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        ipc.send("SetAlert","Delete")
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query("DELETE FROM inventario WHERE IdProdotto = ?",IdDelete,function (error,results,fields){
+            if(error) throw error
+            CreateLog(`Deleted a pair of ${NameProdDeleted}`,"Inventory","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Delete")
+            connection.release()
+            location.reload()
+        })
     })
 }
 
@@ -538,11 +747,14 @@ function Duplicate(Id){
     var Values = [
         [S[1],S[2],ChangeDate(S[3]),S[4],S[5],1,1,S[8],S[9],S[12],S[13],S[14],0,-S[4],S[18],Today,S[21],S[22]]
     ]
-    connection.query(Query,[Values],function(error,results,fields){
-        if(error) throw error
-        CreateLog(`Duplicated a pair of ${ShoeToDuplicate.NomeProdotto}`,"Inventory","Duplicate",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        ipc.send("SetAlert","Duplicate")
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query(Query,[Values],function(error,results,fields){
+            if(error) throw error
+            CreateLog(`Duplicated a pair of ${ShoeToDuplicate.NomeProdotto}`,"Inventory","Duplicate",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Duplicate")
+            connection.release()
+            location.reload()
+        })
     })
 }
 
@@ -555,7 +767,7 @@ function PrepareSale(Id){
         return e.IdProdotto == Id
     })
     console.log(SelectedShoe)
-    document.getElementById("prodPrice").value = SelectedShoe[0].PrezzoProdotto
+    document.getElementById("prodPriceSale").value = SelectedShoe[0].PrezzoProdotto
 }
 
 function SaleShoe(){
@@ -567,7 +779,7 @@ function SaleShoe(){
             NameProdDeleted = Shoe.NomeProdotto
         }
     }
-    var ProdPrice = $("#prodPrice").val()
+    var ProdPrice = $("#prodPriceSale").val()
     var ProdPriceSell = $("#prodPriceSell").val()
     var ProdSite = $("#prodSiteSell").val()
     var DateSale
@@ -583,11 +795,14 @@ function SaleShoe(){
     var Res = CheckValuesBeforeSale(Values)
     if(Res == true){
         console.log(Values)
-        connection.query(Query,Values,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog(`Sold a pair of ${NameProdDeleted}`,"Bot","Sold",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Sold")
-            location.reload()
+        pool.getConnection(function(err,connection){
+            connection.query(Query,Values,function(error,results,fields){
+                if(error) console.log(error)
+                CreateLog(`Sold a pair of ${NameProdDeleted}`,"Bot","Sold",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                ipc.send("SetAlert","Sold")
+                connection.release()
+                location.reload()
+            })
         })
     }else{
         console.log(Res)
@@ -641,12 +856,15 @@ function Edit(Id){
     var Note = $("#NotesToModify").val()
     var Query = "UPDATE inventario SET PrezzoProdotto = ?, ReleaseDate = ?, Taglia = ?,Sito = ?,Note = ?, PrezzoMedioResell = ?,Profitto = ? WHERE IdProdotto = ?"
     var Values = [PrezzoProdotto,ReleaseDate,Taglia,Site,Note,AvgPrice,0 - PrezzoProdotto,Id]
-    connection.query(Query,Values,function(err,results,fields){
-        if(err)console.log(err)
-        console.log("Edited")
-        CreateLog(`Edited a pair of ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        ipc.send("SetAlert","Edit")
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query(Query,Values,function(err,results,fields){
+            if(err)console.log(err)
+            console.log("Edited")
+            CreateLog(`Edited a pair of ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Edit")
+            connection.release()
+            location.reload()
+        })
     })
 }
 
@@ -668,8 +886,10 @@ function CheckValuesBeforeAdd(List){
 /*FUNCTION FOR CHECKING THE VALUES FOR THE SALE*/
 
 function CheckValuesBeforeSale(List){
+    console.log(List)
     var ErrorCreated = "";
-    if(isNaN(List[0])){ ErrorCreated = "The field 'Price' must be a number"; return ErrorCreated}
+    if(isNaN(List[5])){ ErrorCreated = "The field 'Price' must be a number"; return ErrorCreated}
+    if(List[5].length == 0){ErrorCreated = "The field 'Price' cannot be empty"; return ErrorCreated}
     if(List[2].length > 40){ ErrorCreated = "The field 'Site' must be shorter than 40 characters"; return ErrorCreated}
     return true
 }
@@ -709,9 +929,12 @@ ipc.on("ReturnedProductDetailsArr",async function(event,arg){
 async function EditPriceDeadStock(Id,Price){
     var Query = "UPDATE inventario SET PrezzoMedioResell = ? WHERE IdProdotto = ?"
     var Values = [Price,Id]
-    await connection.query(Query,Values,function(error,fields,results){ 
-        if(error) console.log(error)
-        console.log("UPDATED")
+    await pool.getConnection(async function(err,connection){
+        await connection.query(Query,Values,function(error,fields,results){ 
+            if(error) console.log(error)
+            connection.release()
+            console.log("UPDATED")
+        })
     })
 }
 
@@ -761,11 +984,14 @@ function AddCustom(){
         var Values = [
             [Name,DateToAdd,Price,Size,1,1,Site,"",UrlImg,0,-Price,Notes,GetTodaysDateDashFormat(),0,UserId]
         ]
-        connection.query(Query,Values,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog(`Added ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Add")
-            location.reload()
+        pool.getConnection(function(err,connection){
+            connection.query(Query,Values,function(error,results,fields){
+                if(error) console.log(error)
+                CreateLog(`Added ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                ipc.send("SetAlert","Add")
+                connection.release()
+                location.reload()
+            })
         })
     }else{
         ErrorCreation("errorLabelAddCustom",Res)
@@ -781,10 +1007,13 @@ function CheckValuesBeforeAddCustom(Price,Name){
 
 function DeleteCustom(Id){
     var Query = "DELETE FROM inventariocustom WHERE IdProdotto = ?"
-    connection.query(Query,Id,function(error,results,fields){
-        if(error) console.log(error)
-        ipc.send("SetAlert","Delete")
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query(Query,Id,function(error,results,fields){
+            if(error) console.log(error)
+            ipc.send("SetAlert","Delete")
+            connection.release()
+            location.reload()
+        })
     })
 }
 
@@ -796,11 +1025,14 @@ function DuplicateCustom(Id){
             var Values = [
                 [CustomSelected.NomeProdotto,CustomSelected.ReleaseDate,CustomSelected.PrezzoProdotto,CustomSelected.Taglia,1,1,CustomSelected.Sito,"",CustomSelected.ImmagineProdotto,0,-CustomSelected.PrezzoProdotto,CustomSelected.Note,GetTodaysDateDashFormat(),0,UserId]
             ]
-            connection.query(Query,Values,function(error,results,fields){
-                if(error) console.log(error)
-                CreateLog(`Duplicated ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                ipc.send("SetAlert","Duplicate")
-                location.reload()
+            pool.getConnection(function(err,connection){
+                connection.query(Query,Values,function(error,results,fields){
+                    if(error) console.log(error)
+                    CreateLog(`Duplicated ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                    ipc.send("SetAlert","Duplicate")
+                    connection.release()
+                    location.reload()
+                })
             })
         }
     }
@@ -832,11 +1064,14 @@ function SaleCustom(Id){
             FinalDate = GetTodaysDateDashFormat()
         }
         var Values = [Profitto,0,Buyer,"",1,Price,FinalDate,$("#IdToSellCustom").val()]
-        connection.query(Query,Values,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog(`Sold ${$("#newShoeCustom").val()}`,"Inventory","Sale",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Sold")
-            location.reload()
+        pool.getConnection(function(err,connection){
+            connection.query(Query,Values,function(error,results,fields){
+                if(error) console.log(error)
+                CreateLog(`Sold ${$("#newShoeCustom").val()}`,"Inventory","Sale",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                ipc.send("SetAlert","Sold")
+                connection.release()
+                location.reload()
+            })
         })
     }else{
         ErrorCreation("errorLabelSaleCustom",Res)
@@ -879,12 +1114,15 @@ function EditCustom(){
     var Note = $("#NotesToModifyCustom").val()
     var Query = "UPDATE inventariocustom SET PrezzoProdotto = ?, ReleaseDate = ?, Taglia = ?,Sito = ?,Note = ?,Profitto = ? WHERE IdProdotto = ?"
     var Values = [PrezzoProdotto,ReleaseDate,Taglia,Site,Note,0 - PrezzoProdotto,Id]
-    connection.query(Query,Values,function(err,results,fields){
-        if(err)console.log(err)
-        console.log("Edited")
-        CreateLog(`Edited ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        ipc.send("SetAlert","Edit")
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query(Query,Values,function(err,results,fields){
+            if(err)console.log(err)
+            console.log("Edited")
+            CreateLog(`Edited ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Edit")
+            connection.release()
+            location.reload()
+        })
     })
 }
 

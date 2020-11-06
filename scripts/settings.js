@@ -1,8 +1,6 @@
-const { userInfo } = require('os')
-
 const moment = require("moment")
 const ipc = require('electron').ipcRenderer
-const connection = require('electron').remote.getGlobal('conn')
+const pool = require('electron').remote.getGlobal('pool')
 const bcrypt = require("bcrypt")
 
 var UserId = 0
@@ -27,30 +25,36 @@ function ChangePaymentMethod(){
 }
 
 ipc.on("NewPaymentMethod",(event,arg) => {
-    console.log("Risultato")
-    console.log(arg)
-    if(arg == false){
-        $("#errorLabelPayment").val("Incorrect card information or this subscription is deleted.")
-    }else{
-        console.log("PaymentMethodChanged")
-        connection.query("UPDATE utenti SET PaymentId = ? WHERE UserId = ?",[arg.Obj.default_payment_method,UserId],function(error,results,fields){
-            if(error) console.log(error)
-            $("#successLabelPayment").val("Your subscription is now updated!, you can close the page now.")
-        })
-    }
+    pool.getConnection(function(err,connection){
+        console.log("Risultato")
+        console.log(arg)
+        if(arg == false){
+            $("#errorLabelPayment").val("Incorrect card information or this subscription is deleted.")
+        }else{
+            console.log("PaymentMethodChanged")
+            connection.query("UPDATE utenti SET PaymentId = ? WHERE UserId = ?",[arg.Obj.default_payment_method,UserId],function(error,results,fields){
+                if(error) console.log(error)
+                $("#successLabelPayment").val("Your subscription is now updated!, you can close the page now.")
+                connection.release()
+            })
+        }
+    })
 })
 
 
 ipc.send("getUserId")
 ipc.on("ReturnedId",async (event,arg) => {
     UserId = arg
-    connection.query("SELECT * FROM utenti WHERE UserId = ?",UserId,function(error,results,fields){
-        console.log(results)
-        UserDB = results
-        document.getElementById("AccountName").innerHTML = results[0].Username
-        document.getElementById("AccountEmail").innerHTML = results[0].Email
-        document.getElementById("AccountId").innerHTML = results[0].Username + "_" + UserId
-        document.getElementById("CreationDate").innerHTML = moment(results[0].DataCreazione).format("MMM Do YY")
+    pool.getConnection(function(err,connection){
+        connection.query("SELECT * FROM utenti WHERE UserId = ?",UserId,function(error,results,fields){
+            console.log(results)
+            UserDB = results
+            document.getElementById("AccountName").innerHTML = results[0].Username
+            document.getElementById("AccountEmail").innerHTML = results[0].Email
+            document.getElementById("AccountId").innerHTML = results[0].Username + "_" + UserId
+            document.getElementById("CreationDate").innerHTML = moment(results[0].DataCreazione).format("MMM Do YY")
+            connection.release()
+        })
     })
 })
 

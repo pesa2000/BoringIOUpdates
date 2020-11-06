@@ -3,7 +3,7 @@ var moment = require('moment');
 const { loadavg } = require('os');
 const { each } = require('jquery');
 var config = require('electron').remote.getGlobal('configuration')
-var connection = require('electron').remote.getGlobal('conn')
+var pool = require('electron').remote.getGlobal('pool')
 var path = require("path")
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_expenses.js"))
 
@@ -90,13 +90,15 @@ function LoadExpenses(){
   ipc.on("ReturnedId",async (event,arg) => {
     UserId = arg
     console.log(UserId)
-    connection.query("SELECT * FROM costi WHERE IdUtente = ?",UserId,  function (error, results, fields) {
-      if(error) console.log(error)
-      GlobalList = results
-      SplitArrays(results)
-      Util.SetTypes(results)
-      Util.YearExpenses(results)
-      Util.MonthExpenses(results)
+    pool.getConnection(function(err,connection){
+      connection.query("SELECT * FROM costi WHERE IdUtente = ?",UserId,  function (error, results, fields) {
+        if(error) console.log(error)
+        GlobalList = results
+        SplitArrays(results)
+        Util.SetTypes(results)
+        Util.YearExpenses(results)
+        Util.MonthExpenses(results)
+      })
     })
   })
 }
@@ -448,10 +450,13 @@ function SendToDB(Obj){
     [Obj.NomeSelezioneCosto,Obj.DescrizioneCosto,Obj.UrlFoto,Obj.DataCosto,Obj.DataProssimoCosto,Obj.DataAggiunta,Obj.PrezzoCosto,Obj.MesiRicorrenza,ArrMonths.join(" "),1023,UserId]
   ]
   var Query = "INSERT INTO costi (NomeSelezioneCosto,DescrizioneCosto,UrlFoto,DataCosto,DataProssimoCosto,DataAggiunta,PrezzoCosto,MesiRicorrenza,PagamentoMesi,IdConto,IdUtente) VALUES (?)"
-  connection.query(Query,Values,function(err,results,fields){
-    if(err)console.log(err)
-    CreateLog(`Added a new expenses (${Values[0][0]})`,"Expenses","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-    //location.reload()
+  pool.getConnection(function(err,connection){
+    connection.query(Query,Values,function(err,results,fields){
+      if(err)console.log(err)
+      CreateLog(`Added a new expenses (${Values[0][0]})`,"Expenses","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+      connection.release()
+      location.reload()
+    })
   })
 }
 
@@ -459,10 +464,12 @@ function Delete(Id){
   for(var Exp of GlobalList){
     if(Exp.IdCosto == Id){
       var Query = "DELETE FROM costi WHERE IdCosto = ?"
-      connection.query(Query,Id,function(error,results,fields){
-          if(error) console.log(error)
-          CreateLog(`Deleted an expenses (${Exp.NomeSelezioneCosto})`,"Expenses","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-          location.reload()
+      pool.getConnection(function(err,connection){
+        connection.query(Query,Id,function(error,results,fields){
+            if(error) console.log(error)
+            CreateLog(`Deleted an expenses (${Exp.NomeSelezioneCosto})`,"Expenses","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            location.reload()
+        })
       })
     }
   }
@@ -484,7 +491,6 @@ function CheckValues(N,P,R){
 function LogOut(){
   ipc.send("LogOut")
 }
-
 
 function CheckConnection(){
   ipc.send("CheckConnection")

@@ -65,14 +65,14 @@ function SelectedShoesNr(Index){
     $("#dateProd").text(FlipDateAndChange(SelectedShoes.release_date))
     $("#prodRetail").text("Retail: " + Currency + "" + RetailPrice)
     $("#prodSold").text("Tot.Sold: " + SelectedShoes.deadstock_sold)
-    ipc.send("RequestedShoeDetails",SelectedShoes.url)
+    ipc.send("RequestedShoeDetails",{Prod: SelectedShoes.url,Index: "Market"})
 }
 
 ipc.on("ReturnedProductDetails", async(event,arg) => {
     console.log("Details for " + GlobalIndex)
     console.log(GlobalProducts[GlobalIndex])
-    console.log(arg)
-    for(var Variant of arg.variants){
+    console.log(arg.Prod)
+    for(var Variant of arg.Prod.variants){
         DivStats2 += CreateTemplateVariant(Variant)
     }
     document.getElementById("stats").innerHTML += DivStats2

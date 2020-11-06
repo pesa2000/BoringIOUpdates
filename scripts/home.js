@@ -1,10 +1,11 @@
 var windowStats = require('electron').remote.getGlobal('windowStats')
 var https = require('https')
 var http = require('http')
-const { connect } = require('http2')
-var Filter = $("#FilterDate")
 //const moment = require("moment")
-//const connection = require('electron').remote.getGlobal('conn')
+//const pool = require('electron').remote.getGlobal('pool')
+console.log("All connections: " + pool._allConnections.length)
+console.log("Free connections: " + pool._freeConnections.length)
+console.log(pool)
 
 var UserId = require('electron').remote.getGlobal('UserId')
 console.log("Id Utente")
@@ -16,11 +17,15 @@ var flag = true
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-        if(error)console.log(error)
-        console.log(results[0].Valuta1)
-        Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-        console.log(Valuta)
+    pool.getConnection(function(err,connection){
+        if(err)console.log(err)
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+            if(error)console.log(error)
+            console.log(results[0].Valuta1)
+            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+            connection.release()
+            console.log(Valuta)
+        })
     })
 }
 
@@ -76,10 +81,11 @@ ipc.on("ReturnedSub",(event,arg) => {
     ipc.send("RequestedMonthFilter")
 })
 ipc.on("ReturnedMonthFilter",(event,arg)=>{
+    console.log("MESE RITORNATO DAL MAIN")
+    console.log(arg)
+    console.log("Il flag è" + flag)
     if(flag == true){
         flag = false
-        console.log("MESE RITORNATO DAL MAIN")
-        console.log(arg)
         if(arg == "Year"){
             $("#FilterDate").val("Year")
         }else{
@@ -91,20 +97,6 @@ ipc.on("ReturnedMonthFilter",(event,arg)=>{
         ChangeLog()
     }
 })
-/*
-ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"OnLoad"})
-    ipc.on("ReturnedDataGraphsOnLoad",(event,arg) => {
-        console.log("DATI DAL MAIN RITORNATI ONLOAD")
-        console.log(arg)
-        $("#morris-line-chart").empty();
-        var myScript = document.createElement("script")
-        myScript.setAttribute("src", path.join(__dirname,"dist/js/pages/morris/morris-data.js"))
-        myScript.setAttribute("id","scriptMorris")
-        document.body.appendChild(myScript)
-        PrimoCaricamento = false
-    })
-*/
-
 
 async function Changed(){
     //Done = false
@@ -120,101 +112,105 @@ async function Changed(){
 async function LoadStats(Filter){
     console.log("Funzione Load stats")
     GlobalFilter = Filter
-    console.log(GlobalFilter)
+    //console.log(GlobalFilter)
     ChangeValues()
 }
 
 function ChangeValues(){
-    console.log("Sto cambiando i valori")
     if(Done == false){
-        Done = true
-        var EntireInv
-        var EntireInvCustom
-        var TotInventoryValue = 0
-        var TotPurchases = 0
-        var TotSales = 0 
-        var TotProfitTime = 0
-        var TotProfitLifetime = 0
-        console.log("Filter nel change values")
-        console.log(GlobalFilter)
-        if(GlobalFilter == "Year"){
-            Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
-            Values1 = [UserId,parseInt(GetNewDateYear())]
-            Query2 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
-            Values2 = [UserId,parseInt(GetNewDateYear())]
+        pool.getConnection(function(err,connection){
+            if(err)console.log(err)
+            //console.log("Sto cambiando i valori")
+            Done = true
+            var EntireInv
+            var EntireInvCustom
+            var TotInventoryValue = 0
+            var TotPurchases = 0
+            var TotSales = 0 
+            var TotProfitTime = 0
+            var TotProfitLifetime = 0
+            /*console.log("Filter nel change values")
+            console.log(GlobalFilter)*/
+            if(GlobalFilter == "Year"){
+                Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
+                Values1 = [UserId,parseInt(GetNewDateYear())]
+                Query2 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
+                Values2 = [UserId,parseInt(GetNewDateYear())]
 
-            Query3 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
-            Values3 = [UserId,parseInt(GetNewDateYear())]
-            Query4 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
-            Values4 = [UserId,parseInt(GetNewDateYear())]
-        }else{
-            Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-            Values1 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-            Query2 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-            Values2 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
+                Query3 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
+                Values3 = [UserId,parseInt(GetNewDateYear())]
+                Query4 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
+                Values4 = [UserId,parseInt(GetNewDateYear())]
+            }else{
+                Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
+                Values1 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
+                Query2 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
+                Values2 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
 
-            Query3 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
-            Values3 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-            Query4 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
-            Values4 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-        }
-
-        var QueryLifetime = "SELECT * FROM inventario WHERE IdUtente = ?"
-        var QueryLifetime2 = "SELECT * FROM inventariocustom WHERE IdUtente = ?"
-        connection.query(Query1,Values1,function(error,results,fields){
-            if(error) console.log(error)
-            EntireInv = results
-            for(var Item of EntireInv){
-                TotInventoryValue += Item.PrezzoMedioResell
-                TotPurchases += Item.PrezzoProdotto
-                TotSales += Item.PrezzoVendita 
+                Query3 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
+                Values3 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
+                Query4 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
+                Values4 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
             }
-            connection.query(Query2,Values2,function(error,results,fields){
-                if(error)console.log(error)
-                EntireInvCustom = results
-                for(var ItemCustom of EntireInvCustom){
-                    //console.log(ItemCustom)
-                    TotPurchases += ItemCustom.PrezzoProdotto
-                    TotSales += ItemCustom.PrezzoVendita
+
+            var QueryLifetime = "SELECT * FROM inventario WHERE IdUtente = ?"
+            var QueryLifetime2 = "SELECT * FROM inventariocustom WHERE IdUtente = ?"
+            connection.query(Query1,Values1,function(error,results,fields){
+                if(error) console.log(error)
+                EntireInv = results
+                for(var Item of EntireInv){
+                    TotInventoryValue += Item.PrezzoMedioResell
+                    TotPurchases += Item.PrezzoProdotto
+                    TotSales += Item.PrezzoVendita 
                 }
-                $("#InventoryValue").text(Valuta + "" +TotInventoryValue)
-                $("#Purchases").text(Valuta + "" +TotPurchases)
-                $("#Sales").text(Valuta + "" +TotSales)
-                connection.query(Query3,Values3,function(error,results1,fields){
+                connection.query(Query2,Values2,function(error,results,fields){
                     if(error)console.log(error)
-                    for(var Item of results1){
-                        if(Item.Profitto > 0){
-                            TotProfitTime += Item.Profitto
-                        }
+                    EntireInvCustom = results
+                    for(var ItemCustom of EntireInvCustom){
+                        //console.log(ItemCustom)
+                        TotPurchases += ItemCustom.PrezzoProdotto
+                        TotSales += ItemCustom.PrezzoVendita
                     }
-                    connection.query(Query4,Values4,function(error,results2,fields){
+                    $("#InventoryValue").text(Valuta + "" +TotInventoryValue)
+                    $("#Purchases").text(Valuta + "" +TotPurchases)
+                    $("#Sales").text(Valuta + "" +TotSales)
+                    connection.query(Query3,Values3,function(error,results1,fields){
                         if(error)console.log(error)
-                        for(var Item of results2){
+                        for(var Item of results1){
                             if(Item.Profitto > 0){
                                 TotProfitTime += Item.Profitto
                             }
                         }
-                        console.log("Profitto totale")
-                        console.log(TotProfitTime)
-                        //GetExpensesToScale(GlobalFilter)
-                        $("#Profit").text("Profit: " +Valuta + "" + + TotProfitTime + " ")
+                        connection.query(Query4,Values4,function(error,results2,fields){
+                            if(error)console.log(error)
+                            for(var Item of results2){
+                                if(Item.Profitto > 0){
+                                    TotProfitTime += Item.Profitto
+                                }
+                            }
+                            /*console.log("Profitto totale")
+                            console.log(TotProfitTime)*/
+                            //GetExpensesToScale(GlobalFilter)
+                            $("#Profit").text("Profit: " +Valuta + "" + + TotProfitTime + " ")
+                        })
                     })
-                })
-                connection.query(QueryLifetime,UserId,function(error,results,fields){
-                    if(error)console.log(error)
-                    for(var Item of results){
-                        if(Item.Profitto > 0){
-                            TotProfitLifetime += Item.Profitto
-                        }
-                    }
-                    connection.query(QueryLifetime2,UserId,function(error,results,fields){
+                    connection.query(QueryLifetime,UserId,function(error,results,fields){
                         if(error)console.log(error)
                         for(var Item of results){
                             if(Item.Profitto > 0){
                                 TotProfitLifetime += Item.Profitto
                             }
                         }
-                        $("#ProfitLifetime").text("" + Valuta + "" +TotProfitLifetime)
+                        connection.query(QueryLifetime2,UserId,function(error,results,fields){
+                            if(error)console.log(error)
+                            for(var Item of results){
+                                if(Item.Profitto > 0){
+                                    TotProfitLifetime += Item.Profitto
+                                }
+                            }
+                            $("#ProfitLifetime").text("" + Valuta + "" +TotProfitLifetime)
+                            connection.release()
+                        })
                     })
                 })
             })
@@ -223,35 +219,39 @@ function ChangeValues(){
 }
 
 function ChangeLog(){
-    console.log("Cambio del change log")
-    console.log(UserId)
-    connection.query("SELECT * FROM inventario WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-        if(error)console.log(error)
-        console.log(results)
-        for(var i of results){
-            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-primary text-dark","fa-list","text-primary",i.NomeProdotto,i.DataAggiunta,"Inventory"))
-        }
-        console.log(UserId)
-        connection.query("SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC LIMIT 2",UserId,function(error,results,fields){
-            console.log(results)
+    pool.getConnection(function(err,connection){
+        if(err)console.log(err)
+        /*console.log("Cambio del change log")
+        console.log(UserId)*/
+        connection.query("SELECT * FROM inventario WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
             if(error)console.log(error)
+           // console.log(results)
             for(var i of results){
-                $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-success text-dark","fa-tag","text-success",i.NomeProdotto,i.DataVendita,"Sales"))
+                $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-primary text-dark","fa-list","text-primary",i.NomeProdotto,i.DataAggiunta,"Inventory"))
             }
-            console.log(UserId)
-            connection.query("SELECT * FROM spedizioni WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-                console.log(results)
+            //console.log(UserId)
+            connection.query("SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC LIMIT 2",UserId,function(error,results,fields){
+                //console.log(results)
                 if(error)console.log(error)
                 for(var i of results){
-                    $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-warning text-dark","fa-truck","text-warning",i.Corriere,i.DataAggiunta,"Sales"))
+                    $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-success text-dark","fa-tag","text-success",i.NomeProdotto,i.DataVendita,"Sales"))
                 }
-                console.log(UserId)
-                connection.query("SELECT * FROM costi WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-                    console.log(results)
+                //console.log(UserId)
+                connection.query("SELECT * FROM spedizioni WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
+                    //console.log(results)
                     if(error)console.log(error)
                     for(var i of results){
-                        $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-info text-dark","fa-credit-card","text-info",i.NomeSelezioneCosto,i.DataAggiunta,"Sales"))
+                        $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-warning text-dark","fa-truck","text-warning",i.Corriere,i.DataAggiunta,"Sales"))
                     }
+                    //console.log(UserId)
+                    connection.query("SELECT * FROM costi WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
+                        console.log(results)
+                        if(error)console.log(error)
+                        for(var i of results){
+                            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-info text-dark","fa-credit-card","text-info",i.NomeSelezioneCosto,i.DataAggiunta,"Sales"))
+                        }
+                        connection.release()
+                    })
                 })
             })
         })
@@ -304,16 +304,3 @@ function quit(){
 function LogOut(){
     ipc.send("LogOut")
 }
-
-ipc.on("ReturnedDataGraphsFutureCalls",(event,arg) => {
-    var ScriptToRemove = document.getElementById("scriptMorris")
-    ScriptToRemove.parentNode.removeChild(ScriptToRemove)
-    $("#morris-line-chart").empty()
-    for(var k of document.getElementsByClassName("jvectormap-tip")){
-        k.parentNode.removeChild(k)
-    }
-    var myScript = document.createElement("script")
-    myScript.setAttribute("src", "dist/js/pages/morris/morris-data.js")
-    myScript.setAttribute("id","scriptMorris")
-    document.body.appendChild(myScript)
-})

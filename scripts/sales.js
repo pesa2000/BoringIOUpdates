@@ -2,7 +2,7 @@ var mysql = require('mysql')
 var path = require('path')
 var moment = require('moment')
 var config = require('electron').remote.getGlobal('configuration')
-var connection = require('electron').remote.getGlobal('conn')
+var pool = require('electron').remote.getGlobal('pool')
 var SalesList = []
 var SalesListCustom = [] 
 var UserId = 0
@@ -13,11 +13,14 @@ var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion
 
 var Valuta = ""
 function GetValutaAsUtf8(Id){
-    connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-        if(error)console.log(error)
-        console.log(results[0].Valuta1)
-        Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-        console.log(Valuta)
+    pool.getConnection(function(err,connection){
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+            if(error)console.log(error)
+            console.log(results[0].Valuta1)
+            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+            console.log(Valuta)
+            connection.release()
+        })
     })
 }
 
@@ -113,72 +116,82 @@ function TemplateSingleSaleCustom(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price
 
 function LoadSales(){
     document.getElementById("SalesTable").innerHTML = ""
-    ipc.send("getUserId")
-    ipc.on("ReturnedId",(event,arg) => {
-        UserId = arg
-        GetValutaAsUtf8(UserId)
-        var Query = "SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
-        connection.query(Query,UserId,function(error,results,fields){
-            console.log(results)
-            SalesList = results
-            for(var Sale of SalesList){
-                var Sold = TemplateSingleSale(
-                    Sale.IdProdotto,
-                    Sale.NomeProdotto,
-                    Sale.ImmagineProdotto,
-                    Sale.UrlKey,
-                    Sale.Profitto,
-                    FlipDateAndChange(Sale.DataVendita),
-                    Sale.PrezzoProdotto,
-                    Sale.PrezzoMedioResell,
-                    Sale.PrezzoVendita,
-                    Sale.Compratore,
-                    Sale.Taglia)
-                    $("#SalesTable").append(Sold)
-            }
-            //$("#Preloader1").css("display","none")
+    pool.getConnection(function(err,connection){
+        ipc.send("getUserId")
+        ipc.on("ReturnedId",(event,arg) => {
+            UserId = arg
+            GetValutaAsUtf8(UserId)
+            var Query = "SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
+                if(err)console.log(err)
+                connection.query(Query,UserId,function(error,results,fields){
+                    console.log(results)
+                    SalesList = results
+                    for(var Sale of SalesList){
+                        var Sold = TemplateSingleSale(
+                            Sale.IdProdotto,
+                            Sale.NomeProdotto,
+                            Sale.ImmagineProdotto,
+                            Sale.UrlKey,
+                            Sale.Profitto,
+                            FlipDateAndChange(Sale.DataVendita),
+                            Sale.PrezzoProdotto,
+                            Sale.PrezzoMedioResell,
+                            Sale.PrezzoVendita,
+                            Sale.Compratore,
+                            Sale.Taglia)
+                            $("#SalesTable").append(Sold)
+                    }
+                    //$("#Preloader1").css("display","none")
+                })
+            var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
+                if(err)console.log(err)
+                connection.query(Query,UserId,function(error,results,fields){
+                    console.log(results)
+                    SalesListCustom = results
+                    for(var SaleCustom of SalesListCustom){
+                        var SoldCustom = TemplateSingleSaleCustom(
+                            SaleCustom.IdProdotto,
+                            SaleCustom.NomeProdotto,
+                            SaleCustom.ImmagineProdotto,
+                            SaleCustom.UrlKey,
+                            SaleCustom.Profitto,
+                            FlipDateAndChange(SaleCustom.DataVendita),
+                            SaleCustom.PrezzoProdotto,
+                            SaleCustom.PrezzoVendita,
+                            SaleCustom.Compratore,
+                            SaleCustom.Taglia)
+                        $("#SalesTable").append(SoldCustom)
+                    }
+                    Util.Profit(SalesList,SalesListCustom)
+                    Util.TotalSold(SalesList,SalesListCustom)
+                    Util.StockXItemsSold(SalesList)
+                    Util.CustomItemsSold(SalesListCustom)
+                })
+            $("#Preloader1").css("display","none")
+            connection.release()
         })
-        var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
-        connection.query(Query,UserId,function(error,results,fields){
-            console.log(results)
-            SalesListCustom = results
-            for(var SaleCustom of SalesListCustom){
-                var SoldCustom = TemplateSingleSaleCustom(
-                    SaleCustom.IdProdotto,
-                    SaleCustom.NomeProdotto,
-                    SaleCustom.ImmagineProdotto,
-                    SaleCustom.UrlKey,
-                    SaleCustom.Profitto,
-                    FlipDateAndChange(SaleCustom.DataVendita),
-                    SaleCustom.PrezzoProdotto,
-                    SaleCustom.PrezzoVendita,
-                    SaleCustom.Compratore,
-                    SaleCustom.Taglia)
-                $("#SalesTable").append(SoldCustom)
-            }
-            Util.Profit(SalesList,SalesListCustom)
-            Util.TotalSold(SalesList,SalesListCustom)
-            Util.StockXItemsSold(SalesList)
-            Util.CustomItemsSold(SalesListCustom)
-
-        })
-        $("#Preloader1").css("display","none")
     })
 }
 
 function Delete(Id){
-    connection.query("DELETE FROM inventario WHERE IdProdotto = ?",Id,function(error,results,fields){
-        if(error) console.log(error)
-        CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query("DELETE FROM inventario WHERE IdProdotto = ?",Id,function(error,results,fields){
+            if(error) console.log(error)
+            CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            connection.release()
+            location.reload()
+        })
     })
 }
 
 function DeleteCustom(Id){
-    connection.query("DELETE FROM inventariocustom WHERE IdProdotto = ?",Id,function(error,results,fields){
-        if(error) console.log(error)
-        CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-        location.reload()
+    pool.getConnection(function(err,connection){
+        connection.query("DELETE FROM inventariocustom WHERE IdProdotto = ?",Id,function(error,results,fields){
+            if(error) console.log(error)
+            CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            connection.release()
+            location.reload()
+        })
     })
 }
 
@@ -225,9 +238,12 @@ ipc.on("ReturnedProductDetailsArr",async function(event,arg){
 async function EditPriceDeadStock(Id,Price){
     var Query = "UPDATE inventario SET PrezzoMedioResell = ? WHERE IdProdotto = ?"
     var Values = [Price,Id]
-    await connection.query(Query,Values,function(error,fields,results){
-        if(error) console.log(error)
-        console.log("UPDATED")
+    pool.getConnection(async function(err,connection){
+        await connection.query(Query,Values,function(error,fields,results){
+            if(error) console.log(error)
+            console.log("UPDATED")
+            connection.release()
+        })
     })
 }
 

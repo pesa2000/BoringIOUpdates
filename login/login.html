@@ -110,7 +110,7 @@
       var UsernameSaved
       var PasswordSaved
       var BETA_MODE = true
-      var connection = require("electron").remote.getGlobal('conn')
+      var pool = require("electron").remote.getGlobal('pool')
   
       function Minimize(){
           ipc.send("Minimize","login")
@@ -132,65 +132,67 @@
       async function Login(){
         var Username = document.getElementById('username').value
         var Password = document.getElementById('password').value
-        connection.query('SELECT * FROM utenti WHERE Username like ?', Username, async function (error, results, fields) {
-        if (error) throw error;
-            console.log(results)
-            if(results.length == 1){
-                var PasswordHashed = results[0].Password
-                PassTemp = PasswordHashed
-                PasswordHashed = PasswordHashed.replace(/^\$2y(.+)$/i, '$2a$1')
-                bcrypt.compare(Password, PasswordHashed, async function(err, res) {
-                    if(res == true){
-                      console.log("Password Uguali")
-                          if(BETA_MODE == true){
-                            ipc.invoke('setUserId', results[0].UserId)
-                            ipc.invoke('setAttachedInventory',results[0].AccountAttached)
-                            ipc.invoke('setUsername', results[0].Username)
-                            ipc.invoke('setEmail', results[0].Email)
-                            ipc.invoke('setRenew', results[0].TypeSubscription)
-                            ipc.invoke('setRenewDays', results[0].NextDate)
-                            ipc.invoke('setImg', results[0].Immagine)
-                            ipc.invoke('setValuta', results[0].Valuta)
-                            fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
-                            if (err) throw err;
-                                console.log('Saved!');
-                            });
-                            ipc.send('entry-accepted', 'start')
-                          }else{
-                            ipc.send("CheckStripe",results)
-                            ipc.on("ReturnedStripeLogin",(event,arg)=>{
-                              if(arg){
-                                ipc.invoke('setUserId', results[0].UserId)
-                                ipc.invoke('setAttachedInventory',results[0].AccountAttached)
-                                ipc.invoke('setUsername', results[0].Username)
-                                ipc.invoke('setEmail', results[0].Email)
-                                ipc.invoke('setRenew', results[0].TypeSubscription)
-                                ipc.invoke('setRenewDays', results[0].NextDate)
-                                ipc.invoke('setImg', results[0].Immagine)
-                                ipc.invoke('setValuta', results[0].Valuta)
-                                fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
-                                if (err) throw err;
-                                    console.log('Saved!');
-                                });
-                                ipc.send('entry-accepted', 'start')
-                              }else{
-                                console.log("Non hai pagato")
-                              }
-                            })
-                          }
-                          /*if(arg){
-  
-                          }else{
-                            console.log("NON HAI PAGATO")
-                          }*/
-                    }else{
-                        document.getElementById('ErrorLabel').innerText = "       Wrong username or password"
-                    }
-                });
-            }else{
-                document.getElementById('ErrorLabel').innerText = "      Wrong username or password"
-            }
-        });
+        pool.getConnection(function(err,connection){
+          connection.query('SELECT * FROM utenti WHERE Username like ?', Username, async function (error, results, fields) {
+          if (error) throw error;
+              console.log(results)
+              if(results.length == 1){
+                  var PasswordHashed = results[0].Password
+                  PassTemp = PasswordHashed
+                  PasswordHashed = PasswordHashed.replace(/^\$2y(.+)$/i, '$2a$1')
+                  bcrypt.compare(Password, PasswordHashed, async function(err, res) {
+                      if(res == true){
+                        console.log("Password Uguali")
+                            if(BETA_MODE == true){
+                              ipc.invoke('setUserId', results[0].UserId)
+                              ipc.invoke('setAttachedInventory',results[0].AccountAttached)
+                              ipc.invoke('setUsername', results[0].Username)
+                              ipc.invoke('setEmail', results[0].Email)
+                              ipc.invoke('setRenew', results[0].TypeSubscription)
+                              ipc.invoke('setRenewDays', results[0].NextDate)
+                              ipc.invoke('setImg', results[0].Immagine)
+                              ipc.invoke('setValuta', results[0].Valuta)
+                              fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
+                              if (err) throw err;
+                                  console.log('Saved!');
+                              });
+                              ipc.send('entry-accepted', 'start')
+                            }else{
+                              ipc.send("CheckStripe",results)
+                              ipc.on("ReturnedStripeLogin",(event,arg)=>{
+                                if(arg){
+                                  ipc.invoke('setUserId', results[0].UserId)
+                                  ipc.invoke('setAttachedInventory',results[0].AccountAttached)
+                                  ipc.invoke('setUsername', results[0].Username)
+                                  ipc.invoke('setEmail', results[0].Email)
+                                  ipc.invoke('setRenew', results[0].TypeSubscription)
+                                  ipc.invoke('setRenewDays', results[0].NextDate)
+                                  ipc.invoke('setImg', results[0].Immagine)
+                                  ipc.invoke('setValuta', results[0].Valuta)
+                                  fs.writeFile(AccountSavedDirectory, Username+":"+results[0].Password, function (err) {
+                                  if (err) throw err;
+                                      console.log('Saved!');
+                                  });
+                                  ipc.send('entry-accepted', 'start')
+                                }else{
+                                  console.log("Non hai pagato")
+                                }
+                              })
+                            }
+                            /*if(arg){
+    
+                            }else{
+                              console.log("NON HAI PAGATO")
+                            }*/
+                      }else{
+                          document.getElementById('ErrorLabel').innerText = "       Wrong username or password"
+                      }
+                  });
+              }else{
+                  document.getElementById('ErrorLabel').innerText = "      Wrong username or password"
+              }
+          });
+        })
       }
       </script>
 

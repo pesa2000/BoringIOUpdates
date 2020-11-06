@@ -5601,9 +5601,13 @@ input[type=submit].btn-block {
 }
 
 .nav {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
+     -webkit-user-select: none;
+    -webkit-app-region: drag;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
     padding-left: 0;
@@ -5613,7 +5617,8 @@ input[type=submit].btn-block {
 
 .nav-link {
     display: block;
-    padding: .5rem 1rem
+    padding: .5rem 1rem;
+    cursor:pointer;
 }
 
 .nav-link:focus,
@@ -18208,13 +18213,13 @@ label {
 }
 
 .navbar-top {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     position: -webkit-sticky;
     position: sticky;
     top: 0;
     font-size: .83333rem;
     font-weight: 600;
-    margin-left: -.9375rem;
-    margin-right: -.9375rem
 }
 
 .navbar-top .navbar-nav-icons .dropdown-menu {

@@ -44,562 +44,13 @@
           console.log(arg)
           $("#nickName").text(arg)
       })
-    </script>
-  </head>
-
-  <body>
-    <style>
-      .dot {
-        height: 10px;
-        width: 10px;
-        background-color: #F6635B;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 0px;
-      }
-      .dot1 {
-        height: 10px;
-        width: 10px;
-        background-color: #FABF30;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: .3rem;
-      }
-      .dot2 {
-        height: 10px;
-        width: 10px;
-        background-color: #41C941;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: .3rem;
-      }
-    </style>
-    <script>
       function mostraRicerca(){
-      document.getElementById('ricerca').style.display="block";
-    }
-    function visibleSearch(){
-      document.getElementById("Filter").style.display="inline";
-      document.getElementById("cerca").style.display="none";
-    }
-    </script>
-    <!-- ===============================================-->
-    <!--    Main Content-->
-    <!-- ===============================================-->
-    <main class="main" id="top">
-      <div class="preloader" id = "Preloader1">
-        <div style = "position:fixed;top: 50%;left: 50%;">
-          <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
-          </div>
-        </div>
-      </div>
-      <div class="container-fluid" data-layout="container">
-        <div style="height: 20px;cursor: pointer;-webkit-user-select: none; -webkit-app-region: drag;">
-          <span style="float: right; -webkit-app-region: no-drag;">
-            <span class="dot2" onclick = "minimize()"></span>
-            <span class="dot1" onclick = "maximize()"></span>
-            <span class="dot" onclick = "quit()"></span>
-          </span>
-        </div>
-        <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg" style="outline:none;">
-          <a class="navbar-brand mr-1 mr-sm-3">
-            <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
-          </a>
-          <div class="collapse navbar-collapse" id="navbarStandard">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="home.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Inventory</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="sales.html">Sales</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="expenses.html">Expenses</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="bot.html">Bot</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="tracking.html" >Tracking</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="market.html">Market</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="log.html">Log</a>
-            </li>
-          </ul>
-          </div>
-          <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-            <div id="dashboard-actions">
-
-                <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#new">
-                  <span  data-toggle="tooltip" data-placement="top" title="Add item from stockx">
-                  <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                </span>
-               </button>
-              
-               <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FABF30 !important;color: #fff;" type="button"  data-toggle="modal" data-target="#newCustom">
-                <span data-toggle="tooltip" data-placement="top" title="Add custom item">
-                <span class="fas fa-edit" data-fa-transform="shrink-3 down-2"></span>
-                </span>
-              </button>
-             
-
-               <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #2C96F1 !important;color: #fff;" type="button" onclick="SyncAvgPrice()">
-                  <span data-toggle="tooltip" data-placement="top" title="Refresh value for every item">
-                  <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
-                  </span>
-              </button>   
-             
-
-              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
-                <span data-toggle="tooltip" data-placement="top" title="See all statistics">
-                <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
-              </span>
-              </button>
-
-              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #f1743f !important;color: #fff;" type="button" onclick="Export()">
-                <span data-toggle="tooltip" data-placement="top" title="Export your inventory">
-                <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
-                </span>
-              </button>
-
-              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #4BB543 !important;color: #fff;" type="button" id="cerca" onclick="visibleSearch()">
-                <span data-toggle="tooltip" data-placement="top" title="Search items in your inventory">
-                <span class="fas fa-search" data-fa-transform="shrink-3 down-2"></span>
-              </span>
-              </button>
-                  <input type="text" id = "Filter" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
-            </div>
-          </ul>
-        </nav>
-        <div class="content">
-          <div class="header-body">
-            <div class="row align-items-end">
-              <div class="col">
-        
-                <!-- Title -->
-                <h1 class="header-title">
-                  Inventory
-                </h1>
-                <span class="alert alert-export" role="alert" style="display: none;float: right;" id="MessageExport">Inventory Exported</span>
-                <span class="alert alert-edit" role="alert" style="display: none;float: right;" id="MessageEdit">Item edited</span>
-                <span class="alert alert-duplicate" role="alert" style="display: none;float: right;" id="MessageDuplicate">Item duplicated</span>
-                <span class="alert alert-sold" role="alert" style="display: none;float: right;" id="MessageSale">Item sold</span>
-                <span class="alert alert-delete" role="alert" style="display: none;float: right;" id="MessageDelete">Item deleted</span>
-                <span class="alert alert-add" role="alert" style="display: none; float: right;" id="MessageAdd">New item added</span>
-                <span class="alert alert-primary" role="alert" style="display: none;float: right;" id="MessageSync">Synchronizing prices</span>
-                <span class="alert alert-danger" role="alert" style="display: none;float: right;" id="MessageError">Connection error...</span>
-              </div>
-            </div> <!-- / .row -->
-          </div>
-          <div class="card mb-3 bg-200">
-                <table class="table table-borderless table-hover">
-                  <thead class="text-900">
-                    <tr>
-                      <th class="sort pr-1 align-middle">Name</th>
-                      <th class="sort pr-1 align-middle">Site</th>
-                      <th class="sort pr-1 align-middle">Price</th>
-                      <th class="sort pr-1 align-middle">Value</th>
-                      <th class="sort pr-1 align-middle">Size</th>
-                      <th></th>
-                      <th class="sort pr-1 align-middle"></th>
-                    </tr>
-                  </thead>
-                  <tbody id = "Inventory">
-                    
-                 </tbody>
-                </table>
-          </div>
-          <div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">New item</h4>
-                      <p class="fs--1 mb-0">Search your product</p>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <div>
-                    <div class="form-row">
-                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
-                        <input class="form-control" id = "newShoe" oninput="SearchNewShoes();">
-                        <div id="ShoesList" style="background-color:rgb(19, 34,56);height: auto;width: 100%; display: none;">
-                          <div style="height: 10px;"></div>
-                          <div id="Div1" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
-                            <input type="hidden" id="Url1" value = "">
-                            <div class="file-thumbnail">
-                            <img id="Img1" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
-                            </div>
-                            <div class="media-body ml-3">
-                              <h6 style="margin-left: 12px;" class="mb-1" id="Name1"></h6>
-                              <div class="fs--1"><span class="font-weight-medium text-600" id="Date1"></span></div>
-                            </div>
-                        </div>
-                        <div id="Div2" style = "cursor: pointer;"  class="media mb-3 hover-actions-trigger align-items-center">
-                          <input type="hidden" id="Url2" value = "">
-                          <div class="file-thumbnail">
-                          <img id="Img2" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
-                          </div>
-                          <div class="media-body ml-3">
-                            <h6 style="margin-left: 12px;" class="mb-1" id="Name2"></h6>
-                            <div class="fs--1"><span class="font-weight-medium text-600" id="Date2"></span></div>
-                          </div>
-                      </div>
-                      <div id="Div3" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
-                        <input type="hidden" id="Url3" value = "">
-                        <div class="file-thumbnail">
-                        <img id="Img3" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
-                        </div>
-                        <div class="media-body ml-3">
-                          <h6 style="margin-left: 12px;" class="mb-1" id="Name3"></h6>
-                          <div class="fs--1"><span class="font-weight-medium text-600" id="Date3"></span></div>
-                        </div>
-                    </div>
-                    <div id="Div4" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
-                      <input type="hidden" id="Url4" value = "">
-                      <div class="file-thumbnail">
-                      <img id="Img4" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
-                      </div>
-                      <div class="media-body ml-3">
-                        <h6 style="margin-left: 12px;" class="mb-1" id="Name4"></h6>
-                        <div class="fs--1"><span class="font-weight-medium text-600" id="Date4"></span></div>
-                      </div>
-                  </div>
-                  <div id="Div5" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
-                    <input type="hidden" id="Url5" value = "">
-                    <div class="file-thumbnail">
-                    <img id="Img5" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
-                    </div>
-                    <div class="media-body ml-3">
-                      <h6 style="margin-left: 12px;" class="mb-1" id="Name5"></h6>
-                      <div class="fs--1"><span class="font-weight-medium text-600" id="Date5"></span></div>
-                    </div>
-                </div>
-              </div>
-            </div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "prodPrice" /></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Size</label>
-                        <select class="form-control" type="text"  id = "prodSize" >
-                          
-                        </select></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="wizard-datepicker" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "prodSite"/></div>
-                      <div class="form-group col-12">
-                        <label for="modal-auth-password">Notes</label>
-                        <input class="form-control" type="text"  id = "prodNotes"/>
-                      </div>
-                      <div class="form-group col-12"><label id = "errorLabel" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
-                      <input type = "hidden" id = "prodImg"/>
-                      <input type = "hidden" id = "prodPid"/>
-                      <input type = "hidden" id = "prodName"/>
-                      <input type = "hidden" id = "prodUrl"/>
-                    </div>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="Add()">Add</button></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        <div class="modal fade" id="editCustomImg" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Edit image url</h4>
-                  </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div>
-                  <div class="form-row">
-                    <div class="form-group col-12">
-                      <input type="hidden" id="IdToChangeImg" value = "">
-                      <label for="modal-auth-password">Url Image</label>
-                      <input class="form-control" type="text" id = "prodImgCustomToEdit"/>
-                    </div>
-                  </div>
-                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="ChangedImg()">Add</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-        <div class="modal fade" id="newCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">New item custom</h4>
-                  </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div>
-                  <div class="form-row">
-                    <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
-                      <input class="form-control" id = "newShoeCustom">
-                    </div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "prodPriceCustom" /></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Size</label><input type = "text" class = "form-control" id = "prodSizeCustom"></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="prodDateCustom" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "prodSiteCustom"/></div>
-                    <div class="form-group col-12">
-                      <label for="modal-auth-password">Notes</label>
-                      <input class="form-control" type="text"  id = "prodNotesCustom"/>
-                    </div>
-                    <div class="form-group col-12">
-                      <label for="modal-auth-password">Url Image</label>
-                      <input class="form-control" type="text"  id = "prodImgCustom"/>
-                    </div>
-                    <div class="form-group col-12"><label id = "errorLabelAddCustom" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
-
-                  </div>
-                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="AddCustom()">Add</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-          <!--END-->
-          <!--MODAL MODIFICA-->
-          <div class="modal fade" id="modifica" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
-                      <p class="fs--1 mb-0">Edit your item</p>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <div>
-                    <div class="form-row">
-                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "PriceToModify"/></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Size</label>
-                        <select class="form-control" id = "SizeToModify" >
-                          
-                        </select></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="wizard-datepicker2" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "SiteToModify"/></div>
-                      <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesToModify"/></div>
-                      <input type = "hidden" id = "IdToModify">
-                    </div>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick ="Edit()">Edit</button></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal fade" id="modificaCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
-                    <p class="fs--1 mb-0">Edit your item</p>
-                  </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div>
-                  <div class="form-row">
-                    <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "PriceToModifyCustom"/></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Size</label>
-                      <input type = "text" class="form-control" id = "SizeToModifyCustom"/></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="ProdDateToModifyCustom" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "SiteToModifyCustom"/></div>
-                    <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesToModifyCustom"/></div>
-                    <input type = "hidden" id = "IdToModifyCustom">
-                  </div>
-                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick ="EditCustom()">Edit</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-          <!--END-->
-          <!--MODAL VENDITA-->
-          <div class="modal fade" id="sale" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">Sale item</h4>
-                      <p class="fs--1 mb-0">Sales details</p>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <div>
-                    <div class="form-row">
-                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "prodPriceSell"/></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Date</label>
-                        <input class="form-control datetimepicker" id="wizard-datepicker1" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
-                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Site</label>
-                        <input type = "text" class="form-control" id = "prodSiteSell"/>
-                      </div>
-                      <div class="form-group col-12"><label id = "errorLabelSale" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
-                    </div>
-                    <input type = "hidden" id = "IdToSell"/>
-                    <input type = "hidden" id = "PrezzoProdotto"/>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="SaleShoe()">Sale</button></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="modal fade" id="saleCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Sale item</h4>
-                    <p class="fs--1 mb-0">Sales details</p>
-                  </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div>
-                  <div class="form-row">
-                    <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "prodPriceSellCustom"/></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Date</label>
-                      <input class="form-control datetimepicker" id="prodDateSellCustom" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
-                    <div class="form-group col-12"><label for="modal-auth-confirm-password">Site</label>
-                      <input type = "text" class="form-control" id = "prodSiteSellCustom"/>
-                    </div>
-                    <div class="form-group col-12"><label id = "errorLabelSaleCustom" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
-                  </div>
-                  <input type = "hidden" id = "IdToSellCustom"/>
-                  <input type = "hidden" id = "PrezzoProdottoCustom"/>
-                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="SaleCustom()">Sale</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-          <!--END-->
-          <!--MODAL PIAZZAMENTO OFFERTA-->
-          <div class="modal fade" id="ask" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">Place ask</h4>
-                      <p class="fs--1 mb-0">Easily place an ask on Stockx</p>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <form>
-                    <div class="form-row">
-                      <div class="form-group col-12"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  /></div>
-                    </div>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" type="submit" name="submit">Place Ask</button></div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-          <!--END-->
-          <!--MODAL STATS-->
-          <div class="modal modal-fixed-right fade" id="stats" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-vertical" role="document">
-              <div class="modal-content border-0 min-vh-100">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalRightLabel">Statistics</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="card-deck">
-                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
-                      <!--/.bg-holder-->
-                      <div class="card-body position-relative">
-                        <h6>Inventory Retail</h6>
-                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id="InventoryRetail"></div>
-                      </div>
-                    </div>
-                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
-                      <!--/.bg-holder-->
-                      <div class="card-body position-relative">
-                        <h6>Inventory Resell</h6>
-                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="InventoryResell"></div>
-                      </div>
-                    </div>
-                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
-                      <!--/.bg-holder-->
-                      <div class="card-body position-relative">
-                        <h6>StockX Items</h6>
-                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="StockXItems"></div>
-                      </div>
-                    </div>
-
-                    <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-                      <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
-                      <!--/.bg-holder-->
-                      <div class="card-body position-relative">
-                        <h6>Custom Items</h6>
-                        <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="CustomItems"></div>
-                      </div>
-                    </div>
-                  </div>
-              </div>
-            </div>
-          </div>
-          <!---->
-          <footer>
-            <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
-              <div class="col-12 col-sm-auto text-center">
-              </div>
-              <div class="col-12 col-sm-auto text-center">
-                <p class="mb-0 text-600"></p>
-              </div>
-            </div>
-          </footer>
-        </div>
-      </div>
-    </main><!-- ===============================================-->
-    <!--    End of Main Content-->
-    <!-- ===============================================-->
-
-    <script>
-      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
-      if (isFluid) {
-        var container = document.querySelector('[data-layout]');
-        container.classList.remove('container');
-        container.classList.add('container-fluid');
+        document.getElementById('ricerca').style.display="block";
       }
-
-
+      function visibleSearch(){
+        document.getElementById("Filter").style.display="inline";
+        document.getElementById("cerca").style.display="none";
+      }
       function FilterTable(){
         var Filter = $("#Filter").val()
         var inventory = document.getElementById("Inventory")
@@ -628,34 +79,719 @@
         //console.log(tr)
       }
     </script>
+  </head>
 
+  <body>
+    <style>
+      .button-fixed{
+        bottom: 0;
+        position: fixed;
+        right: 0;
+        border-radius: 4px;
+      }
+      .fas{
+        cursor: pointer;
+        font-size: 24px;
+      }
+    </style>
     <!-- ===============================================-->
-    <!--    JavaScripts-->
+    <!--    Main Content-->
     <!-- ===============================================-->
+    <main class="main" id="top">
+
+      <div class="container" data-layout="container">
+        <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;">
+          <script>
+            var navbarStyle = localStorage.getItem("navbarStyle");
+            if (navbarStyle) {
+              document.querySelector('.navbar-vertical').className += ' navbar-' + navbarStyle;
+            }
+          </script>
+          <div class="d-flex align-items-center">
+            <div class="toggle-icon-wrapper">
+              <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-toggle="tooltip" data-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+            </div>
+            <a class="navbar-brand" href="home.html">
+              <div class="d-flex align-items-center py-3">
+                <img class="mr-2" src="img/tondo.png" alt="" width="40" />
+                <span class="text-sans-serif" style="color: #fafafa;">boring</span>
+              </div>
+            </a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
+            <div class="navbar-vertical-content perfect-scrollbar scrollbar">
+              <ul class="navbar-nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="home.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-chart-pie"></span>
+                      </span>
+                      <span class="nav-link-text">Home</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="inventory.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-copy"></span>
+                      </span>
+                      <span class="nav-link-text">Inventory</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="sales.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-tag"></span>
+                      </span>
+                      <span class="nav-link-text">Sales</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="expenses.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-credit-card"></span>
+                      </span>
+                      <span class="nav-link-text">Expenses</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="bot.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-robot"></span>
+                      </span>
+                      <span class="nav-link-text">Bot</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="tracking.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-shipping-fast"></span>
+                      </span>
+                      <span class="nav-link-text">Tracking</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="market.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="far fa-chart-bar"></span>
+                      </span>
+                      <span class="nav-link-text">Market</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="log.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-book"></span>
+                      </span>
+                      <span class="nav-link-text">Activity</span>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+              <div class="navbar-vertical-divider">
+                <hr class="navbar-vertical-hr my-2" />
+              </div>
+              <ul class="navbar-nav flex-column" id="navbarVerticalNav">
+                <li class="nav-item">
+                  <a class="nav-link" href="settings.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-user-alt"></span>
+                      </span>
+                      <span class="nav-link-text">Profile</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item" onclick="LogOut()">
+                  <a class="nav-link" href="settings.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-user-alt-slash"></span>
+                      </span>
+                      <span class="nav-link-text">Logout</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-code-branch"></span></span>
+                        <span class="nav-link-text">Changelog</span>
+                        <span class="badge badge-pill ml-2 badge-soft-primary">vBeta</span>
+                      </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;">
+        </nav>
+        <!--INZIO NAVBAR IN MODALITA' PICCOLA-->
+        <div class="content">
+          <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;">
+            <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+            <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
+              <div class="d-flex align-items-center">
+                <img src="img/tondo.png" alt="" width="40" />
+                <span class="text-sans-serif" style="color:#fafafa">boring</span>
+              </div>
+            </a>
+            <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+              <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "minimize()" data-toggle="tooltip" data-placement="left" title="minimize">
+                <a class="nav-link px-0">
+                  <span class="fas fa-minus fs-4" data-fa-transform="shrink-7" style="margin-right: 8px;"></span>
+                </a>
+              </li>
+              <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "maximize()" data-toggle="tooltip" data-placement="left" title="maximize">
+                <a class="nav-link px-0">
+                  <span class="fas fa-square fs-4" data-fa-transform="shrink-7" style="margin-right: 8px;"></span>
+                </a>
+              </li>
+              <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "quit()" data-toggle="tooltip" data-placement="left" title="close">
+                <a class="nav-link px-0">
+                  <span class="fas fa-times fs-4" data-fa-transform="shrink-7" style="margin-right: 8px;"></span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <script>
+            var navBtn = document.getElementById("btnCloseNav")
+            function OpenClose(){
+              $("#navbarVerticalCollapse").toggle()
+            }
+
+            var navbarPosition = localStorage.getItem('navbarPosition');
+            var navbarVertical = document.querySelector('.navbar-vertical');
+            var navbarTopVertical = document.querySelector('.content .navbar-top');
+            var navbarTop = document.querySelector('[data-layout] .navbar-top');
+            var navbarTopCombo = document.querySelector('.content .navbar-top-combo');
+
+            if (navbarPosition === 'top') {
+              navbarTop.removeAttribute('style');
+              navbarTopVertical.parentNode.removeChild(navbarTopVertical);
+              navbarVertical.parentNode.removeChild(navbarVertical);
+              navbarTopCombo.parentNode.removeChild(navbarTopCombo);
+            } else if (navbarPosition === 'combo') {
+              navbarVertical.removeAttribute('style');
+              navbarTopCombo.removeAttribute('style');
+              navbarTop.parentNode.removeChild(navbarTop);
+              navbarTopVertical.parentNode.removeChild(navbarTopVertical);
+            } else {
+              navbarVertical.removeAttribute('style');
+              navbarTopVertical.removeAttribute('style');
+              navbarTop.parentNode.removeChild(navbarTop);
+              //navbarTopCombo.parentNode.removeChild(navbarTopCombo);
+            }
+          </script>
+                 <div class="content">
+                  <div class="header-body">
+                    <div class="row align-items-end">
+                      <div class="col">
+                
+                        <!-- Title -->
+                        <h1 class="header-title" style="float: left;margin-left: 12px;">
+                          Inventory
+                          <span class="badge badge-soft-primary" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageExport">Inventory Exported</span>
+                          <span class="badge badge-soft-primary" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageEdit">Item edited</span>
+                          <span class="badge badge-soft-secondary" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageDuplicate">Item duplicated</span>
+                          <span class="badge badge-soft-warning" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageSale">Item sold</span>
+                          <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageDelete">Item deleted</span>
+                          <span class="badge badge-soft-success" style="display: none; float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageAdd">New item added</span>
+                          <span class="badge badge-soft-info" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageSync">Synchronizing prices</span>
+                          <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageError">Connection error...</span>
+                        </h1>
+                        <span style="float: right;margin-right: 1%;">                     
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#new">
+                          <span  data-toggle="tooltip" data-placement="top" title="Add item from stockx">
+                          <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+                          </span>
+                          </button>
+
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FABF30 !important;color: #fff;" type="button"  data-toggle="modal" data-target="#newCustom">
+                          <span data-toggle="tooltip" data-placement="top" title="Add custom item">
+                          <span class="fas fa-edit" data-fa-transform="shrink-3 down-2"></span>
+                          </span>
+                          </button>
+
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #2C96F1 !important;color: #fff;" type="button" onclick="SyncAvgPrice()">
+                          <span data-toggle="tooltip" data-placement="top" title="Refresh value for every item">
+                          <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
+                          </span>
+                          </button>
+
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
+                          <span data-toggle="tooltip" data-placement="top" title="See all statistics">
+                          <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
+                          </span>
+                          </button>
+
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #f1743f !important;color: #fff;" type="button" onclick="Export()">
+                          <span data-toggle="tooltip" data-placement="top" title="Export your inventory">
+                          <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
+                          </span>
+                          </button>
+
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #4BB543 !important;color: #fff;" type="button" id="cerca" onclick="visibleSearch()">
+                          <span data-toggle="tooltip" data-placement="top" title="Search items in your inventory">
+                          <span class="fas fa-search" data-fa-transform="shrink-3 down-2"></span>
+                          </span>
+                          </button>
+                          <input type="text" id = "Filter" style="display:none;" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
+   
+  
+                        </span>
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="card mb-3 bg-200">
+                        <table class="table table-borderless table-hover">
+                          <thead class="text-900">
+                            <tr>
+                              <th class="sort pr-1 align-middle">Name</th>
+                              <th class="sort pr-1 align-middle">Site</th>
+                              <th class="sort pr-1 align-middle">Price</th>
+                              <th class="sort pr-1 align-middle">Value</th>
+                              <th class="sort pr-1 align-middle">Size</th>
+                              <th></th>
+                              <th class="sort pr-1 align-middle"></th>
+                            </tr>
+                          </thead>
+                          <tbody id = "Inventory">
+                            
+                         </tbody>
+                        </table>
+                  </div>
+
+
+
+                  <div class="modal fade bd-example-modal-lg" id="new" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content border-0">
+                        <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                          <div class="position-relative z-index-1">
+                            <div>
+                              <h4 class="mb-0 text-white" id="authentication-modal-label">New item</h4>
+                              <p class="fs--1 mb-0">Search your product</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-body py-4 px-5">
+                          <div>
+                            <div class="form-row">
+                              <div class="form-group col-2"></div>
+                                <div class="form-group col-8">
+                                  <input type="text" id = "newShoe" class="btn btn-falcon-default btn-sm" placeholder="Search a product" style="width: 100%;"  oninput="SearchNewShoes();">
+                                  <div id="ShoesList" style="background-color:#132238;height: 280px;width: 100%;display: none;">
+                                    <div style="height: 10px;"></div>
+                                      <div id="Div1" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                                        <input type="hidden" id="Url1" value = "">
+                                        <div class="file-thumbnail">
+                                          <img id="Img1" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                                        </div>
+                                        <div class="media-body ml-3">
+                                          <h6 style="margin-left: 12px;" class="mb-1" id="Name1"></h6>
+                                          <div class="fs--1"><span class="font-weight-medium text-600" id="Date1"></span></div>
+                                        </div>
+                                      </div>
+                                      <div id="Div2" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                                        <input type="hidden" id="Url2" value = "">
+                                        <div class="file-thumbnail">
+                                          <img id="Img2" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                                        </div>
+                                        <div class="media-body ml-3">
+                                          <h6 style="margin-left: 12px;" class="mb-1" id="Name2"></h6>
+                                          <div class="fs--1"><span class="font-weight-medium text-600" id="Date2"></span></div>
+                                        </div>
+                                      </div>
+                                      <div id="Div3" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                                        <input type="hidden" id="Url3" value = "">
+                                        <div class="file-thumbnail">
+                                          <img id="Img3" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                                        </div>
+                                        <div class="media-body ml-3">
+                                          <h6 style="margin-left: 12px;" class="mb-1" id="Name3"></h6>
+                                          <div class="fs--1"><span class="font-weight-medium text-600" id="Date3"></span></div>
+                                        </div>
+                                      </div>
+                                      <div id="Div4" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                                        <input type="hidden" id="Url4" value = "">
+                                        <div class="file-thumbnail">
+                                        <img id="Img4" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                                        </div>
+                                        <div class="media-body ml-3">
+                                          <h6 style="margin-left: 12px;" class="mb-1" id="Name4"></h6>
+                                          <div class="fs--1"><span class="font-weight-medium text-600" id="Date4"></span></div>
+                                        </div>
+                                      </div>
+                                      <div id="Div5" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
+                                          <input type="hidden" id="Url5" value = "">
+                                          <div class="file-thumbnail">
+                                          <img id="Img5" style="width: 48px;border-radius: 1px;margin-left: 10px;" />
+                                          </div>
+                                          <div class="media-body ml-3">
+                                            <h6 style="margin-left: 12px;" class="mb-1" id="Name5"></h6>
+                                            <div class="fs--1"><span class="font-weight-medium text-600" id="Date5"></span></div>
+                                        </div>
+                                      </div>
+                              </div>
+                          </div>
+                          <div class="form-group col-2"></div>
+                          <div class="form-group col-12">
+                            <div class="card mb-3">
+                              <div class="card-body">
+                                <div class="row" id="ContainerSaved">
+                                  <!--<div class="mb-4 col-md-6 col-lg-12" >
+                                    <img class="card-img-top"/>
+                                      
+                                  </div>-->
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group col-4"></div>
+                          <div class="form-group col-4">
+                          <button class="btn btn-primary btn-block mt-3"  name="submit" onclick="SendMultipleToDB()">Add</button>
+                          </div>
+                          <div class="form-group col-4"></div>
+                            <div class="form-group col-12">
+                            <label id = "errorLabel" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label>
+                            </div>
+                          </div>
+                          </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+                  
+                  
+          <div class="modal fade" id="editCustomImg" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">Edit image url</h4>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-12">
+                        <input type="hidden" id="IdToChangeImg" value = "">
+                        <label for="modal-auth-password">Url Image</label>
+                        <input class="form-control" type="text" id = "prodImgCustomToEdit"/>
+                      </div>
+                    </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="ChangedImg()">Add</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+          <div class="modal fade" id="newCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">New item custom</h4>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
+                        <input class="form-control" id = "newShoeCustom">
+                      </div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "prodPriceCustom" /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Size</label><input type = "text" class = "form-control" id = "prodSizeCustom"></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="prodDateCustom" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "prodSiteCustom"/></div>
+                      <div class="form-group col-12">
+                        <label for="modal-auth-password">Notes</label>
+                        <input class="form-control" type="text"  id = "prodNotesCustom"/>
+                      </div>
+                      <div class="form-group col-12">
+                        <label for="modal-auth-password">Url Image</label>
+                        <input class="form-control" type="text"  id = "prodImgCustom"/>
+                      </div>
+                      <div class="form-group col-12"><label id = "errorLabelAddCustom" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+  
+                    </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="AddCustom()">Add</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+            <!--END-->
+            <!--MODAL MODIFICA-->
+            <div class="modal fade" id="modifica" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+              <div class="modal-dialog mt-6" role="document">
+                <div class="modal-content border-0">
+                  <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                    <div class="position-relative z-index-1">
+                      <div>
+                        <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
+                        <p class="fs--1 mb-0">Edit your item</p>
+                      </div>
+                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body py-4 px-5">
+                    <div>
+                      <div class="form-row">
+                        <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "PriceToModify"/></div>
+                        <div class="form-group col-6"><label for="modal-auth-password">Size</label>
+                          <select class="form-control" id = "SizeToModify" >
+                            
+                          </select></div>
+                        <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="wizard-datepicker2" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                        <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "SiteToModify"/></div>
+                        <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesToModify"/></div>
+                        <input type = "hidden" id = "IdToModify">
+                      </div>
+                      <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick ="Edit()">Edit</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="modal fade" id="modificaCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
+                      <p class="fs--1 mb-0">Edit your item</p>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "PriceToModifyCustom"/></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Size</label>
+                        <input type = "text" class="form-control" id = "SizeToModifyCustom"/></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="ProdDateToModifyCustom" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "SiteToModifyCustom"/></div>
+                      <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesToModifyCustom"/></div>
+                      <input type = "hidden" id = "IdToModifyCustom">
+                    </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick ="EditCustom()">Edit</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+            <!--END-->
+            <!--MODAL VENDITA-->
+            <div class="modal fade" id="sale" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+              <div class="modal-dialog mt-6" role="document">
+                <div class="modal-content border-0">
+                  <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                    <div class="position-relative z-index-1">
+                      <div>
+                        <h4 class="mb-0 text-white" id="authentication-modal-label">Sale item</h4>
+                        <p class="fs--1 mb-0">Sales details</p>
+                      </div>
+                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body py-4 px-5">
+                    <div>
+                      <div class="form-row">
+                        <input type="hidden" id="prodPriceSale">
+                        <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "prodPriceSell"/></div>
+                        <div class="form-group col-6"><label for="modal-auth-password">Date</label>
+                          <input class="form-control datetimepicker" id="wizard-datepicker1" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                        <div class="form-group col-12"><label for="modal-auth-confirm-password">Site</label>
+                          <input type = "text" class="form-control" id = "prodSiteSell"/>
+                        </div>
+                        <div class="form-group col-12"><label id = "errorLabelSale" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                      </div>
+                      <input type = "hidden" id = "IdToSell"/>
+                      <input type = "hidden" id = "PrezzoProdotto"/>
+                      <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="SaleShoe()">Sale</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+  
+          <div class="modal fade" id="saleCustom" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+            <div class="modal-dialog mt-6" role="document">
+              <div class="modal-content border-0">
+                <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                  <div class="position-relative z-index-1">
+                    <div>
+                      <h4 class="mb-0 text-white" id="authentication-modal-label">Sale item</h4>
+                      <p class="fs--1 mb-0">Sales details</p>
+                    </div>
+                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body py-4 px-5">
+                  <div>
+                    <div class="form-row">
+                      <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "prodPriceSellCustom"/></div>
+                      <div class="form-group col-6"><label for="modal-auth-password">Date</label>
+                        <input class="form-control datetimepicker" id="prodDateSellCustom" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
+                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Site</label>
+                        <input type = "text" class="form-control" id = "prodSiteSellCustom"/>
+                      </div>
+                      <div class="form-group col-12"><label id = "errorLabelSaleCustom" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                    </div>
+                    <input type = "hidden" id = "IdToSellCustom"/>
+                    <input type = "hidden" id = "PrezzoProdottoCustom"/>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="SaleCustom()">Sale</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+            <!--END-->
+            <!--MODAL PIAZZAMENTO OFFERTA-->
+            <div class="modal fade" id="ask" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+              <div class="modal-dialog mt-6" role="document">
+                <div class="modal-content border-0">
+                  <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                    <div class="position-relative z-index-1">
+                      <div>
+                        <h4 class="mb-0 text-white" id="authentication-modal-label">Place ask</h4>
+                        <p class="fs--1 mb-0">Easily place an ask on Stockx</p>
+                      </div>
+                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body py-4 px-5">
+                    <form>
+                      <div class="form-row">
+                        <div class="form-group col-12"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  /></div>
+                      </div>
+                      <div class="form-group"><button class="btn btn-primary btn-block mt-3" type="submit" name="submit">Place Ask</button></div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+            <!--END-->
+            <!--MODAL STATS-->
+            <div class="modal modal-fixed-right fade" id="stats" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-vertical" role="document">
+                <div class="modal-content border-0 min-vh-100">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalRightLabel">Statistics</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="card-deck">
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Inventory Retail</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id="InventoryRetail"></div>
+                        </div>
+                      </div>
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Inventory Resell</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="InventoryResell"></div>
+                        </div>
+                      </div>
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>StockX Items</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="StockXItems"></div>
+                        </div>
+                      </div>
+  
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Custom Items</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="CustomItems"></div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <!---->
+            <footer>
+              <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+                <div class="col-12 col-sm-auto text-center">
+                </div>
+                <div class="col-12 col-sm-auto text-center">
+                  <p class="mb-0 text-600"></p>
+                </div>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+      </main><!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+
     <script>if (typeof module === 'object') 
-    {window.module = module; module = undefined;}</script>
-    <script src="assets/js/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
-    <script src="assets/lib/@fortawesome/all.min.js"></script>
-    <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
-    <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
-    <script src="assets/lib/is_js/is.min.js"></script>
-    <script src="assets/lib/lodash/lodash.min.js"></script>
-    <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="assets/lib/echarts/echarts.min.js"></script>
-    <script src="assets/lib/chart.js/Chart.min.js"></script>
-    <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
-    <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
-    <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
-    <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
-    <script src="assets/lib/leaflet/leaflet.js"></script>
-    <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
-    <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
-    <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
-    <script src="assets/js/theme.min.js"></script>
-    <script src="scripts/inventory.js" defer></script>
-    <script>if(window.module){module = window.module;}</script> 
-  </body>
-</html>
+      {window.module = module; module = undefined;}</script>
+      <script src="assets/js/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
+      <script src="assets/lib/@fortawesome/all.min.js"></script>
+      <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
+      <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
+      <script src="assets/lib/is_js/is.min.js"></script>
+      <script src="assets/lib/lodash/lodash.min.js"></script>
+      <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+      <script src="assets/lib/echarts/echarts.min.js"></script>
+      <script src="assets/lib/chart.js/Chart.min.js"></script>
+      <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
+      <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
+      <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
+      <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
+      <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
+      <script src="assets/lib/leaflet/leaflet.js"></script>
+      <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+      <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
+      <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
+      <script src="assets/js/theme.min.js"></script>
+      <script src="scripts/inventory.js" defer></script>
+      <script>if(window.module){module = window.module;}</script> 
+    </body>
+  </html>

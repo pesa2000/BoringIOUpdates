@@ -1,4 +1,4 @@
-const connection = require("electron").remote.getGlobal("conn");
+const pool = require("electron").remote.getGlobal("pool");
 const path = require("path")
 const Util = require(path.join(__dirname,"/utilityScripts/query_graphs_expenses.js"))
 const moment = require("moment")
@@ -37,17 +37,20 @@ function Request(FilterDate){
     ipc.send("getUserId")
     ipc.on("ReturnedId",async (event,arg) => {
         UserId = arg
-        connection.query("SELECT * FROM costi WHERE IdUtente = ? AND YEAR(DataCosto) <= ?",[UserId,GetNewDateYear()],  function (error, results, fields) {
-            if(error) console.log(error)
-            SplitArrays(results)
-            Util.SetTypes(results)
-            var Res = ""
-            if(Filter == "Year"){
-                Res = Util.YearExpenses(results)
-            }else{
-                Res = Util.MonthExpenses(results,FilterDate)
-            }
-            CreateGraph(Res)
+        pool.getConnection(function(err,connection){
+            connection.query("SELECT * FROM costi WHERE IdUtente = ? AND YEAR(DataCosto) <= ?",[UserId,GetNewDateYear()],  function (error, results, fields) {
+                if(error) console.log(error)
+                SplitArrays(results)
+                Util.SetTypes(results)
+                var Res = ""
+                if(Filter == "Year"){
+                    Res = Util.YearExpenses(results)
+                }else{
+                    Res = Util.MonthExpenses(results,FilterDate)
+                }
+                connection.release()
+                CreateGraph(Res)
+            })
         })
     })
 }

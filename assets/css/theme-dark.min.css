@@ -5,6 +5,46 @@
  * Copyright 2011-2020 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+ .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+      }
+      .dot1 {
+        cursor: pointer;
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+        -webkit-app-region: no-drag;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+      }
+      .button-fixed{
+        bottom: 0;
+        position: fixed;
+        right: 0;
+        border-radius: 4px;
+      }
+      .fas{
+        cursor: pointer;
+        font-size: 24px;
+      }
 
  .header {
     margin-bottom: 2rem;
@@ -652,7 +692,7 @@ pre code {
 @media (min-width:576px) {
     .container,
     .container-sm {
-        max-width: 540px
+        max-width: 100%
     }
 }
 
@@ -660,7 +700,7 @@ pre code {
     .container,
     .container-md,
     .container-sm {
-        max-width: 720px
+        max-width: 100%
     }
 }
 
@@ -669,7 +709,7 @@ pre code {
     .container-lg,
     .container-md,
     .container-sm {
-        max-width: 960px
+        max-width: 100%
     }
 }
 
@@ -679,7 +719,7 @@ pre code {
     .container-md,
     .container-sm,
     .container-xl {
-        max-width: 1140px
+        max-width: 100%
     }
 }
 
@@ -690,7 +730,7 @@ pre code {
     .container-sm,
     .container-xl,
     .container-xxl {
-        max-width: 1480px
+        max-width: 100%
     }
 }
 
@@ -5588,6 +5628,8 @@ input[type=submit].btn-block {
 }
 
 .nav {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -5600,7 +5642,8 @@ input[type=submit].btn-block {
 
 .nav-link {
     display: block;
-    padding: .5rem 1rem
+    padding: .5rem 1rem;
+    cursor: pointer;
 }
 
 .nav-link:focus,
@@ -5692,6 +5735,8 @@ input[type=submit].btn-block {
     position: relative;
     display: -webkit-box;
     display: -ms-flexbox;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     display: flex;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
@@ -16430,7 +16475,8 @@ label {
     padding: 0;
     z-index: 1019;
     top: 4.3125rem;
-    width: 100vw
+    width: 100vw;
+    -webkit-app-region: no-drag;
 }
 
 .navbar-vertical .navbar-brand {
@@ -16926,7 +16972,7 @@ label {
 @media (max-width:1199.98px) and (min-width:992px) and (max-width:1199.98px) {
     .navbar-vertical.navbar-expand-xl {
         position: fixed;
-        max-width: 960px;
+        /*max-width: 960px;*/
         width: 100%
     }
 }
@@ -16944,14 +16990,14 @@ label {
 @media (max-width:1199.98px) and (min-width:992px) and (max-width:1199.98px) {
     .navbar-vertical.navbar-expand-xl+.content .navbar-top {
         width: 100%;
-        max-width: 960px !important
+        /*max-width: 960px !important*/
     }
 }
 
 @media (max-width:1199.98px) and (min-width:768px) and (max-width:991.98px) {
     .navbar-vertical.navbar-expand-xl {
         position: fixed;
-        max-width: 720px;
+        /*max-width: 720px;*/
         width: 100%
     }
 }
@@ -16969,14 +17015,14 @@ label {
 @media (max-width:1199.98px) and (min-width:768px) and (max-width:991.98px) {
     .navbar-vertical.navbar-expand-xl+.content .navbar-top {
         width: 100%;
-        max-width: 720px !important
+        /*max-width: 720px !important*/
     }
 }
 
 @media (max-width:1199.98px) and (min-width:576px) and (max-width:767.98px) {
     .navbar-vertical.navbar-expand-xl {
         position: fixed;
-        max-width: 540px;
+        /*max-width: 540px;*/
         width: 100%
     }
 }
@@ -16994,7 +17040,7 @@ label {
 @media (max-width:1199.98px) and (min-width:576px) and (max-width:767.98px) {
     .navbar-vertical.navbar-expand-xl+.content .navbar-top {
         width: 100%;
-        max-width: 540px !important
+        /*max-width: 540px !important*/
     }
 }
 
@@ -18236,8 +18282,6 @@ label {
     top: 0;
     font-size: .83333rem;
     font-weight: 600;
-    margin-left: -.9375rem;
-    margin-right: -.9375rem
 }
 
 .navbar-top .navbar-nav-icons .dropdown-menu {

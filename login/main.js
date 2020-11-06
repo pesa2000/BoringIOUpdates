@@ -20,6 +20,7 @@ const bcrypt = require('bcrypt')
 const fs = require('fs')
 const got = require('got')
 var AccountSavedDirectory = path.join(AppDataDir,"AccountSaved.txt")
+var AccountSettingsDirectory = path.join(AppDataDir,"ClientSettings.json")
 console.log(AccountSavedDirectory)
 //const VersionSavedDirectory = path.join(app.getPath("userData"),"/ProgramVersion.txt")
 const InventoryPath = path.join(__dirname,"../scripts/inventory.js")
@@ -37,6 +38,12 @@ const isPackaged = require('electron-is-packaged').isPackaged
 
 var internetAvailable = require("internet-available");
 
+var UserSettings = {
+  posX: 120,
+  posY: 0,
+  width: 1600,
+  height: 1200
+}
 
 function GetTodaysMonth(){
   var today = new Date()
@@ -83,6 +90,21 @@ function CheckLogFile(){
     console.log("Il file non esiste")
     var LogsFile = {Logs:[]}
     fs.writeFile(path.join(DirectoryLog,"/LogMessage.json"),JSON.stringify(LogsFile),() =>{
+      console.log("File Creato")
+    })
+  }
+  if(fs.existsSync(AccountSettingsDirectory)){
+    console.log("Il file delle impostazioni esiste")
+    /*fs.readFileSync(AccountSettingsDirectory,function (err, data) {
+      if(err)console.log(err)
+      console.log("Data inside settings file: " + data)
+      console.log(JSON.parse(data))
+    })*/
+    var Set = fs.readFileSync(AccountSettingsDirectory,{encoding: "utf-8"})
+    UserSettings = JSON.parse(Set)
+    console.log(UserSettings)
+  }else{
+    fs.writeFile(AccountSettingsDirectory,JSON.stringify(UserSettings),() =>{
       console.log("File Creato")
     })
   }
@@ -138,14 +160,17 @@ const stockX = new StockxAPI();
 
 var connection
 var config = {
+  waitForConnections : false,
+  connectionLimit: 50,
   host     : 'www.boringio.com',
   user     : 'desktopuser',
   password : 'anfi1812',
   database : 'gestionaleprodotti'
 }
-connection = mysql.createConnection(config);
+//connection = mysql.createConnection(config);
+var pool = mysql.createPool(config)
 global.configuration = config
-global.conn = connection
+global.pool = pool
 var SelectedTheme = ""
 
 let win
@@ -182,100 +207,141 @@ async function createWindows() {
           var AccSplitted = Acc.split(":")
           UsernameSaved = AccSplitted[0]
           PasswordSaved = AccSplitted[1]
-          connection.query('SELECT * FROM utenti WHERE Username like ?', UsernameSaved,async function (error, results, fields) {
-          CustomerIdDB = results[0].CustomerId
-          SubscriptionId = results[0].SubscriptionId
-          if(BETA_MODE != true){
-            await CheckStripeBeforeStart(results)
-          }else{
-            BOUGHT = true
-          }
-          console.log("DIO PORCO L HO COMPRATO O NO")
-          console.log(BOUGHT)
-          if (error) throw error;
-              console.log(results)
-              if(results.length == 1){
-                  if(PasswordSaved == results[0].Password){
-                    if(BOUGHT == true){
-                      LOGGEDIN = true
-                      setUserId(results[0].UserId)
-                      setUserIdAttached(results[0].AccountAttached)
-                      setUsername(results[0].Username)
-                      setEmail(results[0].Email)
-                      setRenew(results[0].TypeSubscription)
-                      setRenewDays(results[0].NextDate)
-                      setImg(results[0].Immagine)
-                      setValuta(results[0].Valuta)
-
-                      GlobalIdUtente = results[0].UserId
-
-                      win = new BrowserWindow({width:1600,height:1200,show: true,frame: false,webPreferences: {
-                        enableRemoteModule: true,
-                        nodeIntegration: true,
-                        zoomFactor: 1.0
-                      }})
-                      win.loadURL(url.format({
-                        pathname:path.join(__dirname,'../home.html'),
-                        protocol:'file',
-                        slashes:true
-                      }))
-                      win.webContents.setZoomFactor(0.9)
-                      if(DEBUGGER_MODE){
-                        win.webContents.openDevTools()
-                      }
-                      win.removeMenu()
-                      win.show()
-                      windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
-                        enableRemoteModule: true,
-                        nodeIntegration: true,
-                        zoomFactor: 1.0
-                      }})
-                      windowStats.loadURL(url.format({
-                        pathname:path.join(__dirname,'../stats.html'),
-                        protocol:'file',
-                        slashes:true
-                      }))
-                      windowStats.removeMenu()
-                      windowStats.on("close",(event,arg)=> {
-                        event.preventDefault()
-                        if(windowStats) windowStats.hide()
-                        console.log("hidden stats for now")
-                      })
-                    }else{
-                      console.log("Errore")
-                    }
-                  }
+          pool.getConnection(function(err,connection){
+            connection.query('SELECT * FROM utenti WHERE Username like ?', UsernameSaved,async function (error, results, fields) {
+              CustomerIdDB = results[0].CustomerId
+              SubscriptionId = results[0].SubscriptionId
+              connection.release()
+              if(BETA_MODE != true){
+                await CheckStripeBeforeStart(results)
+              }else{
+                BOUGHT = true
               }
+              console.log("DIO PORCO L HO COMPRATO O NO")
+              console.log(BOUGHT)
+              if (error) throw error;
+                  console.log(results)
+                  if(results.length == 1){
+                      if(PasswordSaved == results[0].Password){
+                        if(BOUGHT == true){
+                          LOGGEDIN = true
+                          setUserId(results[0].UserId)
+                          setUserIdAttached(results[0].AccountAttached)
+                          setUsername(results[0].Username)
+                          setEmail(results[0].Email)
+                          setRenew(results[0].TypeSubscription)
+                          setRenewDays(results[0].NextDate)
+                          setImg(results[0].Immagine)
+                          setValuta(results[0].Valuta)
+    
+                          GlobalIdUtente = results[0].UserId
+    
+                          win = new BrowserWindow(
+                            {
+                              width:UserSettings.width,
+                              height:UserSettings.height,
+                              x: UserSettings.posX,
+                              y: UserSettings.posY,
+                              show: false,
+                              frame: false,
+                              webPreferences: {
+                                enableRemoteModule: true,
+                                nodeIntegration: true,
+                                zoomFactor: 1.0
+                              }
+                            }
+                          )
+                          win.removeMenu()
+                          win.loadURL(url.format({
+                            pathname:path.join(__dirname,'../home.html'),
+                            protocol:'file',
+                            slashes:true
+                          }))
+                          win.webContents.setZoomFactor(0.9)
+                          if(DEBUGGER_MODE){
+                            win.webContents.openDevTools()
+                          }
+                          win.once('ready-to-show', () => {
+                            win.show()
+                          })
+                          windowStats = new BrowserWindow(
+                            {
+                              width:800,
+                              height:600,
+                              show: false,
+                              frame: true,
+                              webPreferences: {
+                                enableRemoteModule: true,
+                                nodeIntegration: true,
+                                zoomFactor: 1.0
+                              }
+                            }
+                          )
+                          windowStats.loadURL(url.format({
+                            pathname:path.join(__dirname,'../stats.html'),
+                            protocol:'file',
+                            slashes:true
+                          }))
+                          windowStats.removeMenu()
+                          windowStats.on("close",(event,arg)=> {
+                            event.preventDefault()
+                            if(windowStats) windowStats.hide()
+                            console.log("hidden stats for now")
+                          })
+                        }else{
+                          console.log("Errore")
+                        }
+                      }
+                  }
+              })
           })
       }
   })
   await sleep(1000)
   if(LOGGEDIN == false){
-    win = new BrowserWindow({width:1600,height:1200,show: false,frame: false,webPreferences: {
-      enableRemoteModule: true,
-      nodeIntegration: true,
-      zoomFactor: 1.0
-    }})
-    child = new BrowserWindow({parent: win,width:800,height:600,frame: false,webPreferences: {
-      enableRemoteModule: true,
-      nodeIntegration: true
-    }})
+    win = new BrowserWindow(
+      {
+        width:1600,
+        height:1200,
+        show: false,
+        frame: false,
+        webPreferences: {
+          enableRemoteModule: true,
+          nodeIntegration: true,
+          zoomFactor: 1.0
+        }
+      }
+    )
+    child = new BrowserWindow(
+      {
+        parent: win,
+        width:800,
+        height:600,
+        show: false,
+        frame: false,
+        webPreferences: {
+          enableRemoteModule: true,
+          nodeIntegration: true
+        }
+      }
+    )
+    child.removeMenu()
     child.loadURL(url.format({
       pathname:path.join(__dirname,'login.html'),
       protocol:'file',
       slashes:true
     }))
+    child.once('ready-to-show', () => {
+      child.show()
+    })
     if(DEBUGGER_MODE){
       child.webContents.openDevTools()
     }
-    child.removeMenu()
   }
 
-  win.on("close", (event,arg) => {
-    if(windowStats) (windowStats.close() , windowStats = null)
-    connection.end()
-    app.quit()
-  })
+  /*win.on("close", (event,arg) => {
+    console.log("closing app triggered in the win.on")
+  })*/
 }
 function setValuta(input){
   Valuta = input
@@ -326,11 +392,12 @@ ipcMain.on('entry-accepted', (event, arg) => {
 })
 
 ipcMain.on("LogOut",function (){
+  SetUserSettings()
   fs.writeFile(AccountSavedDirectory, "", function (err) {
     if (err) throw err;
-        console.log('Saved!');
-    });
+    console.log('Saved!');
     app.exit()
+  });
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
@@ -415,24 +482,49 @@ ipcMain.on('Maximize', async (event, arg) => {
   }
 })
 
+function SetUserSettings(){
+  var pos = win.getPosition()
+  var positionX = pos[0]
+  var positionY = pos[1]
+  var size = win.getSize()
+  var width = size[0]
+  var height = size[1]
+  console.log(size)
+  var UserSettings = {
+    posX: positionX,
+    posY: positionY,
+    width: width,
+    height: height
+  }
+  fs.writeFileSync(path.join(AccountSettingsDirectory),JSON.stringify(UserSettings),"utf8")
+}
+
 ipcMain.on('AppQuit',async (event,arg) => {
-  //app.quit()
+  event.preventDefault()
+  SetUserSettings()
   app.exit()
 })
 
 ipcMain.on('close', async (event, arg) => {
   event.preventDefault()
-  console.log("close event")
+  console.log("closing app triggered in the ipcMain.on")
   app.removeAllListeners()
   windowStats.quit()
   windowStats = null
-  app.exit()
-  app.quit()
+  /*app.exit()
+  app.quit()*/
 })
 
 ipcMain.on("WindowTracking",(event,arg) => {
   console.log("It should open another window")
-  var WindowForTracking = new BrowserWindow({width:800,height:600,show: false,frame: true})
+  var WindowForTracking = new BrowserWindow(
+    {
+      width:800,
+      height:600,
+      show: false,
+      frame: true
+    }
+  )
   WindowForTracking.loadURL(arg)
   WindowForTracking.show()
   WindowForTracking.removeMenu()
@@ -447,10 +539,14 @@ ipcMain.on("SearchProducts",(event,arg) => {
 })
 
 ipcMain.on("RequestedShoeDetails",(event,arg) => {
-  stockX.fetchProductDetails('https://stockx.com/' + arg)
-  .then(product => (console.log(product),event.sender.send("ReturnedProductDetails",product)))
+  stockX.fetchProductDetails('https://stockx.com/' + arg.Prod)
+  .then(product => {
+    console.log(product)
+    Logger.log(product)
+    event.sender.send("ReturnedProductDetails",{Prod:product ,Index: arg.Index})})
   .catch(err => {
     console.log(`Error scraping product details: ${err.message}`)
+    Logger.error(err.message)
     event.sender.send("ErrorFoundResearch",{err:err.message,lastArg:arg})
   });
 })
@@ -493,7 +589,6 @@ ipcMain.on("RequestedShoeDetailsEdit",(event,arg) => {
   .catch(err => console.log(`Error scraping product details: ${err.message}`));
 })
 
-
 ipcMain.on("CreateLog",(event,arg) => {
     console.log("Creating a Log")
     console.log(arg)
@@ -501,13 +596,13 @@ ipcMain.on("CreateLog",(event,arg) => {
 })
 
 function CreateLog(ObjLog){ 
+  ObjLog.Message = Username + " " + ObjLog.Message
   var FileContentLog = fs.readFileSync(path.join(DirectoryLog, "/LogMessage.json"), "utf8");
   var Json = JSON.parse(FileContentLog)
   console.log(Json)
   Json.Logs.push(ObjLog)
   fs.writeFileSync(path.join(DirectoryLog, "/LogMessage.json"),JSON.stringify(Json),"utf8")
 }
-
 
 ipcMain.on("CheckConnection",(event,arg)=>{
   internetAvailable().then(function(){
@@ -548,62 +643,64 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
     var Inventory = {Inventory:[]}
     var InventoryCustom = {Inventory_Custom:[]}
     var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1"
-    connection.query(Query,userId,function(error,results){
+    pool.getConnection(function(err,connection){
+      connection.query(Query,userId,function(error,results){
       if(error) console.log(error)
       var StockXInv = results
-      connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,function(error,results){
-        if(error) console.log(error)
-        var CustomInv = results
-        if(Path.filePath.includes(".json")){
-          for(var i = 0; i < StockXInv.length; i++){
-            var SingleItem = {
-              "Type":"StockX Item",
-              "Product Name":StockXInv[i].NomeProdotto,
-              "Price": StockXInv[i].PrezzoProdotto,
-              "Release Date" : StockXInv[i].ReleaseDate,
-              "Added Date" : StockXInv[i].DataAggiunta,
-              "Size": StockXInv[i].Taglia,
-              "Notes": StockXInv[i].Note
+        connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,function(error,results){
+          if(error) console.log(error)
+          var CustomInv = results
+          if(Path.filePath.includes(".json")){
+            for(var i = 0; i < StockXInv.length; i++){
+              var SingleItem = {
+                "Type":"StockX Item",
+                "Product Name":StockXInv[i].NomeProdotto,
+                "Price": StockXInv[i].PrezzoProdotto,
+                "Release Date" : StockXInv[i].ReleaseDate,
+                "Added Date" : StockXInv[i].DataAggiunta,
+                "Size": StockXInv[i].Taglia,
+                "Notes": StockXInv[i].Note
+              }
+              Inventory.Inventory.push(SingleItem)
             }
-            Inventory.Inventory.push(SingleItem)
-          }
-          for(var i = 0; i < CustomInv.length; i++){
-            var SingleItemCustom = {
-              "Type":"Custom Item",
-              "Product Name":CustomInv[i].NomeProdotto,
-              "Price": CustomInv[i].PrezzoProdotto,
-              "Release Date" : CustomInv[i].ReleaseDate,
-              "Added Date" : CustomInv[i].DataAggiunta,
-              "Size": CustomInv[i].Taglia,
-              "Notes": CustomInv[i].Note
+            for(var i = 0; i < CustomInv.length; i++){
+              var SingleItemCustom = {
+                "Type":"Custom Item",
+                "Product Name":CustomInv[i].NomeProdotto,
+                "Price": CustomInv[i].PrezzoProdotto,
+                "Release Date" : CustomInv[i].ReleaseDate,
+                "Added Date" : CustomInv[i].DataAggiunta,
+                "Size": CustomInv[i].Taglia,
+                "Notes": CustomInv[i].Note
+              }
+              InventoryCustom.Inventory_Custom.push(SingleItemCustom)
             }
-            InventoryCustom.Inventory_Custom.push(SingleItemCustom)
+            TotalInventory.Full_Inventory.push(Inventory)
+            TotalInventory.Full_Inventory.push(InventoryCustom)
+            fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventory,null,4),() => {console.log("Writing new file")})
           }
-          TotalInventory.Full_Inventory.push(Inventory)
-          TotalInventory.Full_Inventory.push(InventoryCustom)
-          fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventory,null,4),() => {console.log("Writing new file")})
-        }
-        if(Path.filePath.includes(".txt")){
-          var Txt = "Type Name Price Release-Date Added Size Notes \n"
-          for(var i = 0; i < StockXInv.length; i++){
-            Txt += "StockX Item " + StockXInv[i].NomeProdotto + " " + StockXInv[i].PrezzoProdotto + " " + StockXInv[i].ReleaseDate + " " + StockXInv[i].DataAggiunta + " " +StockXInv[i].Taglia + " " +StockXInv[i].Note + "\n"
+          if(Path.filePath.includes(".txt")){
+            var Txt = "Type Name Price Release-Date Added Size Notes \n"
+            for(var i = 0; i < StockXInv.length; i++){
+              Txt += "StockX Item " + StockXInv[i].NomeProdotto + " " + StockXInv[i].PrezzoProdotto + " " + StockXInv[i].ReleaseDate + " " + StockXInv[i].DataAggiunta + " " +StockXInv[i].Taglia + " " +StockXInv[i].Note + "\n"
+            }
+            for(var i = 0; i < CustomInv.length; i++){
+              Txt += "Custom Item " + CustomInv[i].NomeProdotto + " " + CustomInv[i].PrezzoProdotto + " " + CustomInv[i].ReleaseDate + " " + CustomInv[i].DataAggiunta + " " +CustomInv[i].Taglia + " " +CustomInv[i].Note + "\n"
+            }
+            fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
           }
-          for(var i = 0; i < CustomInv.length; i++){
-            Txt += "Custom Item " + CustomInv[i].NomeProdotto + " " + CustomInv[i].PrezzoProdotto + " " + CustomInv[i].ReleaseDate + " " + CustomInv[i].DataAggiunta + " " +CustomInv[i].Taglia + " " +CustomInv[i].Note + "\n"
+          if(Path.filePath.includes(".csv")){
+            var Csv = "Type;Name;Price;Release Date;Added;Size;Notes \n"
+            for(var i = 0; i < StockXInv.length; i++){
+              Csv += "StockX Item;" + StockXInv[i].NomeProdotto + ";" + StockXInv[i].PrezzoProdotto + ";" + StockXInv[i].ReleaseDate + ";" + StockXInv[i].DataAggiunta + ";" +StockXInv[i].Taglia + ";" +StockXInv[i].Note + "\n"
+            }
+            for(var i = 0; i < CustomInv.length; i++){
+              Csv += "Custom Item;" + CustomInv[i].NomeProdotto + ";" + CustomInv[i].PrezzoProdotto + ";" + CustomInv[i].ReleaseDate + ";" + CustomInv[i].DataAggiunta + ";" +CustomInv[i].Taglia + ";" +CustomInv[i].Note + "\n"
+            }
+            fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
           }
-          fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
-        }
-        if(Path.filePath.includes(".csv")){
-          var Csv = "Type;Name;Price;Release Date;Added;Size;Notes \n"
-          for(var i = 0; i < StockXInv.length; i++){
-            Csv += "StockX Item;" + StockXInv[i].NomeProdotto + ";" + StockXInv[i].PrezzoProdotto + ";" + StockXInv[i].ReleaseDate + ";" + StockXInv[i].DataAggiunta + ";" +StockXInv[i].Taglia + ";" +StockXInv[i].Note + "\n"
-          }
-          for(var i = 0; i < CustomInv.length; i++){
-            Csv += "Custom Item;" + CustomInv[i].NomeProdotto + ";" + CustomInv[i].PrezzoProdotto + ";" + CustomInv[i].ReleaseDate + ";" + CustomInv[i].DataAggiunta + ";" +CustomInv[i].Taglia + ";" +CustomInv[i].Note + "\n"
-          }
-          fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
-        }
-      })  
+        })  
+      })
     })
   }else{
     console.log("Non hai salvato il file")
@@ -621,66 +718,68 @@ ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
       var InventorySold = {Inventory_Sold:[]}
       var InventoryCustomSold = {Inventory_Custom_Sold:[]}
       var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 0"
-      connection.query(Query,userId,function(error,results){
+      pool.getConnection(function(err,connection){
+        connection.query(Query,userId,function(error,results){
         if(error) console.log(error)
         var InventorySoldRes = results
-        connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
-          if(error) console.log(error)
-          var InvetoryCustomSoldRes = results
-          if(Path.filePath.includes(".json")){
-            for(var i = 0; i < InventorySoldRes.length; i++){
-              var SingleItem = {
-                "Type":"StockX Item",
-                "Product Name":InventorySoldRes[i].NomeProdotto,
-                "Price": InventorySoldRes[i].PrezzoProdotto,
-                "Release Date" : InventorySoldRes[i].ReleaseDate,
-                "Added Date" : InventorySoldRes[i].DataAggiunta,
-                "Size": InventorySoldRes[i].Taglia,
-                "Notes": InventorySoldRes[i].Note,
-                "Date Sold": InventorySoldRes[i].DataVendita,
-                "Sold  Price": InventorySoldRes[i].PrezzoVendita 
+          connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
+            if(error) console.log(error)
+            var InvetoryCustomSoldRes = results
+            if(Path.filePath.includes(".json")){
+              for(var i = 0; i < InventorySoldRes.length; i++){
+                var SingleItem = {
+                  "Type":"StockX Item",
+                  "Product Name":InventorySoldRes[i].NomeProdotto,
+                  "Price": InventorySoldRes[i].PrezzoProdotto,
+                  "Release Date" : InventorySoldRes[i].ReleaseDate,
+                  "Added Date" : InventorySoldRes[i].DataAggiunta,
+                  "Size": InventorySoldRes[i].Taglia,
+                  "Notes": InventorySoldRes[i].Note,
+                  "Date Sold": InventorySoldRes[i].DataVendita,
+                  "Sold  Price": InventorySoldRes[i].PrezzoVendita 
+                }
+                InventorySold.Inventory_Sold.push(SingleItem)
               }
-              InventorySold.Inventory_Sold.push(SingleItem)
-            }
-            for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
-              var SingleItemCustom = {
-                "Type":"Custom Item",
-                "Product Name":InvetoryCustomSoldRes[i].NomeProdotto,
-                "Price": InvetoryCustomSoldRes[i].PrezzoProdotto,
-                "Release Date" : InvetoryCustomSoldRes[i].ReleaseDate,
-                "Added Date" : InvetoryCustomSoldRes[i].DataAggiunta,
-                "Size": InvetoryCustomSoldRes[i].Taglia,
-                "Notes": InvetoryCustomSoldRes[i].Note,
-                "Date Sold": InvetoryCustomSoldRes[i].DataVendita,
-                "Sold  Price": InvetoryCustomSoldRes[i].PrezzoVendita 
+              for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
+                var SingleItemCustom = {
+                  "Type":"Custom Item",
+                  "Product Name":InvetoryCustomSoldRes[i].NomeProdotto,
+                  "Price": InvetoryCustomSoldRes[i].PrezzoProdotto,
+                  "Release Date" : InvetoryCustomSoldRes[i].ReleaseDate,
+                  "Added Date" : InvetoryCustomSoldRes[i].DataAggiunta,
+                  "Size": InvetoryCustomSoldRes[i].Taglia,
+                  "Notes": InvetoryCustomSoldRes[i].Note,
+                  "Date Sold": InvetoryCustomSoldRes[i].DataVendita,
+                  "Sold  Price": InvetoryCustomSoldRes[i].PrezzoVendita 
+                }
+                InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
               }
-              InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
+              TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
+              TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)
+              fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
             }
-            TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
-            TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)
-            fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
-          }
-          if(Path.filePath.includes(".txt")){
-            var Txt = "Type Name Price Release-Date Added Size Notes Date-Sold Price-Sold \n"
-            for(var i = 0; i < InventorySoldRes.length; i++){
-              Txt += "StockX Item " + InventorySoldRes[i].NomeProdotto + " " + InventorySoldRes[i].PrezzoProdotto + " " + InventorySoldRes[i].ReleaseDate + " " + InventorySoldRes[i].DataAggiunta + " " +InventorySoldRes[i].Taglia + " " +InventorySoldRes[i].Note + " " +InventorySoldRes[i].DataVendita + " " +InventorySoldRes[i].PrezzoVendita +"\n"
+            if(Path.filePath.includes(".txt")){
+              var Txt = "Type Name Price Release-Date Added Size Notes Date-Sold Price-Sold \n"
+              for(var i = 0; i < InventorySoldRes.length; i++){
+                Txt += "StockX Item " + InventorySoldRes[i].NomeProdotto + " " + InventorySoldRes[i].PrezzoProdotto + " " + InventorySoldRes[i].ReleaseDate + " " + InventorySoldRes[i].DataAggiunta + " " +InventorySoldRes[i].Taglia + " " +InventorySoldRes[i].Note + " " +InventorySoldRes[i].DataVendita + " " +InventorySoldRes[i].PrezzoVendita +"\n"
+              }
+              for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
+                Txt += "Custom Item " + InvetoryCustomSoldRes[i].NomeProdotto + " " + InvetoryCustomSoldRes[i].PrezzoProdotto + " " + InvetoryCustomSoldRes[i].ReleaseDate + " " + InvetoryCustomSoldRes[i].DataAggiunta + " " +InvetoryCustomSoldRes[i].Taglia + " " +InvetoryCustomSoldRes[i].Note + " " +InvetoryCustomSoldRes[i].DataVendita + " " + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+              }
+              fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
             }
-            for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
-              Txt += "Custom Item " + InvetoryCustomSoldRes[i].NomeProdotto + " " + InvetoryCustomSoldRes[i].PrezzoProdotto + " " + InvetoryCustomSoldRes[i].ReleaseDate + " " + InvetoryCustomSoldRes[i].DataAggiunta + " " +InvetoryCustomSoldRes[i].Taglia + " " +InvetoryCustomSoldRes[i].Note + " " +InvetoryCustomSoldRes[i].DataVendita + " " + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+            if(Path.filePath.includes(".csv")){
+              var Csv = "Type;Name;Price;Release Date;Added;Size;Notes;Date Sold;Price Sold \n"
+              for(var i = 0; i < InventorySoldRes.length; i++){
+                Csv += "StockX Item;" + InventorySoldRes[i].NomeProdotto + ";" + InventorySoldRes[i].PrezzoProdotto + ";" + InventorySoldRes[i].ReleaseDate + ";" + InventorySoldRes[i].DataAggiunta + ";" +InventorySoldRes[i].Taglia + ";" +InventorySoldRes[i].Note + ";" +InventorySoldRes[i].DataVendita + ";" +InventorySoldRes[i].PrezzoVendita +"\n"
+              }
+              for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
+                Csv += "Custom Item;" + InvetoryCustomSoldRes[i].NomeProdotto + ";" + InvetoryCustomSoldRes[i].PrezzoProdotto + ";" + InvetoryCustomSoldRes[i].ReleaseDate + ";" + InvetoryCustomSoldRes[i].DataAggiunta + ";" +InvetoryCustomSoldRes[i].Taglia + ";" +InvetoryCustomSoldRes[i].Note + ";" +InvetoryCustomSoldRes[i].DataVendita + ";" + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+              }
+              fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
             }
-            fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
-          }
-          if(Path.filePath.includes(".csv")){
-            var Csv = "Type;Name;Price;Release Date;Added;Size;Notes;Date Sold;Price Sold \n"
-            for(var i = 0; i < InventorySoldRes.length; i++){
-              Csv += "StockX Item;" + InventorySoldRes[i].NomeProdotto + ";" + InventorySoldRes[i].PrezzoProdotto + ";" + InventorySoldRes[i].ReleaseDate + ";" + InventorySoldRes[i].DataAggiunta + ";" +InventorySoldRes[i].Taglia + ";" +InventorySoldRes[i].Note + ";" +InventorySoldRes[i].DataVendita + ";" +InventorySoldRes[i].PrezzoVendita +"\n"
-            }
-            for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
-              Csv += "Custom Item;" + InvetoryCustomSoldRes[i].NomeProdotto + ";" + InvetoryCustomSoldRes[i].PrezzoProdotto + ";" + InvetoryCustomSoldRes[i].ReleaseDate + ";" + InvetoryCustomSoldRes[i].DataAggiunta + ";" +InvetoryCustomSoldRes[i].Taglia + ";" +InvetoryCustomSoldRes[i].Note + ";" +InvetoryCustomSoldRes[i].DataVendita + ";" + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
-            }
-            fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
-          }
-          //fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
+            //fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
+          })
         })
       })
     }else{
@@ -805,57 +904,61 @@ var TotWeek4 = 0
 var TotWeek5 = 0
 
 ipcMain.on("RequestedDataGraphs", (event,arg) => {
-  ResetVar()
-  DATAGRAPHS.length = 0
-  console.log("DATAGRAPHS PULITO")
-  console.log(DATAGRAPHS)
-  console.log("Richiesta arrivata")
-  if(FilterMonth == "Year"){
-    connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()],  function (error, results, fields) {
-      for(var k of results){
-        SetMonthLifetime(k)
-      }
-      connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()], function(error,results,fields){
-        if(error)console.log(error)
-        for(var c of results){
-          SetMonthLifetime(c)
+  pool.getConnection(function(err,connection){
+    ResetVar()
+    DATAGRAPHS.length = 0
+    console.log("DATAGRAPHS PULITO")
+    console.log(DATAGRAPHS)
+    console.log("Richiesta arrivata")
+    if(FilterMonth == "Year"){
+      connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()],  function (error, results, fields) {
+        for(var k of results){
+          SetMonthLifetime(k)
         }
-        DATAGRAPHS.push({y: `Jan`, item1: TotMonth1})
-        DATAGRAPHS.push({y: `Feb`, item1: TotMonth2})
-        DATAGRAPHS.push({y: `Mar`, item1: TotMonth3})
-        DATAGRAPHS.push({y: 'Apr', item1: TotMonth4})
-        DATAGRAPHS.push({y: `May`, item1: TotMonth5})
-        DATAGRAPHS.push({y: `Jun`, item1: TotMonth6})
-        DATAGRAPHS.push({y: 'Jul', item1: TotMonth7})
-        DATAGRAPHS.push({y: `Aug`, item1: TotMonth8})
-        DATAGRAPHS.push({y: `Sep`, item1: TotMonth9})
-        DATAGRAPHS.push({y: `Oct`, item1: TotMonth10})
-        DATAGRAPHS.push({y: `Nov`, item1: TotMonth11})
-        DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
-        event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+        connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()], function(error,results,fields){
+          if(error)console.log(error)
+          for(var c of results){
+            SetMonthLifetime(c)
+          }
+          DATAGRAPHS.push({y: `Jan`, item1: TotMonth1})
+          DATAGRAPHS.push({y: `Feb`, item1: TotMonth2})
+          DATAGRAPHS.push({y: `Mar`, item1: TotMonth3})
+          DATAGRAPHS.push({y: 'Apr', item1: TotMonth4})
+          DATAGRAPHS.push({y: `May`, item1: TotMonth5})
+          DATAGRAPHS.push({y: `Jun`, item1: TotMonth6})
+          DATAGRAPHS.push({y: 'Jul', item1: TotMonth7})
+          DATAGRAPHS.push({y: `Aug`, item1: TotMonth8})
+          DATAGRAPHS.push({y: `Sep`, item1: TotMonth9})
+          DATAGRAPHS.push({y: `Oct`, item1: TotMonth10})
+          DATAGRAPHS.push({y: `Nov`, item1: TotMonth11})
+          DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
+          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          connection.release()
+        })
       })
-    })
-  }else{
-    connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],  function (error, results, fields) {
-      if(error) console.log(error)
-      ResetVar2()
-      for(var k of results){
-        SetWeekProfit(k)
-      }
-      connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],function(error,results,fields){
-        if(error)console.log(error)
-        for(var c of results){
-          SetWeekProfit(c)
+    }else{
+      connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],  function (error, results, fields) {
+        if(error) console.log(error)
+        ResetVar2()
+        for(var k of results){
+          SetWeekProfit(k)
         }
-        DATAGRAPHS.push({y: `First Week`, item1: TotWeek1})
-        DATAGRAPHS.push({y: `Second Week`, item1: TotWeek2})
-        DATAGRAPHS.push({y: `Third Week`, item1: TotWeek3})
-        DATAGRAPHS.push({y: `Fourth Week`, item1: TotWeek4})
-        DATAGRAPHS.push({y: `Fifth Week`, item1: TotWeek5})
-        event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+        connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],function(error,results,fields){
+          if(error)console.log(error)
+          for(var c of results){
+            SetWeekProfit(c)
+          }
+          DATAGRAPHS.push({y: `First Week`, item1: TotWeek1})
+          DATAGRAPHS.push({y: `Second Week`, item1: TotWeek2})
+          DATAGRAPHS.push({y: `Third Week`, item1: TotWeek3})
+          DATAGRAPHS.push({y: `Fourth Week`, item1: TotWeek4})
+          DATAGRAPHS.push({y: `Fifth Week`, item1: TotWeek5})
+          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          connection.release()
+        })
       })
-    })
-  }
+    }
+  })
 })
 
 
@@ -1011,12 +1114,12 @@ autoUpdater.on("error", err => {
 autoUpdater.on('download-progress', (progress) => {
   Logger.log("Download progress")
   Logger.log(progress)
-});
+})
 
 autoUpdater.on('update-downloaded', () => {
   Logger.log("Installing right now")
   autoUpdater.quitAndInstall()
-});
+})
 
 ipcMain.on("StoreSavedMonthFilter",(event,arg)=>{
   FilterMonth = arg
@@ -1026,21 +1129,3 @@ ipcMain.on("RequestedMonthFilter",(event,arg)=>{
   console.log("Requested a new month filter from home.js")
   event.sender.send("ReturnedMonthFilter",FilterMonth)
 })
-
-
-/*for(var i = 0; i < results.length; i++){
-          var SingleItemCustom = {
-            "Type":"Custom Item",
-            "Product Name":results[i].NomeProdotto,
-            "Price": results[i].PrezzoProdotto,
-            "Release Date" : results[i].ReleaseDate,
-            "Added Date" : results[i].DataAggiunta,
-            "Size": results[i].Taglia,
-            "Notes": results[i].Note,
-            "Date Sold": results[i].DataVendita,
-            "Sold  Price": results[i].PrezzoVendita 
-          }
-          InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
-        }
-        TotalInventorySold.Full_Inventory_Sold.push(InventorySold)
-        TotalInventorySold.Full_Inventory_Sold.push(InventoryCustomSold)*/
