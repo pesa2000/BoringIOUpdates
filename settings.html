@@ -20,9 +20,8 @@
     <script>
       ipc.send("getUsername")
       ipc.on("ReturnedUsername",(event,arg) => {
-          console.log("Nome")
-          console.log(arg)
-          $("#nickName").text(arg)
+        console.log("Nome")
+        console.log(arg)
       })
     </script>
   </head>
@@ -241,8 +240,7 @@
             <div class="card-body border-top">
               <div class="media"><span class="fas fa-user text-success mr-2" data-fa-transform="down-5"></span>
                 <div class="media-body">
-                  <p class="mb-0">Customer was created</p>
-                  <p class="fs--1 mb-0 text-600" id="CreationDate"></p>
+                  <p class="mb-0" id="CreationDate">Customer was created</p>
                 </div>
               </div>
             </div>
@@ -273,16 +271,16 @@
                   </div>
                 </div>
                 <div class="col-lg col-xxl-5 mt-4 mt-lg-0 offset-xxl-1">
-                  <h6 class="font-weight-semi-bold ls mb-3 text-uppercase">Billing Information</h6>
+                  <h6 class="font-weight-semi-bold ls mb-3 text-uppercase"></h6>
                   <div class="row">
                     <div class="col-5 col-sm-4">
-                      <p class="font-weight-semi-bold mb-1">Last 4 numbers</p>
+                      <p class="font-weight-semi-bold mb-1"></p>
                     </div>
                     <div class="col"><a id="AccountLastNumbers"></a></div>
                   </div>
                   <div class="row">
                     <div class="col-5 col-sm-4">
-                      <p class="font-weight-semi-bold mb-0">Type</p>
+                      <p class="font-weight-semi-bold mb-0"></p>
                     </div>
                     <div class="col">
                       <p class="font-weight-semi-bold mb-0" id ="PaymentType"></p>
@@ -291,13 +289,8 @@
                 </div>
               </div>
             </div>
-            <div class="card-footer border-top text-right">
-                <a class="btn btn-falcon-default btn-sm" data-toggle="modal" data-target="#changePaymentMethod"><span class="fas fa-credit-card fs--2 mr-1"></span>Change Payment</a>
-                <a class="btn btn-falcon-default btn-sm" data-toggle="modal" data-target="#deleteSubscription"><span class="fas fa-lock fs--2 mr-1"></span>Delete Subscription</a>
-                <!--<a class="btn btn-falcon-default btn-sm ml-2" data-toggle="modal" data-target="#changePaymentMethod"><span class="fas fa-credit-card fs--2 mr-1"></span>Change Card</a>-->
-            </div>
           </div>
-          <div class="card">
+          <div class="card" id="SubscriptionCard">
             <div class="card-header">
               <h5 class="mb-0">Subscription</h5>
             </div>
@@ -373,25 +366,6 @@
           <footer>
           </footer>
         </div>
-        <div class="modal fade" id="deleteSubscription" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Are you sure you want to delete it?</h4>
-                  </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div>
-                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="deleteSubscription()">Delete</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
         <div class="modal fade" id="changePass" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
             <div class="modal-dialog mt-6" role="document">
               <div class="modal-content border-0">
@@ -417,33 +391,6 @@
             </div>
           </div>
         </div>
-        <div class="modal fade" id="changePaymentMethod" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Change Payment Method</h4>
-                  </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <div>
-                  <div class="form-row">
-                    <div class="form-group col-12"><label for="modal-auth-password">Card Holder</label><input class="form-control" type="text" id = "CardHolder" /></div>
-                    <div class="form-group col-12"><label for="modal-auth-password">Card Number</label><input class="form-control" type="text" id = "CardNumber" /></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Cvc</label><input class="form-control" type="text" id = "Cvc" /></div>
-                    <div class="form-group col-6"><label for="modal-auth-password">Expiration Date</label><input class="form-control" type="text" id = "ExpirationDate" placeholder="mm/yyyy"/></div>
-                    <div class="form-group col-12"><label id = "errorLabelPayment" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
-                    <div class="form-group col-12"><label id = "successLabelPayment" style = "font-size: 15px;color:rgb(64, 199, 40); align-content: center;"></label></div>
-                  </div>
-                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="ChangePaymentMethod()">Change</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
         <div class="toast bg-white notice" id="cookie-notice" role="alert" data-options='{"autoShow":false,"autoShowDelay":3000,"showOnce":true,"cookieExpireTime":7200000}' data-autohide="false" aria-live="assertive" aria-atomic="true">
           <div class="toast-body d-flex justify-content-center px-5">
             <div class="d-lg-flex align-items-center text-center"><button class="close text-shadow-none position-absolute t-0 r-0 p-2 mr-2 mt-2" type="button" data-dismiss="toast" aria-label="Close"><span class="font-weight-medium" aria-hidden="true">×</span></button><img class="mr-2" src="https://prium.github.io/falcon/v2.7.1/dark/assets/img/icons/cookie.png" width="20" alt="" />

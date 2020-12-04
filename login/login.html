@@ -132,7 +132,48 @@
       async function Login(){
         var Username = document.getElementById('username').value
         var Password = document.getElementById('password').value
-        pool.getConnection(function(err,connection){
+        var Data = {
+          Username: Username,
+          Password: Password,
+          CryptedPass:false
+        }
+        fetch('https://www.boringio.com:5035/DesktopAppAuth',{
+          method: 'POST',
+          body: JSON.stringify(Data),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          referrer: 'no-referrer'
+        }).then(function (response) {
+          if (response.ok) {
+            return response.json();
+          } else {
+            return Promise.reject(response);
+          }
+        }).then(async function (data) {
+          if(data.Code == 1){
+            ipc.invoke('setUserId', data.Profile.UserId)
+            ipc.invoke('setAttachedInventory',data.Profile.AccountAttached)
+            ipc.invoke('setUsername', data.Profile.Username)
+            ipc.invoke('setEmail', data.Profile.Email)
+            ipc.invoke('setRenew', data.Profile.TypeSubscription)
+            ipc.invoke('setRenewDays', data.Profile.NextDate)
+            ipc.invoke('setImg', data.Profile.Immagine)
+            ipc.invoke('setValuta', data.Profile.Valuta)
+            fs.writeFile(AccountSavedDirectory, Username+":"+data.Profile.Password, function (err) {
+            if (err) throw err;
+                console.log('Saved!');
+            });
+            ipc.send('entry-accepted', 'start')
+          }else if(data.Code == 2){
+            document.getElementById('ErrorLabel').innerText = "       This user is Not active or Expired"
+          }else if(data.Code == 3){
+            document.getElementById('ErrorLabel').innerText = "       Wrong username or password"
+          }
+        }).catch(function (err){
+          console.log(err)
+        })
+        /*pool.getConnection(function(err,connection){
           connection.query('SELECT * FROM utenti WHERE Username like ?', Username, async function (error, results, fields) {
           if (error) throw error;
               console.log(results)
@@ -179,11 +220,6 @@
                                 }
                               })
                             }
-                            /*if(arg){
-    
-                            }else{
-                              console.log("NON HAI PAGATO")
-                            }*/
                       }else{
                           document.getElementById('ErrorLabel').innerText = "       Wrong username or password"
                       }
@@ -192,7 +228,7 @@
                   document.getElementById('ErrorLabel').innerText = "      Wrong username or password"
               }
           });
-        })
+        })*/
       }
       </script>
 

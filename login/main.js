@@ -175,6 +175,10 @@ var SelectedTheme = ""
 
 let win
 let child
+
+let win1
+let child1
+
 global.windowStats = null
 let userId
 let Username
@@ -195,149 +199,188 @@ function sleep(ms) {
 
 async function createWindows() {
   var LOGGEDIN = false
-  fs.readFile(AccountSavedDirectory, function (err, data) {
+  fs.readFile(AccountSavedDirectory, async function (err, data) {
     if (err) LOGGEDIN = false
       rawFile = data.toString()
       console.log("FILE")
       console.log(rawFile)
       var Acc = rawFile
       if(Acc != ""){
-          console.log("ACC letto")
-          console.log(Acc)
-          var AccSplitted = Acc.split(":")
-          UsernameSaved = AccSplitted[0]
-          PasswordSaved = AccSplitted[1]
-          pool.getConnection(function(err,connection){
-            connection.query('SELECT * FROM utenti WHERE Username like ?', UsernameSaved,async function (error, results, fields) {
-              CustomerIdDB = results[0].CustomerId
-              SubscriptionId = results[0].SubscriptionId
-              connection.release()
-              if(BETA_MODE != true){
-                await CheckStripeBeforeStart(results)
-              }else{
-                BOUGHT = true
+        console.log("ACC letto")
+        console.log(Acc)
+        var AccSplitted = Acc.split(":")
+        UsernameSaved = AccSplitted[0]
+        PasswordSaved = AccSplitted[1]
+        var Data = {
+          Username: UsernameSaved,
+          Password: PasswordSaved,
+          CryptedPass: true
+        }
+        fetch('https://www.boringio.com:5035/DesktopAppAuth',{
+          method: 'POST',
+          body: JSON.stringify(Data),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          referrer: 'no-referrer'
+        }).then(function (response) {
+          if (response.ok) {
+            return response.json();
+          } else {
+            return Promise.reject(response);
+          }
+        }).then(async function (data) {
+          console.log(data)
+          if(data.Code == 1){
+            LOGGEDIN = true
+            setUserId(data.Profile.UserId)
+            setUserIdAttached(data.Profile.AccountAttached)
+            setUsername(data.Profile.Username)
+            setEmail(data.Profile.Email)
+            setRenew(data.Profile.TypeSubscription)
+            setRenewDays(data.Profile.NextDate)
+            setImg(data.Profile.Immagine)
+            setValuta(data.Profile.Valuta)
+
+            GlobalIdUtente = data.Profile.UserId
+
+            win = new BrowserWindow(
+              {
+                width:UserSettings.width,
+                height:UserSettings.height,
+                x: UserSettings.posX,
+                y: UserSettings.posY,
+                show: false,
+                frame: false,
+                webPreferences: {
+                  enableRemoteModule: true,
+                  nodeIntegration: true,
+                  zoomFactor: 1.0
+                }
               }
-              console.log("DIO PORCO L HO COMPRATO O NO")
-              console.log(BOUGHT)
-              if (error) throw error;
-                  console.log(results)
-                  if(results.length == 1){
-                      if(PasswordSaved == results[0].Password){
-                        if(BOUGHT == true){
-                          LOGGEDIN = true
-                          setUserId(results[0].UserId)
-                          setUserIdAttached(results[0].AccountAttached)
-                          setUsername(results[0].Username)
-                          setEmail(results[0].Email)
-                          setRenew(results[0].TypeSubscription)
-                          setRenewDays(results[0].NextDate)
-                          setImg(results[0].Immagine)
-                          setValuta(results[0].Valuta)
-    
-                          GlobalIdUtente = results[0].UserId
-    
-                          win = new BrowserWindow(
-                            {
-                              width:UserSettings.width,
-                              height:UserSettings.height,
-                              x: UserSettings.posX,
-                              y: UserSettings.posY,
-                              show: false,
-                              frame: false,
-                              webPreferences: {
-                                enableRemoteModule: true,
-                                nodeIntegration: true,
-                                zoomFactor: 1.0
-                              }
-                            }
-                          )
-                          win.removeMenu()
-                          win.loadURL(url.format({
-                            pathname:path.join(__dirname,'../home.html'),
-                            protocol:'file',
-                            slashes:true
-                          }))
-                          win.webContents.setZoomFactor(0.9)
-                          if(DEBUGGER_MODE){
-                            win.webContents.openDevTools()
-                          }
-                          win.once('ready-to-show', () => {
-                            win.show()
-                          })
-                          windowStats = new BrowserWindow(
-                            {
-                              width:800,
-                              height:600,
-                              show: false,
-                              frame: true,
-                              webPreferences: {
-                                enableRemoteModule: true,
-                                nodeIntegration: true,
-                                zoomFactor: 1.0
-                              }
-                            }
-                          )
-                          windowStats.loadURL(url.format({
-                            pathname:path.join(__dirname,'../stats.html'),
-                            protocol:'file',
-                            slashes:true
-                          }))
-                          windowStats.removeMenu()
-                          windowStats.on("close",(event,arg)=> {
-                            event.preventDefault()
-                            if(windowStats) windowStats.hide()
-                            console.log("hidden stats for now")
-                          })
-                        }else{
-                          console.log("Errore")
-                        }
-                      }
-                  }
-              })
-          })
+            )
+            win.removeMenu()
+            win.loadURL(url.format({
+              pathname:path.join(__dirname,'../home.html'),
+              protocol:'file',
+              slashes:true
+            }))
+            win.webContents.setZoomFactor(0.9)
+            if(DEBUGGER_MODE){
+              win.webContents.openDevTools()
+            }
+            win.once('ready-to-show', () => {
+              win.show()
+            })
+            windowStats = new BrowserWindow(
+              {
+                width:800,
+                height:600,
+                show: false,
+                frame: true,
+                webPreferences: {
+                  enableRemoteModule: true,
+                  nodeIntegration: true,
+                  zoomFactor: 1.0
+                }
+              }
+            )
+            windowStats.loadURL(url.format({
+              pathname:path.join(__dirname,'../stats.html'),
+              protocol:'file',
+              slashes:true
+            }))
+            windowStats.removeMenu()
+            windowStats.on("close",(event,arg)=> {
+              event.preventDefault()
+              if(windowStats) windowStats.hide()
+              console.log("hidden stats for now")
+            })
+          }else{
+            LOGGEDIN = false
+            win = new BrowserWindow(
+              {
+                width:1600,
+                height:1200,
+                show: false,
+                frame: false,
+                webPreferences: {
+                  enableRemoteModule: true,
+                  nodeIntegration: true,
+                  zoomFactor: 1.0
+                }
+              }
+            )
+            child = new BrowserWindow(
+              {
+                parent: win,
+                width:800,
+                height:600,
+                show: false,
+                frame: false,
+                webPreferences: {
+                  enableRemoteModule: true,
+                  nodeIntegration: true
+                }
+              }
+            )
+            child.removeMenu()
+            child.loadURL(url.format({
+              pathname:path.join(__dirname,'login.html'),
+              protocol:'file',
+              slashes:true
+            }))
+            if(DEBUGGER_MODE){
+              child.webContents.openDevTools()
+            }
+          }
+
+        }).catch(function (err) {
+          console.warn('Something went wrong.', err);
+        });   
+      }else{
+        LOGGEDIN = false
+        win = new BrowserWindow(
+          {
+            width:1600,
+            height:1200,
+            show: false,
+            frame: false,
+            webPreferences: {
+              enableRemoteModule: true,
+              nodeIntegration: true,
+              zoomFactor: 1.0
+            }
+          }
+        )
+        child = new BrowserWindow(
+          {
+            parent: win,
+            width:800,
+            height:600,
+            show: false,
+            frame: false,
+            webPreferences: {
+              enableRemoteModule: true,
+              nodeIntegration: true
+            }
+          }
+        )
+        child.removeMenu()
+        child.loadURL(url.format({
+          pathname:path.join(__dirname,'login.html'),
+          protocol:'file',
+          slashes:true
+        }))
+        child.on("ready-to-show",()=>{
+          console.log("Showing app")
+          child.show()
+        })
+        if(DEBUGGER_MODE){
+          child1.webContents.openDevTools()
+        }
       }
   })
-  await sleep(1000)
-  if(LOGGEDIN == false){
-    win = new BrowserWindow(
-      {
-        width:1600,
-        height:1200,
-        show: false,
-        frame: false,
-        webPreferences: {
-          enableRemoteModule: true,
-          nodeIntegration: true,
-          zoomFactor: 1.0
-        }
-      }
-    )
-    child = new BrowserWindow(
-      {
-        parent: win,
-        width:800,
-        height:600,
-        show: false,
-        frame: false,
-        webPreferences: {
-          enableRemoteModule: true,
-          nodeIntegration: true
-        }
-      }
-    )
-    child.removeMenu()
-    child.loadURL(url.format({
-      pathname:path.join(__dirname,'login.html'),
-      protocol:'file',
-      slashes:true
-    }))
-    child.once('ready-to-show', () => {
-      child.show()
-    })
-    if(DEBUGGER_MODE){
-      child.webContents.openDevTools()
-    }
-  }
 
   /*win.on("close", (event,arg) => {
     console.log("closing app triggered in the win.on")
@@ -590,9 +633,9 @@ ipcMain.on("RequestedShoeDetailsEdit",(event,arg) => {
 })
 
 ipcMain.on("CreateLog",(event,arg) => {
-    console.log("Creating a Log")
-    console.log(arg)
-    CreateLog(arg)
+  console.log("Creating a Log")
+  console.log(arg)
+  CreateLog(arg)
 })
 
 function CreateLog(ObjLog){ 
@@ -805,33 +848,6 @@ async function SetBought(res){
   BOUGHT = res
 }
 
-ipcMain.on("ChangePaymentMethod",async (event,arg) =>{
-  await ChangePaymentMethods(CustomerIdDB,SubscriptionId,arg)
-  event.sender.send("NewPaymentMethod",SubscriptionChanged)
-})
-
-async function ChangePaymentMethods(IdCustomer,IdSubscription,Card){
-  var card =  {
-    number: Card.number,
-    exp_month: Card.month,
-    exp_year: Card.year,
-    cvc: Card.cvc,
-  }
-  console.log(IdSubscription)
-  console.log(card)
-  await fetch("https://www.boringio.com:5001/ModifyStripePayment", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: IdSubscription,Card:card}) })
-  .then(async res => res.json())
-  .then(async json => {console.log(json);await SetNewPm(json)});
-}
-
-async function SetNewPm(json){
-  if(json.Res == "DELETED_SUBSCRIPTION_ERROR"){
-    SubscriptionChanged = false
-  }else{
-    SubscriptionChanged = json
-  }
-}
-
 function ChangeDate(DateToChange){
   return moment(DateToChange).format('YYYY[-]MM[-]DD')
 }
@@ -841,23 +857,8 @@ ipcMain.on("ResetAlert",(event,arg) =>{
   global.AlertInventory = LatestAlertInventory
 })
 
-ipcMain.on("ChangePassword",(event,arg) => {
-  bcrypt.hash(arg.pass, arg.saltRounds, function(err, hash) {
-    if(err) throw err
-    console.log(hash)
-  });
-})
-
-ipcMain.on("DeleteSubscription",async (event,arg) => {
-  console.log("Id da mandare")
-  console.log(SubscriptionId)
-  await fetch("https://www.boringio.com:5001/DeleteStripeSubscription", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: SubscriptionId})})
-  .then(async res => res.json())
-  .then(async json =>  event.sender.send("SubscriptionDeleted",json));
-})
-
 ipcMain.on("ReturnStripeSub",async (event,arg) => {
-  await fetch("https://www.boringio.com:5001/GetSub", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({IdSubscription: SubscriptionId})})
+  fetch("https://www.boringio.com:5001/GetSub", { method: 'POST',headers: {"Content-Type": "application/json"}, body:JSON.stringify({UserId:userId})})
   .then(async res => res.json())
   .then(async json => event.sender.send("ReturnedSub",json));
 })
