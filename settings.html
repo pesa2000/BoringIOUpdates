@@ -11,11 +11,9 @@
     <meta name="msapplication-TileImage" content="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/mstile-150x150.png">
     <meta name="theme-color" content="#ffffff">
     <script>window.$ = window.jQuery = require('jquery');</script>
-    <!--<script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/config.navbar-vertical.min.js"></script>-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
     <link href="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
     <link href="assets/css/theme-dark.min.css" rel="stylesheet">
-    <!--<link href="assets/css/theme-dark.min.css" rel="stylesheets">-->
     <script src = "scripts/settings.js"></script>
     <script>
       ipc.send("getUsername")
@@ -27,6 +25,13 @@
   </head>
   <body>
     <main class="main" id="top">
+      <div class="preloader" id = "Preloader1">
+        <div style = "position:fixed;top: 50%;left: 50%;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
       <div class="container-fluid" data-layout="container">
         <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;">
           <script>
@@ -41,7 +46,7 @@
             </div>
             <a class="navbar-brand" href="home.html">
               <div class="d-flex align-items-center py-3">
-                <img class="mr-2" src="img/tondo.png" alt="" width="40" />
+                <img class="mr-2" src="img/logo-piccolo.png" alt="" width="40" />
                 <span class="text-sans-serif" style="color: #fafafa;">boring</span>
               </div>
             </a>
@@ -169,13 +174,12 @@
         </nav>
         <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;">
         </nav>
-        <!--INZIO NAVBAR IN MODALITA' PICCOLA-->
         <div class="content">
           <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;">
             <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
             <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
               <div class="d-flex align-items-center">
-                <img src="img/tondo.png" alt="" width="40" />
+                <img src="img/logo-piccolo.png" alt="" width="40" />
                 <span class="text-sans-serif" style="color:#fafafa">boring</span>
               </div>
             </a>
@@ -222,14 +226,12 @@
               navbarVertical.removeAttribute('style');
               navbarTopVertical.removeAttribute('style');
               navbarTop.parentNode.removeChild(navbarTop);
-              //navbarTopCombo.parentNode.removeChild(navbarTopCombo);
             }
           </script>
-          <div class="card mb-3">
+          <!--<div class="card mb-3">
             <div class="card-header">
               <div class="row">
                 <div class="col">
-                  <!--(<a href="mailto:tony@gmail.com">markdoe@gmail.com</a>)-->
                   <h5 class="mb-2" id = "AccountName"></h5>
                 </div>
                 <div class="col-auto d-none d-sm-block">
@@ -332,6 +334,38 @@
               </div>
             </div>
             <div class="card-footer bg-light p-0"><a class="btn btn-link btn-block" ></a></div>
+          </div>-->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-8">
+                  <h4 class="mb-1" id="Username"></h4>
+                  <h5 class="fs-0 font-weight-normal" id="TypeOfMembership">Lifetime member</h5>
+                  <p class="text-500" id="Membership">Member since </p><button class="btn btn-falcon-default btn-sm px-3 ml-2" type="button">Contact us</button>
+                  <hr class="border-dashed my-4 d-lg-none" />
+                </div>
+                <div class="col pl-2 pl-lg-3">
+                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;">
+                    <select class="form-control" id = "SelectCurrency" onchange="changeCurrency()">
+                      <option selected disabled>Currency</option>
+                      <option value="EUROS">Euros</option>
+                      <option value="DOLLARS">Dollars</option>
+                      <option value="POUNDS">Pounds</option>
+                    </select>
+                  </a>
+                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;">
+                    <select class="form-control" id = "SelectLanguage" onchange="changeLanguage()">
+                      <option selected disabled>Language</option>
+                      <option value="EN">English</option>
+                      <option value="IT" disabled>Italian(coming soon)</option>
+                      <option value="ES" disabled>Spanish(coming soon)</option>
+                      <option value="DEU" disabled>German(coming soon)</option>
+                      <option value="FR" disabled>French(coming soon)</option>
+                    </select>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="card" style = "margin-top: 30px;">
@@ -365,31 +399,6 @@
           </div>
           <footer>
           </footer>
-        </div>
-        <div class="modal fade" id="changePass" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">Change Password</h4>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <div>
-                    <div class="form-row">
-                      <div class="form-group col-6"><label for="modal-auth-password">Username</label><input class="form-control" type="text" id = "prodPrice" /></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Password</label><input class="form-control" type="text" id = "prodPrice" /></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">New Password</label><input class="form-control" type="text" id = "newPassword" /></div>
-                      <div class="form-group col-6"><label for="modal-auth-password">Confirm Password</label><input class="form-control" type="text" id = "prodPrice" /></div>
-                    </div>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" name="submit" onclick="changePass()">Change</button></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
         <div class="toast bg-white notice" id="cookie-notice" role="alert" data-options='{"autoShow":false,"autoShowDelay":3000,"showOnce":true,"cookieExpireTime":7200000}' data-autohide="false" aria-live="assertive" aria-atomic="true">
           <div class="toast-body d-flex justify-content-center px-5">

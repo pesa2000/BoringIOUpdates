@@ -559,18 +559,19 @@ function LoadShoes(){
             if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
             ShoesList = results
             console.log(ShoesList)
-            PopulateTable()
+            //PopulateTable()
             Util.StockXItems(ShoesList,Valuta)
-        })
-        connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-            if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-            CustomList = results
-            console.log(CustomList)
-            PopulateTableCustom()
-            Util.CustomItems(CustomList,Valuta)
-            Util.Retail(ShoesList,CustomList,Valuta)
-            Util.Average(ShoesList,Valuta)
-            connection.release()
+            connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+                if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
+                CustomList = results
+                console.log(CustomList)
+                //PopulateTableCustom()
+                Util.CustomItems(CustomList,Valuta)
+                Util.Retail(ShoesList,CustomList,Valuta)
+                Util.Average(ShoesList,Valuta)
+                Populate()
+                connection.release()
+            })
         })
     })
     console.log("Loaded")
@@ -591,6 +592,36 @@ function ReturnObjectFromList(Id){
         }
     }
 }
+/*<div class='center'>
+<img src='https://i.ibb.co/kKmwkJW/superscene-69-box-removebg-preview.png' alt=''>
+<h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
+<p style='margin-top: -20px;'>Start to add something</p>
+</div>
+*/
+function Populate(){
+    var Inventario = document.getElementById("Inventory")
+    Inventario.innerHTML = ""
+    if(ShoesList.length == 0 && CustomList.length == 0){
+        document.getElementById("TableInventory").style.display = "none"
+        document.getElementById("AlertNoItem").style.display = "inline-block"
+        $("#Preloader1").css("display","none")
+    }else{
+        document.getElementById("TableInventory").style.display = "table-header-group"
+        //document.getElementById("AlertNoItem").style.visibility="hidden"
+        for(var Shoe of ShoesList){
+            var NewDate = FlipDateAndChange(Shoe.ReleaseDate)
+            var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto,Shoe.UrlKey)
+            $("#Inventory").append(Shoe)
+        }
+        for(var CustomObj of CustomList){
+            var NewDate = FlipDateAndChange(CustomObj.ReleaseDate)
+            var Custom = TemplateShoeCustom(CustomObj.IdProdotto,CustomObj.NomeProdotto,NewDate,CustomObj.Sito,CustomObj.PrezzoProdotto,CustomObj.Taglia,CustomObj.ImmagineProdotto)
+            $("#Inventory").append(Custom)    
+        }
+        $("#Preloader1").css("display","none")
+    }
+}
+
 
 function PopulateTable(){
     var Inventario = document.getElementById("Inventory")

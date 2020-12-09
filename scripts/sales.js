@@ -122,55 +122,68 @@ function LoadSales(){
             UserId = arg
             GetValutaAsUtf8(UserId)
             var Query = "SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
-                if(err)console.log(err)
-                connection.query(Query,UserId,function(error,results,fields){
-                    console.log(results)
-                    SalesList = results
-                    for(var Sale of SalesList){
-                        var Sold = TemplateSingleSale(
-                            Sale.IdProdotto,
-                            Sale.NomeProdotto,
-                            Sale.ImmagineProdotto,
-                            Sale.UrlKey,
-                            Sale.Profitto,
-                            FlipDateAndChange(Sale.DataVendita),
-                            Sale.PrezzoProdotto,
-                            Sale.PrezzoMedioResell,
-                            Sale.PrezzoVendita,
-                            Sale.Compratore,
-                            Sale.Taglia)
-                            $("#SalesTable").append(Sold)
-                    }
-                    //$("#Preloader1").css("display","none")
-                })
-            var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
-                if(err)console.log(err)
+            if(err)console.log(err)
+            connection.query(Query,UserId,function(error,results,fields){
+                console.log(results)
+                SalesList = results
+                var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
                 connection.query(Query,UserId,function(error,results,fields){
                     console.log(results)
                     SalesListCustom = results
-                    for(var SaleCustom of SalesListCustom){
-                        var SoldCustom = TemplateSingleSaleCustom(
-                            SaleCustom.IdProdotto,
-                            SaleCustom.NomeProdotto,
-                            SaleCustom.ImmagineProdotto,
-                            SaleCustom.UrlKey,
-                            SaleCustom.Profitto,
-                            FlipDateAndChange(SaleCustom.DataVendita),
-                            SaleCustom.PrezzoProdotto,
-                            SaleCustom.PrezzoVendita,
-                            SaleCustom.Compratore,
-                            SaleCustom.Taglia)
-                        $("#SalesTable").append(SoldCustom)
-                    }
+                    LoadAll()
                     Util.Profit(SalesList,SalesListCustom)
                     Util.TotalSold(SalesList,SalesListCustom)
                     Util.StockXItemsSold(SalesList)
                     Util.CustomItemsSold(SalesListCustom)
+                    $("#Preloader1").css("display","none")
+                    connection.release()
                 })
-            $("#Preloader1").css("display","none")
-            connection.release()
+            })
         })
     })
+}
+
+function LoadAll(){
+    console.log("Carico tutto")
+    if(SalesList.length == 0 && SalesListCustom.length == 0){
+        console.log("Liste vuote")
+        //document.getElementById("TableSales").style.visibility = "hidden"
+        document.getElementById("AlertSales").style.display = "inline-block"
+    }else{
+        console.log(SalesList)
+        console.log(SalesListCustom)
+        //document.getElementById("TableSales").style.visibility = "visible"
+        document.getElementById("SalesHeader").style.display = "table-header-group"
+        for(var Sale of SalesList){
+            var Sold = TemplateSingleSale(
+            Sale.IdProdotto,
+            Sale.NomeProdotto,
+            Sale.ImmagineProdotto,
+            Sale.UrlKey,
+            Sale.Profitto,
+            FlipDateAndChange(Sale.DataVendita),
+            Sale.PrezzoProdotto,
+            Sale.PrezzoMedioResell,
+            Sale.PrezzoVendita,
+            Sale.Compratore,
+            Sale.Taglia)
+            $("#SalesTable").append(Sold)
+        }
+        for(var SaleCustom of SalesListCustom){
+            var SoldCustom = TemplateSingleSaleCustom(
+                SaleCustom.IdProdotto,
+                SaleCustom.NomeProdotto,
+                SaleCustom.ImmagineProdotto,
+                SaleCustom.UrlKey,
+                SaleCustom.Profitto,
+                FlipDateAndChange(SaleCustom.DataVendita),
+                SaleCustom.PrezzoProdotto,
+                SaleCustom.PrezzoVendita,
+                SaleCustom.Compratore,
+                SaleCustom.Taglia)
+            $("#SalesTable").append(SoldCustom)
+        }
+    }
 }
 
 function Delete(Id){

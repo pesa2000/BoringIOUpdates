@@ -74,7 +74,7 @@ function SetThisYearExpenses(ExpensesList){
         Total += parTot
     }
     //console.log("Total year costs" + Total)
-    document.getElementById("TotalYear").innerHTML = Currency + "" +Total
+    document.getElementById("TotalYear").innerHTML = Currency + "" +Total.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 function SetThisMonthExpenses(ExpensesList){
@@ -91,7 +91,7 @@ function SetThisMonthExpenses(ExpensesList){
         Total += parseInt(ArrMonths[LastIndex + parseInt(GetMonth(Expense.DataCosto)) - 1])
     }
     //console.log("Total month costs" + Total)
-    document.getElementById("TotalMonth").innerHTML = Currency + "" +Total
+    document.getElementById("TotalMonth").innerHTML = Currency + "" +Total.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 function SetNumberOfItemsPerType(ExpensesList){

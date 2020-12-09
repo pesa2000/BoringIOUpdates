@@ -21,7 +21,7 @@ function SetSalesTotalProfit(ListStockX,ListCustom){
     for(var Item of ListCustom){
         ResProfit += Item.Profitto
     }
-    $("#TotalProfit").text(Currency +  "" + ResProfit)
+    $("#TotalProfit").text(Currency +  "" + ResProfit.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
 }
 
 function SetSalesTotal(ListStockX,ListCustom){
@@ -31,7 +31,7 @@ function SetSalesTotal(ListStockX,ListCustom){
     for(var Item of ListCustom){
         ResTotalSold += Item.PrezzoVendita
     }
-    $("#TotalSales").text(Currency + "" +ResTotalSold)
+    $("#TotalSales").text(Currency + "" +ResTotalSold.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
 }
 
 function SetSalesNrStockX(ListStockX){

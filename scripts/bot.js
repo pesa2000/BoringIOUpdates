@@ -66,8 +66,11 @@ function LoadBots() {
       }
       if(data != ""){
         console.log(BotFile)
-        for (var BotLoaded of BotFile.BotsList) {
-            //console.log(BotLoaded);
+        if(BotFile.BotsList.length == 0){
+          $("#Preloader1").css("display", "none");
+          document.getElementById("AlertBot").style.display = "block"
+        }else{
+          for (var BotLoaded of BotFile.BotsList) {
             var obj = {
                 BrandBeautify: BotLoaded.BotBrandToPrint, 
                 Brand: BotLoaded.BotBrand
@@ -77,8 +80,9 @@ function LoadBots() {
           for (var Single of ArrBotBrand) {
             document.getElementById("TableBots").innerHTML += Create(Single.BrandBeautify,Single.Brand);
           }
-          console.log(ArrBotBrand);
           $("#Preloader1").css("display", "none");
+        }
+          console.log(ArrBotBrand);
       }else{
         $("#Preloader1").css("display", "none");
         console.log("No Bots Loaded")

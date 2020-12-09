@@ -2,6 +2,8 @@ const moment = require("moment")
 const ipc = require('electron').ipcRenderer
 const pool = require('electron').remote.getGlobal('pool')
 const bcrypt = require("bcrypt")
+var UserId = require('electron').remote.getGlobal('UserId')
+const { createConnection } = require("net")
 
 var UserId = 0
 var UserDB = []
@@ -29,53 +31,73 @@ function CheckConnection(){
 }
 
 ipc.on("CheckedConnection", (event,arg) =>{
-    console.log(arg)
+    //console.log(arg)
 })
 
-ipc.on("ReturnedSub",(event,arg) => {
-    console.log(arg)
-
-    var l = document.getElementsByName("stat")
+ipc.on("ReturnedSub",async(event,arg) => {
     var user = arg.User
     var sub = arg.Subscription
     if(sub != null){
-        l[0].innerHTML += sub.id
-        l[1].innerHTML += sub.customer
-        l[2].innerHTML += GetDateRightFormat(sub.start_date * 1000)
-        l[3].innerHTML += GetDateRightFormat(sub.current_period_end * 1000)
-        l[4].innerHTML += sub.status
-    
-        var k = document.getElementsByName("lastUpdate")
-        k[0].innerHTML = moment().format('MMMM Do YYYY, h:mm:ss a');
-        k[1].innerHTML = moment().format('MMMM Do YYYY, h:mm:ss a');
-        k[2].innerHTML = moment().format('MMMM Do YYYY, h:mm:ss a');
-        k[3].innerHTML = moment().format('MMMM Do YYYY, h:mm:ss a');
-        k[4].innerHTML = moment().format('MMMM Do YYYY, h:mm:ss a');
-    
-        var s = document.getElementsByName("Code")
-        s[0].innerHTML = 200
-        s[1].innerHTML = 200
-        s[2].innerHTML = 200
-        s[3].innerHTML = 200
-
-        var el = document.getElementsByName("Code")[4]
-        if(user.status == "canceled"){
-            s[4].innerHTML = 404
-            $(el).removeClass()
-            $(el).addClass("badge badge-soft-danger badge-pill")
-        }else{
-            s[4].innerHTML = 200
-        }
+        document.getElementById("TypeOfMembership").innerText = "Monthly user"
     }else{
-        document.getElementById("SubscriptionCard").style.display = "none"
+        document.getElementById("TypeOfMembership").innerText = "Lifetime user"
     }
-
-    document.getElementById("CreationDate").innerHTML += " " + GetDateRightFormat(user.DataCreazione)
-    document.getElementById("AccountName").innerHTML = user.Username
-    document.getElementById("AccountId").innerHTML = user.Username + "_" + user.UserId
-    document.getElementById("AccountEmail").innerHTML = user.Email
+    document.getElementById("Username").innerHTML = user.Username + "<small class='fas fa-check-circle text-primary ml-1' data-toggle='tooltip' data-placement='right' title='Verified' data-fa-transform='shrink-4 down-2'></small>"
+    document.getElementById("Membership").innerHTML += " " + GetDateRightFormat(user.DataCreazione)
+    await sleep(500)
+    $("#Preloader1").css("display","none")
 })
+
+function sleep(ms) {
+    try{
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    catch(err){
+        console.log(err)
+    }
+}
 
 function GetDateRightFormat(DateToChange){
     return moment(DateToChange).format('DD[-]MM[-]YYYY')
+}
+
+function changeLanguage(){
+    pool.getConnection(function(err,connection){
+        connection.query("UPDATE utenti SET Lingua = ? WHERE UserId = ?",[document.getElementById("SelectLanguage").value,UserId],function(err,results,fields){
+            connection.release()
+            if(err){
+                console.log(err)
+            }
+        })
+    })
+}
+
+function changeCurrency(){
+    var Valuta
+    var ConversioneValuta
+    var ValutaStringa
+    switch(document.getElementById("SelectCurrency").value){
+        case "DOLLARS":
+            ValutaStringa = "DOLLARS"
+            Valuta = "&#36"
+            ConversioneValuta = 1
+        break;
+        case "EUROS":
+            ValutaStringa = "EUROS"
+            Valuta = "&#8364"
+            ConversioneValuta = 0.8600
+        break;
+        case "POUNDS":
+            ValutaStringa = "POUNDS"
+            Valuta = "£"
+            ConversioneValuta = 0.7500
+        break;
+    }
+    pool.getConnection(function(err,connection){
+        connection.query("UPDATE utenti SET Valuta = ?, ValutaStringa = ?, ConversioneValuta = ?  WHERE UserId like ?",[Valuta,ValutaStringa,ConversioneValuta,UserId],function(err,results,fields){
+            if(err){
+                console.log(err)
+            }
+        })
+    })
 }

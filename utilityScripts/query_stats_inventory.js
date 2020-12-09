@@ -19,7 +19,7 @@ function SetInventoryRetailStats(ListOfItemsStockX,ListOfItemsCustom){
         ResCustom += Item.PrezzoProdotto
     }
     var Res = ResCustom + ResStockX
-    document.getElementById("InventoryRetail").innerHTML = Currency + "" + Res
+    document.getElementById("InventoryRetail").innerHTML = Currency + "" + Res.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 function SetInventoryValueStats(ListOfItemsStockX){
@@ -27,7 +27,7 @@ function SetInventoryValueStats(ListOfItemsStockX){
     for(var Shoe of ListOfItemsStockX){
         ResStockX += Shoe.PrezzoMedioResell
     }
-    document.getElementById("InventoryResell").innerHTML = Currency + "" + ResStockX
+    document.getElementById("InventoryResell").innerHTML = Currency + "" + ResStockX.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 async function SetInventoryNrItemsStats(ListOfItems){

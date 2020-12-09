@@ -77,29 +77,32 @@ function LoadTrackings(){
             if(error) console.log(error)
             TrackingList = results
             console.log(TrackingList)
-            for(var Track of TrackingList){
-                document.getElementById("TrackingTable").innerHTML += TemplateTracking(Track.IdSpedizione,Track.ImmagineProdotto,Track.UrlKey,Track.NomeProdotto,Track.TrackingCode,FlipDateAndChange(Track.DataAggiunta),Track.Corriere,Track.Taglia)
-            }
+            LoadAll()
             $("#Preloader1").css("display","none")
-        })
-        connection.query("SELECT * FROM inventario WHERE IdUtente = ?",UserId,function(error,results,fields){
-            if(error) console.log(error)
-            ShoesList = results
-            for(var Shoe of ShoesList){
-                console.log(Shoe)
-                document.getElementById("ShoesListModal").innerHTML += "<option value = '" + Shoe.IdProdotto + "'>"+Shoe.NomeProdotto+" " + Shoe.Taglia + "</option>"
-            }
-            connection.release()
+            connection.query("SELECT * FROM inventario WHERE IdUtente = ?",UserId,function(error,results,fields){
+                connection.release()
+                if(error) console.log(error)
+                ShoesList = results
+                for(var Shoe of ShoesList){
+                    console.log(Shoe)
+                    document.getElementById("ShoesListModal").innerHTML += "<option value = '" + Shoe.IdProdotto + "'>"+Shoe.NomeProdotto+" " + Shoe.Taglia + "</option>"
+                }
+            })
         })
     })
     //ipc.send("getUserId")
 }
-/*ipc.on("ReturnedId",(event,arg) => {
-    console.log("Ciao")
-    console.log(arg)
-    UserId = arg
-        /* INNER JOIN 
-})*/
+
+function LoadAll(){
+    if(TrackingList.length == 0){
+        document.getElementById("AlertTracking").style.display = "inline-block"
+    }else{
+        document.getElementById("TableHeader").style.display = "table-header-group"
+        for(var Track of TrackingList){
+            document.getElementById("TrackingTable").innerHTML += TemplateTracking(Track.IdSpedizione,Track.ImmagineProdotto,Track.UrlKey,Track.NomeProdotto,Track.TrackingCode,FlipDateAndChange(Track.DataAggiunta),Track.Corriere,Track.Taglia)
+        }
+    }
+}
 
 function Add(){
     var ItemIdChosen = $("#ShoesListModal").val()

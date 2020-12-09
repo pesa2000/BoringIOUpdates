@@ -22,7 +22,6 @@ const got = require('got')
 var AccountSavedDirectory = path.join(AppDataDir,"AccountSaved.txt")
 var AccountSettingsDirectory = path.join(AppDataDir,"ClientSettings.json")
 console.log(AccountSavedDirectory)
-//const VersionSavedDirectory = path.join(app.getPath("userData"),"/ProgramVersion.txt")
 const InventoryPath = path.join(__dirname,"../scripts/inventory.js")
 const StockxAPI = require('./../node_modules/stockx-api/index.js');
 var LastConnection = "Connected"
@@ -224,7 +223,7 @@ async function createWindows() {
           },
           referrer: 'no-referrer'
         }).then(function (response) {
-          if (response.ok) {
+          if(response.ok){
             return response.json();
           } else {
             return Promise.reject(response);
@@ -275,7 +274,7 @@ async function createWindows() {
             windowStats = new BrowserWindow(
               {
                 width:800,
-                height:600,
+                height:700,
                 show: false,
                 frame: true,
                 webPreferences: {
@@ -315,7 +314,7 @@ async function createWindows() {
               {
                 parent: win,
                 width:800,
-                height:600,
+                height:700,
                 show: false,
                 frame: false,
                 webPreferences: {
@@ -330,6 +329,7 @@ async function createWindows() {
               protocol:'file',
               slashes:true
             }))
+            child.show()
             if(DEBUGGER_MODE){
               child.webContents.openDevTools()
             }
@@ -357,7 +357,7 @@ async function createWindows() {
           {
             parent: win,
             width:800,
-            height:600,
+            height:800,
             show: false,
             frame: false,
             webPreferences: {
@@ -897,12 +897,16 @@ var TotMonth10 = 0
 var TotMonth11 = 0
 var TotMonth12 = 0
 
-
 var TotWeek1 = 0
 var TotWeek2 = 0
 var TotWeek3 = 0
 var TotWeek4 = 0
 var TotWeek5 = 0
+
+var Tot = 0
+var FinalArray = []
+var ArrayYears = []
+var ArrayProfit = [0,0,0,0,0,0,0,0,0,0,0]
 
 ipcMain.on("RequestedDataGraphs", (event,arg) => {
   pool.getConnection(function(err,connection){
@@ -935,6 +939,30 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
           event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
           connection.release()
+        })
+      })
+    }else if(FilterMonth == "Lifetime"){
+      connection.query("SELECT SUM(Profitto) as SUM, YEAR(DataVendita) as Anno FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente],  function (error, results1, fields) {
+        if(error) console.log(error)
+        connection.query("SELECT SUM(Profitto) as SUM, YEAR(DataVendita) as Anno FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente], function(error,results2,fields){
+          if(error)console.log(error)
+          var Arr = FinalArray.concat(results1,results2)
+          console.log(Arr)
+          connection.release()
+          for(var FullYear of Arr){
+            if(!ArrayYears.includes(FullYear.Anno)){
+              ArrayYears.push(FullYear.Anno)
+            }
+            var Cont = ArrayYears.indexOf(FullYear.Anno)
+            ArrayProfit[Cont] += FullYear.SUM
+            console.log(Cont)
+            console.log(ArrayProfit)
+          }
+
+          for(var i = 0; i < ArrayYears.length; i+=1){
+            DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
+          }
+          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
         })
       })
     }else{
@@ -1003,6 +1031,11 @@ function SetMonthLifetime(k){
       break;
   }
 }
+
+function setYearLifetime(){
+  
+}
+
 function ResetVar2(){
   TotWeek1 = 0
   TotWeek2 = 0
