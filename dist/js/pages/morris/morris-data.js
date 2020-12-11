@@ -17,20 +17,37 @@ $(async function() {
   ipc.on("ReturnedDataGraphsMorris",(event,arg)=>{
     console.log("Morris Chart Data")
     console.log(arg)
-    var Data = arg
+    var Data = arg.DATAGRAPHS
     "use strict";
-    var line = new Morris.Line({
-      element: 'morris-line-chart',
-      resize: true,
-      data: Data,
-      parseTime: false,
-      xkey: 'y',
-      ykeys: ['item1'],
-      labels: ['Profit'],
-      gridLineColor: '#082242',
-      lineColors: ['#2771d3'],
-      lineWidth: 2,
-      hideHover: 'auto'
-    });
+
+    if(arg.FilterMonth == "Return"){
+      var line = new Morris.Line({
+        element: 'morris-line-chart',
+        resize: true,
+        data: Data,
+        parseTime: false,
+        xkey: 'y',
+        ykeys: ['item1'],
+        labels: ['Return'],
+        gridLineColor: '#082242',
+        lineColors: ['#2771d3'],
+        lineWidth: 2,
+        hideHover: 'auto'
+      });
+    }else{
+      var line = new Morris.Line({
+        element: 'morris-line-chart',
+        resize: true,
+        data: Data,
+        parseTime: false,
+        xkey: 'y',
+        ykeys: ['item1'],
+        labels: ['Profit'],
+        gridLineColor: '#082242',
+        lineColors: ['#2771d3'],
+        lineWidth: 2,
+        hideHover: 'auto'
+      });
+    }
   })
  })

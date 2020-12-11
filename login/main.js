@@ -94,11 +94,6 @@ function CheckLogFile(){
   }
   if(fs.existsSync(AccountSettingsDirectory)){
     console.log("Il file delle impostazioni esiste")
-    /*fs.readFileSync(AccountSettingsDirectory,function (err, data) {
-      if(err)console.log(err)
-      console.log("Data inside settings file: " + data)
-      console.log(JSON.parse(data))
-    })*/
     var Set = fs.readFileSync(AccountSettingsDirectory,{encoding: "utf-8"})
     UserSettings = JSON.parse(Set)
     console.log(UserSettings)
@@ -107,7 +102,6 @@ function CheckLogFile(){
       console.log("File Creato")
     })
   }
-  //createWindows()
   if(isPackaged == true){
     console.log("Is Packaged")
     DEBUGGER_MODE = false
@@ -115,7 +109,6 @@ function CheckLogFile(){
   }else{
     console.log("Is not Packaged")
     DEBUGGER_MODE = true
-    //CreateUpdateWindows()
     createWindows()
   }
 }
@@ -152,11 +145,7 @@ function GetTodaysDateDashFormat1(){
   return today
 }
 
-//userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
 const stockX = new StockxAPI();
-
-//app.on("ready",CheckLogFile())
-
 var connection
 var config = {
   waitForConnections : false,
@@ -166,7 +155,6 @@ var config = {
   password : 'anfi1812',
   database : 'gestionaleprodotti'
 }
-//connection = mysql.createConnection(config);
 var pool = mysql.createPool(config)
 global.configuration = config
 global.pool = pool
@@ -381,10 +369,6 @@ async function createWindows() {
         }
       }
   })
-
-  /*win.on("close", (event,arg) => {
-    console.log("closing app triggered in the win.on")
-  })*/
 }
 function setValuta(input){
   Valuta = input
@@ -554,8 +538,6 @@ ipcMain.on('close', async (event, arg) => {
   app.removeAllListeners()
   windowStats.quit()
   windowStats = null
-  /*app.exit()
-  app.quit()*/
 })
 
 ipcMain.on("WindowTracking",(event,arg) => {
@@ -937,7 +919,7 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           DATAGRAPHS.push({y: `Oct`, item1: TotMonth10})
           DATAGRAPHS.push({y: `Nov`, item1: TotMonth11})
           DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
-          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
           connection.release()
         })
       })
@@ -962,10 +944,35 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           for(var i = 0; i < ArrayYears.length; i+=1){
             DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
           }
-          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
         })
       })
-    }else{
+    }else if(FilterMonth == "Return"){
+      connection.query("SELECT SUM(PrezzoVendita) as SUM, YEAR(DataVendita) as Anno FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente],  function (error, results1, fields) {
+        if(error) console.log(error)
+        connection.query("SELECT SUM(PrezzoVendita) as SUM, YEAR(DataVendita) as Anno FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente], function(error,results2,fields){
+          if(error)console.log(error)
+          var Arr = FinalArray.concat(results1,results2)
+          console.log(Arr)
+          connection.release()
+          for(var FullYear of Arr){
+            if(!ArrayYears.includes(FullYear.Anno)){
+              ArrayYears.push(FullYear.Anno)
+            }
+            var Cont = ArrayYears.indexOf(FullYear.Anno)
+            ArrayProfit[Cont] += FullYear.SUM
+            console.log(Cont)
+            console.log(ArrayProfit)
+          }
+
+          for(var i = 0; i < ArrayYears.length; i+=1){
+            DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
+          }
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
+        })
+      })
+    }
+    else{
       connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],  function (error, results, fields) {
         if(error) console.log(error)
         ResetVar2()
@@ -982,7 +989,7 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           DATAGRAPHS.push({y: `Third Week`, item1: TotWeek3})
           DATAGRAPHS.push({y: `Fourth Week`, item1: TotWeek4})
           DATAGRAPHS.push({y: `Fifth Week`, item1: TotWeek5})
-          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
           connection.release()
         })
       })
@@ -1030,10 +1037,6 @@ function SetMonthLifetime(k){
       TotMonth12 +=  parseInt(k.Profitto)
       break;
   }
-}
-
-function setYearLifetime(){
-  
 }
 
 function ResetVar2(){
@@ -1097,10 +1100,6 @@ async function CreateWindow(arg){
 
 ipcMain.on("RequestedShoeDetailsServer",async (event,arg) => {
   console.log(arg)
-  //console.log("RICHIESTA DETTAGLI DA SERVER DIO BESTIA")
-  /*stockX.fetchProductDetails('https://stockx.com/' + arg)
-  .then(product => (console.log(product),event.sender.send("ReturnedProductDetails",product)))
-  .catch(err => console.log(`Error scraping product details: ${err.message}`),event.sender.send("ErrorFoundResearch",err));*/
   var res1 = await got("https://www.boringio.com:5001/GetDetails/Url=" + arg)
   console.log(res1.body)
   event.sender.send("ReturnedProductDetailsServer",res1.body)
@@ -1114,14 +1113,11 @@ autoUpdater.on("update-available", (info) => {
   Logger.log("New Update found in the main process")
   Logger.log(info)
   CreateUpdateWindows()
-  //console.log("Update available")
 })
 
 autoUpdater.on("update-not-available", () =>{
-  //console.log("Update not available")
   Logger.log("This is the new version")
   createWindows()
-  //CreateUpdateWindows()
 })
 
 async function CreateUpdateWindows(){

@@ -1,5 +1,7 @@
 const { totalmem } = require("os")
 const { parse } = require("path")
+const moment = require("moment")
+const { Console } = require("console")
 
 var Offsett = 0
 
@@ -50,7 +52,161 @@ function GetTodaysDate() {
     return tot;
 }
 
-function SetThisYearExpenses(ExpensesList){
+
+
+/*const mysql = require("mysql")
+const moment = require("moment")
+var config = {
+    waitForConnections : false,
+    connectionLimit: 50,
+    host     : 'www.boringio.com',
+    user     : 'desktopuser',
+    password : 'anfi1812',
+    database : 'gestionaleprodotti'
+}
+
+var UserId = 1086
+var pool = mysql.createPool(config)
+var Filtro = "Lifetime"
+
+pool.getConnection(function(error,connection){
+    connection.query("SELECT * FROM costi WHERE IdUtente = ?",[UserId],function(error,results,fields){
+        for(var Exp of results){
+            var DataInizio = moment(Exp.DataCosto).format("DD-MM-YYYY")
+            var Res = ReturnPriceFilter(DataInizio,Filtro,Exp.Mese,Exp.PrezzoCosto)
+            console.log(Res)
+            console.log("-----------------")
+        }
+    })
+})*/
+var TotalBots = 0
+var TotalCookGroups = 0
+var TotalShip = 0
+var TotalProxy = 0
+var TotalCustom = 0
+
+function IterateResults(Filtro,Array){
+    for(var Exp of Array){
+        var DataInizio = moment(Exp.DataCosto).format("DD-MM-YYYY")
+        var Res = ReturnPriceFilter(DataInizio,Filtro,Exp.MesiRicorrenza,Exp.PrezzoCosto)
+        switch(Exp.NomeSelezioneCosto){
+            case "CookGroup":
+                TotalCookGroups += parseInt(Res)
+            break; 
+            case "Ship":
+                TotalShip += parseInt(Res)
+            break; 
+            case "Proxy":
+                TotalProxy += parseInt(Res)
+            break; 
+            case "Bot":
+                TotalBots += parseInt(Res)
+            break; 
+            case "Custom":
+                TotalCustom += parseInt(Res)
+            break; 
+        }
+    }
+    return Obj = {
+        Cook: TotalCookGroups,
+        Ship: TotalShip,
+        Proxy: TotalProxy,
+        Bot:TotalBots,
+        Custom: TotalCustom
+    }
+}
+
+function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
+    var DataFine
+    var app = DataInizio.split("-")
+    var StartingDate = moment([app[2],app[1]-1,app[0]])
+    var Total = 0
+    switch(Filtro){
+        case "Lifetime":
+            Total = 0
+            var DataFine = CreateEndDateLifetime()
+            do{
+                Total += parseInt(Costo)
+                StartingDate.add(Mese,"months")
+            }while(StartingDate < DataFine)
+            return Total
+            break;
+        case "Year":
+            Total = 0
+            var DataFine = CreateEndDateYear()
+            do{
+                Total += parseInt(Costo)
+                StartingDate.add(Mese,"months")
+            }while(StartingDate < DataFine)
+            return Total
+            break;
+        case "Return":
+            Total = 0
+            var DataFine = CreateEndDateLifetime()
+            do{
+                Total += parseInt(Costo)
+                StartingDate.add(Mese,"months")
+            }while(StartingDate < DataFine)
+            return Total
+            break;
+        default :
+            Total = 0
+            var DataFine = CreateEndDateMonth(Filtro)
+            do{
+                Total += parseInt(Costo)
+                StartingDate.add(Mese,"months")
+            }while(StartingDate < DataFine)
+            return Total
+            break;
+    }
+}
+
+function CreateEndDateLifetime(){
+    var end = new Date();
+    var dd = String(end.getDate()).padStart(2, '0');
+    var mm = String(end.getMonth() + 1).padStart(2, '0');
+    var yyyy = end.getFullYear();
+
+    end = moment([yyyy,mm-1,dd]);
+    return end
+}
+
+function CreateEndDateMonth(filter){
+    var end = new Date();
+    var yyyy = end.getFullYear();
+    end = moment([yyyy,filter-1,1]);
+    return end
+}
+
+function CreateEndDateYear(){
+    var end = new Date();
+    var yyyy = end.getFullYear();
+    end = moment([yyyy,11,1]);
+    return end
+}
+
+function GetMonthsInside(StartDate,EndDate){
+    console.log(EndDate.diff(StartDate,"months",true))
+    return Math.ceil(EndDate.diff(StartDate,"months",true))
+}
+
+function ReturnsNumberOfTimes(StartDate,EndDate){
+    var I = StartDate.split("-")
+    var F = EndDate.split("-")
+    var a = moment([I[2],I[1] - 1,I[0]])
+    var b = moment([F[2],F[1] - 1,F[0]])
+    console.log(a.toDate())
+    console.log(b.toDate())
+    if((a <= b)){
+        return GetMonthsInside(a,b)
+    }else{
+        return null
+    }
+}
+
+exports.IterateResults = IterateResults
+
+/*function SetThisYearExpenses(ExpensesList){
     var TotalOthers = 0
     var TotalBots = 0
     var TotalCookGroups = 0 
@@ -93,11 +249,6 @@ function SetThisYearExpenses(ExpensesList){
             break;
         }
     }
-    /*console.log(TotalBots)
-    console.log(TotalCookGroups)
-    console.log(TotalShips)
-    console.log(TotalProxies)
-    console.log(TotalOthers)*/
     var Res = {
         TotalBots: TotalBots, 
         TotalCookGroups: TotalCookGroups,
@@ -106,29 +257,22 @@ function SetThisYearExpenses(ExpensesList){
         TotalOthers: TotalOthers
     }
     return Res
-}
+}*/
 
-function SetThisMonthExpenses(ExpensesList,FilteredMonth){
+/*function SetThisMonthExpenses(ExpensesList,FilteredMonth){
     var TotalOthers = 0
     var TotalBots = 0
     var TotalCookGroups = 0 
     var TotalProxies = 0
     var TotalShips = 0
     for(var Expense of ExpensesList){
-        //console.log(Expense)
         var Total = 0
         var ArrMonths = Expense.PagamentoMesi.split(" ") 
-        //console.log(ArrMonths)
         if(parseInt(GetYear(Expense.DataCosto)) == parseInt(GetTodaysYear())){
             if(Expense.MesiRicorrenza == 0){
                 var Date1 = GetDateFormat2(Expense.DataCosto).split("-")
                 var Date2 = GetTodaysYear() + "-" +  $("#FilterDate").val()
-                /*console.log("Data costo")
-                console.log(Date1[0] + "-" + Date1[1])
-                console.log("Data filtrata")
-                console.log(Date2)*/
                 if(Date1[0] + "-" + Date1[1] == Date2){
-                    //console.log("Il mese e l'anno coincidono")
                     Total += parseInt(Expense.PrezzoCosto)
                 }
             }else{
@@ -164,9 +308,48 @@ function SetThisMonthExpenses(ExpensesList,FilteredMonth){
         TotalOthers: TotalOthers
     }
     return Res
-}
+}*/
 
-function SetNumberOfItemsPerType(ExpensesList){
+
+/*function SetLifetimeExpenses(ExpensesList){
+    console.log("Lista spese")
+    console.log(ExpensesList)
+    for(var Exp of ExpensesList){
+        var ArrMonths = Exp.PagamentoMesi.split(" ")
+        switch(parseInt(getYear(Expense.DataCosto))){
+            case 2020:
+                break;
+            case 2021:
+                break;
+            case 2022:
+                break;
+            case 2023: 
+                break;
+            case 2024:
+                break; 
+        }
+    }
+    /*switch(Year){
+        case "2020":
+            offsett = 0;
+        break;
+        case "2021":
+            offsett = 12;
+        break;
+        case "2022":
+            offsett = 24;
+        break;
+        case "2023":
+            offsett = 36;
+        break;
+        case "2024":
+            offsett = 48;
+        break;
+    }
+    return 
+}*/
+
+/*function SetNumberOfItemsPerType(ExpensesList){
     var NrCookGroups = 0
     var NrBots = 0
     var NrShips = 0
@@ -209,6 +392,15 @@ function ReturnedIndexMonthYearForYear(DateStart){
     return diffMonths
 }
 
+function ReturnedIndexMonthYearForLifetime(DateStart){
+    var a = moment(GetDateFormat(DateStart),'D-M-YYYY');
+    var b = moment(GetDateFormat(new Date()),'D-M-YYYY');
+    var diffMonths = b.diff(a, 'months');
+    //console.log("Diff di mesi" + diffMonths);
+    return diffMonths
+}
+
+exports.LifetimeExpenses = SetLifetimeExpenses
 exports.MonthExpenses = SetThisMonthExpenses
 exports.YearExpenses = SetThisYearExpenses
-exports.SetTypes = SetNumberOfItemsPerType
+exports.SetTypes = SetNumberOfItemsPerType*/

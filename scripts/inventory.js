@@ -685,65 +685,12 @@ async function SendMultipleToDB(){
     console.log(Values)
     pool.getConnection(async function(err,connection){
         connection.query(Query,[Values],function(error,results,fields){
-            if(err)console.log(err)
             connection.release()
+            if(err)console.log(err)
             location.reload()
         })
     })
 }
-
-/*async function SendToDb(Query,Values,QueryDone,QueryReady,Name){
-    await pool.getConnection(async function(err,connection){
-        await connection.query(Query,Values,function(error,results,fields){
-            if(error)console.log(error)
-            console.log("Fatto")
-            CreateLog(`Added a pair of ${Name}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            connection.release()
-            //QueryDone+=1
-            if(QueryDone == QueryReady){
-                location.reload()
-            }
-            return true
-        })
-    })
-}*/
-
-
-/*function Add(){
-    var Notes = ""
-    if($("#prodNotes").val() == ""){ Notes = "No notes"}else{ Notes = $("#prodNotes").val()}
-    var DateToAdd = ""
-    if($("#wizard-datepicker").val() != ""){
-        var FlippedDate = $("#wizard-datepicker").val().split('/')
-        DateToAdd = FlippedDate[2] +"-"+FlippedDate[1]+"-"+FlippedDate[0]
-    }else{
-        DateToAdd = GetTodaysDateDashFormat()
-    }
-    var Query = ("INSERT INTO inventario (PidProdotto,NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,UrlKey,PrezzoMedioResell,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values (?)")
-    var Values = [
-        [
-            $("#prodPid").val(),$("#prodName").val(),DateToAdd,parseFloat($("#prodPrice").val()),$("#prodSize option:selected").text(),1,1,
-            $("#prodSite").val(),"",$("#prodImg").val(),$("#prodUrl").val(),parseInt($("#prodSize option:selected").val()),0,0 - $("#prodPrice").val(),Notes,
-            GetTodaysDate(),0,UserId
-        ]
-    ]
-    console.log(Values)
-    var Res = CheckValuesBeforeAdd(Values)
-    if(Res == true){
-        console.log(Values)
-        pool.getConnection(function(err,connection){
-            connection.query(Query,Values,function(error,results,fields){
-                if(error) console.log(error)
-                CreateLog(`Added a pair of ${$("#prodName").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                ipc.send("SetAlert","Add")
-                connection.release()
-                location.reload()
-            })
-        })
-    }else{
-        ErrorCreation("errorLabel",Res)
-    }
-}*/
 
 function Delete(IdDelete){
     console.log(IdDelete)
@@ -757,11 +704,15 @@ function Delete(IdDelete){
     console.log(NameProdDeleted)
     pool.getConnection(function(err,connection){
         connection.query("DELETE FROM inventario WHERE IdProdotto = ?",IdDelete,function (error,results,fields){
-            if(error) throw error
-            CreateLog(`Deleted a pair of ${NameProdDeleted}`,"Inventory","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Delete")
             connection.release()
-            location.reload()
+            if(error){
+                console.log(error)
+                alert("You have a tracking associated with this item, delete it first!")
+            }else{
+                CreateLog(`Deleted a pair of ${NameProdDeleted}`,"Inventory","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                ipc.send("SetAlert","Delete")
+                location.reload()
+            }
         })
     })
 }

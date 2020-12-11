@@ -58,13 +58,10 @@ ipc.on("ReturnedId",async (event,arg) => {
         connection.query("SELECT * FROM costi WHERE IdUtente = ? AND YEAR(DataCosto) <= ?",[UserId,GetNewDateYear()],  function (error, results, fields) {
             if(error) console.log(error)
             SplitArrays(results)
-            Util.SetTypes(results)
+            //Util.SetTypes(results)
             var Res = ""
-            if(Filter1 == "Year"){
-                Res = Util.YearExpenses(results)
-            }else{
-                Res = Util.MonthExpenses(results,Filter1)
-            }
+            Res = Util.IterateResults(Filter1,results)
+            console.log(Res)
             connection.release()
             CreateGraph(Res)
         })
@@ -106,15 +103,15 @@ function SplitArrays(CostsList){
 
 function CreateGraph(Res){
     console.log(Res)
-    var Tot = Res.TotalBots + Res.TotalCookGroups + Res.TotalShips + Res.TotalProxies + Res.TotalOthers
+    var Tot = Res.Bot + Res.Cook + Res.Ship + Res.Proxy + Res.Custom
 
     console.log(Tot)
 
-    var p1 = parseInt((Res.TotalBots/Tot) * 100) 
-    var p2 = parseInt((Res.TotalCookGroups/Tot) * 100) 
-    var p3 = parseInt((Res.TotalShips/Tot) * 100) 
-    var p4 = parseInt((Res.TotalProxies/Tot) * 100) 
-    var p5 = parseInt((Res.TotalOthers/Tot) * 100)  
+    var p1 = parseInt((Res.Bot/Tot) * 100) 
+    var p2 = parseInt((Res.Cook/Tot) * 100) 
+    var p3 = parseInt((Res.Ship/Tot) * 100)
+    var p4 = parseInt((Res.Proxy/Tot) * 100) 
+    var p5 = parseInt((Res.Custom/Tot) * 100)  
 
     console.log(p1)
     console.log(p2)
