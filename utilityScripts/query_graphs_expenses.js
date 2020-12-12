@@ -86,6 +86,7 @@ var TotalProxy = 0
 var TotalCustom = 0
 
 function IterateResults(Filtro,Array){
+    var i = 0
     for(var Exp of Array){
         var DataInizio = moment(Exp.DataCosto).format("DD-MM-YYYY")
         var Res = ReturnPriceFilter(DataInizio,Filtro,Exp.MesiRicorrenza,Exp.PrezzoCosto)
@@ -102,7 +103,7 @@ function IterateResults(Filtro,Array){
             case "Bot":
                 TotalBots += parseInt(Res)
             break; 
-            case "Custom":
+            default:
                 TotalCustom += parseInt(Res)
             break; 
         }
@@ -125,40 +126,66 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
         case "Lifetime":
             Total = 0
             var DataFine = CreateEndDateLifetime()
-            do{
-                Total += parseInt(Costo)
-                StartingDate.add(Mese,"months")
-            }while(StartingDate < DataFine)
-            return Total
+            if(Mese != 0){
+                do{
+                    Total += parseInt(Costo)
+                    StartingDate.add(Mese,"months")
+                }while(StartingDate < DataFine)   
+            }else{
+                if(StartingDate < DataFine){
+                    Total += parseInt(Costo)
+                }
+            }
             break;
         case "Year":
             Total = 0
             var DataFine = CreateEndDateYear()
-            do{
-                Total += parseInt(Costo)
-                StartingDate.add(Mese,"months")
-            }while(StartingDate < DataFine)
-            return Total
+            if(Mese != 0){
+                do{
+                    Total += parseInt(Costo)
+                    StartingDate.add(Mese,"months")
+                }while(StartingDate < DataFine)   
+            }else{
+                if(StartingDate < DataFine){
+                    Total += parseInt(Costo)
+                }
+            }
             break;
         case "Return":
             Total = 0
             var DataFine = CreateEndDateLifetime()
-            do{
-                Total += parseInt(Costo)
-                StartingDate.add(Mese,"months")
-            }while(StartingDate < DataFine)
-            return Total
+            if(Mese != 0){
+                do{
+                    Total += parseInt(Costo)
+                    StartingDate.add(Mese,"months")
+                }while(StartingDate < DataFine)   
+            }else{
+                if(StartingDate < DataFine){
+                    Total += parseInt(Costo)
+                }
+            }
             break;
         default :
             Total = 0
             var DataFine = CreateEndDateMonth(Filtro)
-            do{
-                Total += parseInt(Costo)
-                StartingDate.add(Mese,"months")
-            }while(StartingDate < DataFine)
-            return Total
-            break;
+            if(Mese != 0){
+                do{
+                    Total += parseInt(Costo)
+                    StartingDate.add(Mese,"months")
+                }while(StartingDate < DataFine)   
+            }else{
+                console.log(DataFine.toString())
+                console.log(StartingDate.toString())
+                if(DataFine.isSame(StartingDate,"month") == true){
+                    console.log("Le date coincidono")
+                    Total += parseInt(Costo)
+                }
+            }
+        break;
     }
+    console.log("Calcolo parziale")
+    console.log(Total)
+    return Total
 }
 
 function CreateEndDateLifetime(){
@@ -172,9 +199,10 @@ function CreateEndDateLifetime(){
 }
 
 function CreateEndDateMonth(filter){
-    var end = new Date();
+    var dd = new Date().getDate()
+    var end = new Date()
     var yyyy = end.getFullYear();
-    end = moment([yyyy,filter-1,1]);
+    end = moment([yyyy,filter-1,dd]);
     return end
 }
 

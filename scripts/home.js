@@ -79,7 +79,7 @@ $(document).ready(async () => {
 ipc.on("ReturnedSub",(event,arg) => {
     console.log("Stripe subscription")
     console.log(arg)
-    document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
+    //document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
     ipc.send("RequestedMonthFilter")
 })
 ipc.on("ReturnedMonthFilter",(event,arg)=>{
