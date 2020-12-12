@@ -83,6 +83,7 @@ function TemplateSingleSale(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price,Avera
 function TemplateSingleSaleCustom(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price,Sale,Site,Size){
     var ProfitLine = "" 
     var l = ""
+    if(Photo == "" || Photo == null){Photo = "img/InvEmpty.jpeg"}
     if(Site == ""){Site = "No Site"}
     //AveragePriceStockX = AveragePriceStockX.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
     (Profit >= 0) ? (ProfitLine = "success",l = "+ " + Valuta) : (ProfitLine = "danger",Profit *= -1, l = "- " + Valuta);

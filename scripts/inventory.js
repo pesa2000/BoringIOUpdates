@@ -204,6 +204,9 @@ function ChangedImg(){
 }
 
 function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
+    console.log("FOTO PORCCODIO")
+    console.log(Photo)
+    if(Photo == "" || Photo == null){Photo = "img/InvEmpty.jpeg"}
     if(Site == ""){Site = "No Site"}
     if(UserAttachedInventory != null){
         return `<tr id = "${ProductName}" >` +

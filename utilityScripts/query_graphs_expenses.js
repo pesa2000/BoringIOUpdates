@@ -170,13 +170,16 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
             var DataFine = CreateEndDateMonth(Filtro)
             if(Mese != 0){
                 do{
-                    Total += parseInt(Costo)
+                    if(DataFine.isSame(StartingDate,"month") == true){
+                        Total += parseInt(Costo)
+                    }
                     StartingDate.add(Mese,"months")
+
                 }while(StartingDate < DataFine)   
             }else{
                 console.log(DataFine.toString())
                 console.log(StartingDate.toString())
-                if(DataFine.isSame(StartingDate,"month") == true){
+                if(DataFine.isSame(StartingDate,"month")){
                     console.log("Le date coincidono")
                     Total += parseInt(Costo)
                 }
