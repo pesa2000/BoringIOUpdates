@@ -8,10 +8,12 @@ console.log("Free connections: " + pool._freeConnections.length)
 console.log(pool)
 var path = require("path")
 const moment = require("moment")
+const { isParameter } = require('typescript')
+const { parse } = require('path')
 
 var UserId = require('electron').remote.getGlobal('UserId')
-console.log("Id Utente")
-console.log(UserId)
+/*console.log("Id Utente")
+console.log(UserId)*/
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
 var Valuta = ""
@@ -23,10 +25,10 @@ function GetValutaAsUtf8(Id){
         if(err)console.log(err)
         connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
             if(error)console.log(error)
-            console.log(results[0].Valuta1)
+            //console.log(results[0].Valuta1)
             Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
             connection.release()
-            console.log(Valuta)
+            //console.log(Valuta)
         })
     })
 }
@@ -77,28 +79,18 @@ $(document).ready(async () => {
 })
 
 ipc.on("ReturnedSub",(event,arg) => {
-    console.log("Stripe subscription")
-    console.log(arg)
-    //document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
     ipc.send("RequestedMonthFilter")
 })
-ipc.on("ReturnedMonthFilter",(event,arg)=>{
-    console.log("MESE RITORNATO DAL MAIN")
-    console.log(arg)
-    console.log("Il flag è" + flag)
+ipc.on("ReturnedMonthFilter",(event,arg) => {
     if(flag == true){
         flag = false
         if(arg == "Year"){
             $("#FilterDate").val("Year")
         }else if(arg == "Lifetime"){
             $("#FilterDate").val("Lifetime")
-        }else if(arg == "Return"){
-            $("#FilterDate").val("Return")
         }else{
             $("#FilterDate").val(parseInt(arg))
         }
-        console.log("Mese scelto")
-        console.log($("#FilterDate").val())
         LoadStats(arg)
         ChangeLog()
     }
@@ -116,166 +108,30 @@ async function LoadStats(Filter){
 }
 
 function ChangeValues(){
-    if(Done == false){
-        pool.getConnection(function(err,connection){
-            if(err)console.log(err)
-            Done = true
-            var Purchases = 0
-            var Profit = 0
-            var NumerTot = 0
-            var NumberSold = 0
-            var InventorySales = 0
-            var InventoryValue = 0
-
-            if(GlobalFilter == "Year"){
-                Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ?"
-                Values1 = [UserId,parseInt(GetNewDateYear())]
-                Query2 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ?"
-                Values2 = [UserId,parseInt(GetNewDateYear())]
-                Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ?"
-                Values3 = [UserId,parseInt(GetNewDateYear())]
-                Query4 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ?"
-                Values4 = [UserId,parseInt(GetNewDateYear())]
-            }else if(GlobalFilter == "Lifetime"){
-                Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1"
-                Values1 = [UserId]
-                Query2 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0"
-                Values2 = [UserId]
-                Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1"
-                Values3 = [UserId]
-                Query4 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0"
-                Values4 = [UserId]
-            }else if(GlobalFilter == "Return"){
-                Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1"
-                Values1 = [UserId]
-                Query2 = "SELECT SUM(Prezzovendita) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0"
-                Values2 = [UserId]
-                Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1"
-                Values3 = [UserId]
-                Query4 = "SELECT SUM(Prezzovendita) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0"
-                Values4 = [UserId]
-            } 
-            else{
-                Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-                Values1 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-                Query2 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
-                Values2 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-                Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-                Values3 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-                Query4 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
-                Values4 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-            }
-            connection.query(Query1,Values1,function(error,results1,fields) {
-                console.log(results1)
-                Purchases = results1[0].Purchases
-                NumberTot = results1[0].Conteggio
-                InventoryValue = results1[0].Value
-                connection.query(Query2,Values2,function(error,results2,fields) {
-                    console.log(results2)
-                    Profit = results2[0].Profitto
-                    NumberSold = results2[0].Conteggio
-                    InventorySales = results2[0].PrezzoVendita
-                    connection.query(Query3,Values3,function(error,results3,fields) {
-                        console.log(results3)
-                        Purchases += results3[0].Purchases
-                        NumberTot += results3[0].Conteggio
-                        connection.query(Query4,Values4,function(error,results4,fields) {
-                            connection.release()
-                            console.log(results4)
-                            Profit += results4[0].Profitto
-                            NumberSold += results4[0].Conteggio
-                            InventorySales += results4[0].PrezzoVendita
-                            if(InventoryValue == null){
-                                InventoryValue = 0
-                            }
-                            if(Purchases == null){
-                                Purchases = 0
-                            }
-                            if(Profit == null){
-                                Profit = 0
-                            }
-                            if(InventorySales == null){
-                                InventorySales = 0
-                            }
-                            $("#InventoryValue").text(Valuta + "" +InventoryValue.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                            $("#Purchases").text(Valuta + "" +Purchases.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                            if(GlobalFilter == "Return"){
-                                $("#Profit").text("Profit: " +Valuta + "" + (Profit).toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.") + " ")
-                            }else{
-                                $("#Profit").text("Profit: " +Valuta + "" + (Profit-Purchases).toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.") + " ")
-                            }
-                            $("#Sales").text(Valuta + "" +InventorySales.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                        })
-                    })
-                })
-            })
-
-
-            /*var QueryLifetime = "SELECT * FROM inventario WHERE IdUtente = ?"
-            var QueryLifetime2 = "SELECT * FROM inventariocustom WHERE IdUtente = ?"
-            connection.query(Query1,Values1,function(error,results,fields){
-                if(error) console.log(error)
-                EntireInv = results
-                for(var Item of EntireInv){
-                    if(Item.QuantitaAttuale == 1){
-                        TotInventoryValue += Item.PrezzoMedioResell
-                    }
-                    TotPurchases += Item.PrezzoProdotto
-                    //TotSales += Item.PrezzoVendita 
-                }
-                connection.query(Query2,Values2,function(error,results,fields){
-                    if(error)console.log(error)
-                    EntireInvCustom = results
-                    for(var ItemCustom of EntireInvCustom){
-                        TotPurchases += ItemCustom.PrezzoProdotto
-                        //TotSales += ItemCustom.PrezzoVendita
-                    }
-                    $("#InventoryValue").text(Valuta + "" +TotInventoryValue.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                    $("#Purchases").text(Valuta + "" +TotPurchases.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                    //$("#Sales").text(Valuta + "" +TotSales.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                    connection.query(Query3,Values3,function(error,results1,fields){
-                        if(error)console.log(error)
-                        for(var Item of results1){
-                            if(Item.QuantitaAttuale == 0){
-                                TotProfitTime += Item.Profitto
-                            }
-                            TotSales += Item.PrezzoVendita
-                        }
-                        connection.query(Query4,Values4,function(error,results2,fields){
-                            if(error)console.log(error)
-                            for(var Item of results2){
-                                if(Item.QuantitaAttuale == 0){
-                                    TotProfitTime += Item.Profitto
-                                }
-                                TotSales += Item.PrezzoVendita
-                            }
-                            $("#Profit").text("Profit: " +Valuta + "" + TotProfitTime.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.") + " ")
-                            $("#Sales").text(Valuta + "" +TotSales.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                        })
-                    })
-                    connection.query(QueryLifetime,UserId,function(error,results,fields){
-                        if(error)console.log(error)
-                        for(var Item of results){
-                            if(Item.Profitto > 0){
-                                TotProfitLifetime += Item.Profitto
-                            }
-                        }
-                        connection.query(QueryLifetime2,UserId,function(error,results,fields){
-                            if(error)console.log(error)
-                            for(var Item of results){
-                                if(Item.Profitto > 0){
-                                    TotProfitLifetime += Item.Profitto
-                                }
-                            }
-                            $("#ProfitLifetime").text("" + Valuta + "" +TotProfitLifetime.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
-                            connection.release()
-                        })
-                    })
-                })
-            })*/
-        })
-    }
+    ipc.send("RequestedStats",{Filter:GlobalFilter})
 }
+
+ipc.on("ReturnedStats",(event,arg1) => {
+    ipc.send("RequestedExpensesFetched",{Filter:GlobalFilter})
+    ipc.on("ReturnedExpensesFetched",(event,arg2) => {
+        console.log("Stats nuove")
+        console.log(arg1)
+        console.log(arg2)
+        var TotExpenses = parseInt(arg2.Res.Bot + arg2.Res.Cook + arg2.Res.Custom + arg2.Res.Proxy + arg2.Res.Ship)
+        $("#InventoryValue").text(Valuta + "" + arg1.Inv.toString())
+        $("#Purchases").text(Valuta + "" + arg1.Pur.toString())
+        $("#Profit").text("Profit: " +Valuta + "" + GetFormattedNumber(arg1.Prof - TotExpenses).toString() + " ")
+        $("#Sales").text(Valuta + "" + arg1.Sal)
+        $("#Return").text("Return: " + Valuta + "" + arg1.Return)
+    })
+})
+
+function GetFormattedNumber(Number){
+    var N = Number.toString().split(".")
+    N[0] = N[0].replace(/\B(?=(\d{3})+(?!\d))/g,".");
+    return N[0]
+}
+  
 
 function ChangeLog(){
     pool.getConnection(function(err,connection){
@@ -314,8 +170,8 @@ function ChangeDate(DateToChange){
 }
 
 function CreateLogElement(Class1,Class2,Class3,Name,Date,Section){
-    console.log(ChangeDate(Date))
-    console.log(GetTodaysDate())
+    /*console.log(ChangeDate(Date))
+    console.log(GetTodaysDate())*/
     var DateDiff = moment.duration(moment(GetTodaysDate()).diff(moment(ChangeDate(Date))))
 
     var DaysDiff = parseInt(DateDiff.asDays())

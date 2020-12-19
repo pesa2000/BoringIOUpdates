@@ -26,7 +26,7 @@
   <body>
     <main class="main" id="top">
       <div class="preloader" id = "Preloader1">
-        <div style = "position:fixed;top: 50%;left: 50%;">
+        <div style = "position:fixed;top: 50%;left: 50%;z-index: 1000;">
           <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
           </div>
@@ -179,7 +179,7 @@
             <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
             <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
               <div class="d-flex align-items-center">
-                <img src="img/logo-piccolo.png" alt="" width="40" />
+                <img src="img/logo-piccolo.png" alt="" width="40"/>
                 <span class="text-sans-serif" style="color:#fafafa">boring</span>
               </div>
             </a>
@@ -228,121 +228,19 @@
               navbarTop.parentNode.removeChild(navbarTop);
             }
           </script>
-          <!--<div class="card mb-3">
-            <div class="card-header">
-              <div class="row">
-                <div class="col">
-                  <h5 class="mb-2" id = "AccountName"></h5>
-                </div>
-                <div class="col-auto d-none d-sm-block">
-                  <h6 class="text-uppercase text-600">Customer<span class="fas fa-user ml-2"></span></h6>
-                </div>
+          <div class="card mb-3" id="Content" style="display: none;">
+            <div class="card mb-3">
+              <div class="card-header position-relative min-vh-25 mb-7">
+                <div class="bg-holder rounded-soft rounded-bottom-0" style="background-image:url('img/1500x500.jpg');"></div>
+                <div class="avatar avatar-5xl avatar-profile"><img class="rounded-circle img-thumbnail shadow-sm" id="ImmagineProfilo" src="" width="200" alt="" /></div>
               </div>
-            </div>
-            <div class="card-body border-top">
-              <div class="media"><span class="fas fa-user text-success mr-2" data-fa-transform="down-5"></span>
-                <div class="media-body">
-                  <p class="mb-0" id="CreationDate">Customer was created</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card mb-3">
-            <div class="card-header">
-              <div class="row align-items-center">
-                <div class="col">
-                  <h5 class="mb-0">Details</h5>
-                </div>
-              </div>
-            </div>
-            <div class="card-body bg-light border-top">
-              <div class="row">
-                <div class="col-lg col-xxl-5">
-                  <h6 class="font-weight-semi-bold ls mb-3 text-uppercase">Account Information</h6>
-                  <div class="row">
-                    <div class="col-5 col-sm-4">
-                      <p class="font-weight-semi-bold mb-1">ID</p>
-                    </div>
-                    <div class="col" id="AccountId"></div>
-                  </div>
-                  <div class="row">
-                    <div class="col-5 col-sm-4">
-                      <p class="font-weight-semi-bold mb-1">Email</p>
-                    </div>
-                    <div class="col"><a id = "AccountEmail"></a></div>
-                  </div>
-                </div>
-                <div class="col-lg col-xxl-5 mt-4 mt-lg-0 offset-xxl-1">
-                  <h6 class="font-weight-semi-bold ls mb-3 text-uppercase"></h6>
-                  <div class="row">
-                    <div class="col-5 col-sm-4">
-                      <p class="font-weight-semi-bold mb-1"></p>
-                    </div>
-                    <div class="col"><a id="AccountLastNumbers"></a></div>
-                  </div>
-                  <div class="row">
-                    <div class="col-5 col-sm-4">
-                      <p class="font-weight-semi-bold mb-0"></p>
-                    </div>
-                    <div class="col">
-                      <p class="font-weight-semi-bold mb-0" id ="PaymentType"></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card" id="SubscriptionCard">
-            <div class="card-header">
-              <h5 class="mb-0">Subscription</h5>
-            </div>
-            <div class="card-body border-top p-0" id="SubscriptionInfo">
-              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
-                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/SubscriptionId/</code></div>
-                <div class="col-md-auto">
-                  <p class="mb-0" name="lastUpdate"></p>
-                </div>
-              </div>
-              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
-                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/CustomerId/</code></div>
-                <div class="col-md-auto">
-                  <p class="mb-0" name="lastUpdate"></p>
-                </div>
-              </div>
-              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
-                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/StartDate/</code></div>
-                <div class="col-md-auto">
-                  <p class="mb-0" name="lastUpdate"></p>
-                </div>
-              </div>
-              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
-                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoiceSubscription/EndDate/</code></div>
-                <div class="col-md-auto">
-                  <p class="mb-0" name="lastUpdate"></p>
-                </div>
-              </div>
-              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
-                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="Code"></span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "stat">POST /v1/invoices/Status/</code></div>
-                <div class="col-md-auto">
-                  <p class="mb-0" name="lastUpdate"></p>
-                </div>
-              </div>
-            </div>
-            <div class="card-footer bg-light p-0"><a class="btn btn-link btn-block" ></a></div>
-          </div>-->
-          <div class="card mb-3">
             <div class="card-body">
               <div class="row">
                 <div class="col-lg-8">
                   <h4 class="mb-1" id="Username"></h4>
                   <h5 class="fs-0 font-weight-normal" id="TypeOfMembership">Lifetime member</h5>
-                  <p class="text-500" id="Membership">Member since </p><button class="btn btn-falcon-default btn-sm px-3 ml-2" type="button">Contact us</button>
-                  <hr class="border-dashed my-4 d-lg-none" />
+                  <p class="text-500" id="Membership">Member since </p><button class="btn btn-falcon-default btn-sm px-3 ml-2" type="button" onclick="CreateWindow()">Contact us</button>
+                  <hr class="border-dashed my-4 d-lg-none"/>
                 </div>
                 <div class="col pl-2 pl-lg-3">
                   <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;">
@@ -363,6 +261,9 @@
                       <option value="FR" disabled>French(coming soon)</option>
                     </select>
                   </a>
+                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;">
+                    <input type="text" class="form-control" id="Immagine"></input><button style="margin-left: 5px; width:auto;"class="form-control" onclick="changeImg()">Save</button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -370,26 +271,54 @@
 
           <div class="card" style = "margin-top: 30px;">
             <div class="card-header">
-              <h5 class="mb-0">Change logs (06/11/2020)</h5>
+              <h5 class="mb-0">Change logs (19/12/2020)</h5>
             </div>
             <div class="card-body border-top p-0" id="SubscriptionInfo">
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">New GUI</code></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Changed settings section</code></div>
                 <div class="col-md-auto">
                   <p class="mb-0" name="dateLastUp"></p>
                 </div>
               </div>
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Add multiple shoes at one time</code></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Changed profit stats(now it counts expenses too)</code></div>
                 <div class="col-md-auto">
                   <p class="mb-0" name="dateLastUp"></p>
                 </div>
               </div>
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
-                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Major bug fixes</code></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Added "Return" to the stats in the homepage(it counts only what you sold)</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="dateLastUp"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Minor bug fixes</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="dateLastUp"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Integrated currency change</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="dateLastUp"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Integrated image change</code></div>
+                <div class="col-md-auto">
+                  <p class="mb-0" name="dateLastUp"></p>
+                </div>
+              </div>
+              <div class="row no-gutters align-items-center border-bottom py-2 px-3">
+                <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
+                <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Added 3 more bots to the expenses</code></div>
                 <div class="col-md-auto">
                   <p class="mb-0" name="dateLastUp"></p>
                 </div>

@@ -1,144 +1,60 @@
 const pool = require("electron").remote.getGlobal("pool");
 const path = require("path")
-const Util = require(path.join(__dirname,"/utilityScripts/query_graphs_expenses.js"))
 const moment = require("moment")
-var UserId = require('electron').remote.getGlobal('UserId')
-
-/*GetValutaAsUtf8(UserId)
-function GetValutaAsUtf8(Id){
-    connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-        if(error)console.log(error)
-        console.log(results[0].Valuta1)
-        Valuta = Util.GetCurrencyFromUTF8(results[0].Valuta1)
-        console.log(Valuta)
-    })
-}*/
-
-var CostsBotList = []
-var CostsCookGroupList = []
-var CostsProxiesList = []
-var CostsShipsList = []
-var CostsOthersList = []
 
 var Select = document.getElementById("FilterDate")
 var Filter1 = parseInt(GetNewDateMonth())
 
 $(document).ready(() => {
-    console.log("Filtro scelto onload")
-    console.log(Filter1)
     Request()
 })
 
 Select.addEventListener("change", () => {
     Filter = $("#FilterDate").val() 
-    console.log("Filtro dashboard1")
-    console.log(Filter)
     Request(Filter)
 })
 
 function GetNewDateMonth(){
     var d = moment(new Date()).format("DD[/]MM[/]YYYY").split("/")
-    //console.log(d[2])
     return d[1]
 }
 
 function GetNewDateYear(){
     var d = moment(new Date()).format("DD[/]MM[/]YYYY").split("/")
-    //console.log(d[2])
     return d[2]
 }
 
-function Request(FilterDate){
-    ipc.send("getUserId")
+function Request(){
+    ipc.send("RequestedExpensesFetched",{Filter:Filter1})
 }
 
-ipc.on("ReturnedId",async (event,arg) => {
-    UserId = arg
-    pool.getConnection(function(err,connection){
-        connection.query("SELECT * FROM costi WHERE IdUtente = ? AND YEAR(DataCosto) <= ?",[UserId,GetNewDateYear()],  function (error, results, fields) {
-            if(error) console.log(error)
-            SplitArrays(results)
-            //Util.SetTypes(results)
-            var Res = ""
-            Res = Util.IterateResults(Filter1,results)
-            console.log(Res)
-            connection.release()
-            CreateGraph(Res)
-        })
-    })
+ipc.on("ReturnedExpensesFetched",(event,arg) => {
+    CreateGraph(arg.Res)
 })
 
-function SplitArrays(CostsList){
-    var length1 = 0
-    var length2 = 0
-    var length3 = 0
-    var length4 = 0
-    var length5 = 0
-    for(var Cost of CostsList){
-      //console.log(Cost)
-      switch(Cost.NomeSelezioneCosto){
-        case "Bot":
-          CostsBotList.push(Cost)
-          length3 += 1
-          break;
-        case "CookGroup":
-          CostsCookGroupList.push(Cost)
-          length1 += 1
-          break;
-        case "Proxy":
-          CostsProxiesList.push(Cost)
-          length2 += 1
-          break;
-        case "Ship":
-          CostsShipsList.push(Cost)
-          length4 += 1
-          break;
-        default:
-          CostsOthersList.push(Cost)
-          length5 += 1
-          break;
-      }
-    }
-}
-
 function CreateGraph(Res){
-    console.log(Res)
     var Tot = Res.Bot + Res.Cook + Res.Ship + Res.Proxy + Res.Custom
-
-    console.log(Tot)
-
     var p1 = parseInt((Res.Bot/Tot) * 100) 
     var p2 = parseInt((Res.Cook/Tot) * 100) 
     var p3 = parseInt((Res.Ship/Tot) * 100)
     var p4 = parseInt((Res.Proxy/Tot) * 100) 
     var p5 = parseInt((Res.Custom/Tot) * 100)  
-
-    console.log(p1)
-    console.log(p2)
-    console.log(p3)
-    console.log(p4)
-    console.log(p5)
-
     var Color = []
     var Values = []
-
     if(p1 != 0){Color.push("#61C822"); Values.push(['CookGroups', p2])}
     if(p2 != 0){Color.push("#5f76e8"); Values.push(['Bots', p1])}
     if(p3 != 0){Color.push("#ff4f70"); Values.push(['Proxies', p4])}
     if(p4 != 0){Color.push("#01caf1"); Values.push(['Ships', p3])}
     if(p5 != 0){Color.push("#e6b975"); Values.push(['Others', p5])}
-
     $("#BotsCosts").text(Valuta + " " +Res.TotalBots)
     $("#CookGroupsCosts").text(Valuta + " " +Res.TotalCookGroups)
     $("#ShipsCosts").text(Valuta + " " +Res.TotalShips)
     $("#ProxiesCosts").text(Valuta + " " +Res.TotalProxies)
     $("#OthersCosts").text(Valuta + " " +Res.TotalOthers)
-
     var chart1 = c3.generate({
         bindto: '#campaign-v2',
         data: {
             columns: Values,
-
             type: 'donut',
             tooltip: {
                 show: true

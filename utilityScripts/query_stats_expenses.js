@@ -83,11 +83,6 @@ function SetThisMonthExpenses(ExpensesList){
         var ArrMonths = Expense.PagamentoMesi.split(" ")
         //console.log("Lenght Arr" + ArrMonths.length)
         var LastIndex = ReturnedIndexMonthYear(Expense.DataCosto)
-        /*console.log("Data costo iniziale " + GetDateFormat(Expense.DataCosto))
-        console.log("Mesi calcolati " + LastIndex)
-        console.log("Mesi del costo " + parseInt(GetMonth(Expense.DataCosto)))
-        console.log("Index da prendere " + (parseInt(LastIndex) + parseInt(GetMonth(Expense.DataCosto)) - 1))
-        console.log(ArrMonths)*/
         Total += parseInt(ArrMonths[LastIndex + parseInt(GetMonth(Expense.DataCosto)) - 1])
     }
     //console.log("Total month costs" + Total)
