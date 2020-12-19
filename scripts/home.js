@@ -120,9 +120,9 @@ ipc.on("ReturnedStats",(event,arg1) => {
         var TotExpenses = parseInt(arg2.Res.Bot + arg2.Res.Cook + arg2.Res.Custom + arg2.Res.Proxy + arg2.Res.Ship)
         $("#InventoryValue").text(Valuta + "" + arg1.Inv.toString())
         $("#Purchases").text(Valuta + "" + arg1.Pur.toString())
-        $("#Profit").text("Profit: " +Valuta + "" + GetFormattedNumber(arg1.Prof - TotExpenses).toString() + " ")
+        $("#Profit").text("Profit " +Valuta + "" + GetFormattedNumber(arg1.Prof - TotExpenses).toString() + " ")
         $("#Sales").text(Valuta + "" + arg1.Sal)
-        $("#Return").text("Return: " + Valuta + "" + arg1.Return)
+        $("#Return").text(" " + Valuta + "" + arg1.Prof)
     })
 })
 

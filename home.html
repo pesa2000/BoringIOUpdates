@@ -353,12 +353,19 @@
                 <!-- Title -->
                 <h1 class="header-title">
                   Dashboard
+                  <span style="float: right;">
+                    <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#info">
+                      <span data-toggle="tooltip" data-placement="top" title="See all statistics">
+                      <span class="fas fa-info" data-fa-transform="shrink-3 down-2"></span>
+                      </span>
+                      </button>
+                  </span>
                 </h1>
               </div>
             </div> <!-- / .row -->
           </div>
           <div class="card-deck">
-            <div class="card mb-4 overflow-hidden" style="min-width: 12rem">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
               <div class="card-body position-relative">
                 <h6>Inventory Value<!--<span class="badge badge-soft-warning rounded-capsule ml-2">-0.23%</span>--></h6>
@@ -366,16 +373,16 @@
                 <a class="font-weight-semi-bold fs--1 text-nowrap" href="inventory.html">See items<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>
               </div>
             </div>
-            <div class="card mb-4 overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-2.png');"></div>
               <div class="card-body position-relative">
                 <h6>Purchases<!--<span class="badge badge-soft-info rounded-capsule ml-2">0.0%</span>--></h6>
                 <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" Id = "Purchases">0</div>
                 <a class="font-weight-semi-bold fs--1 text-nowrap" href="inventory.html">See items<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>
               </div>
             </div>
-            <div class="card mb-4 overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-3.png');"></div>
               <div class="card-body position-relative">
                 <h6>Sales<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
                 <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success" id = "Sales">0</div>
@@ -390,7 +397,7 @@
                     <div class="row flex-between-center">
                       <div class="col">
                         <h4 class="text-white mb-0" id = "Profit"></h4>
-                        <h6 class="text-white mb-0" id = "Return"></h6>
+                        <p class="fs--1 font-weight-semi-bold">Return <span class="opacity-50" id="Return"></span></p>
                       </div>
                       <div class="col-auto d-flex"><select class="custom-select custom-select-sm select-month mr-2" id="FilterDate" onchange="Changed()">
                           <option value="1">January</option>
@@ -530,6 +537,112 @@
             </div>
           </div>
         </div>
+
+        <div class="modal modal-fixed-right fade" id="info" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-vertical" role="document">
+            <div class="modal-content border-0 min-vh-100">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalRightLabel">Guide</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="card-deck">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                  <!--/.bg-holder-->
+                  <div class="card-body position-relative">
+                    <h5>Dashboard</h5>
+                    <p>
+                      This is your personal dashboard which can give you an estimate of your economic performance, each statistic is based on various calculations taken from both StockX and Custom inventories.
+                    </p>
+                  </div>
+                </div>
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                  <!--/.bg-holder-->
+                  <div class="card-body position-relative">
+                    <h5>Filter</h5>
+                    <p>
+                      You can select what filter to use for fetching every single stats, you can choose from:<br> - Month <br> - This Year<br> - Lifetime
+                    </p>
+                  </div>
+                </div>
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                  <!--/.bg-holder-->
+                  <div class="card-body position-relative">
+                    <h5>Graph</h5>
+                    <p>
+                      The Graph changes each time you select a different filter, the graph counts only the profit less the purchases but it doesnt count the expenses.
+                    </p>
+                  </div>
+                </div>
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                    <!--/.bg-holder-->
+                    <div class="card-body position-relative">
+                      <h5>Profit</h5>
+                      <p>
+                        Profit is the sum of sales from this period minus the sum of purchases from this period minus all expenses from this period.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                    <!--/.bg-holder-->
+                    <div class="card-body position-relative">
+                      <h5>Return</h5>
+                      <p>
+                        Return is actually pretty similar tot the profit but it doesnt count the expenses for the filtered period.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                    <!--/.bg-holder-->
+                    <div class="card-body position-relative">
+                      <h5>Inventory Value</h5>
+                      <p>
+                        Inventory value is the sum of the average DeadStock price of each product from your inventory, it calculated based on the items that are still on your inventory and are not yet sold.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                    <!--/.bg-holder-->
+                    <div class="card-body position-relative">
+                      <h5>Purchases</h5>
+                      <p>
+                        It is the sum of the prices at which you bought the various items.</p>
+                    </div>
+                  </div>
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                    <!--/.bg-holder-->
+                    <div class="card-body position-relative">
+                      <h5>Inventory Sold</h5>
+                      <p>
+                        Inventory sold is simply the sum of each item sold in the selected period.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <!---->
+        <footer>
+          <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+            <div class="col-12 col-sm-auto text-center">
+            </div>
+            <div class="col-12 col-sm-auto text-center">
+              <p class="mb-0 text-600"></p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
       </div>
     </main>
 
