@@ -116,6 +116,7 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
             }
             break;
         case "Year":
+            var StartingPartialDate = moment([app[2],0,1])
             Total = 0
             var DataFine = CreateEndDateYear()
             if(Mese != 0){
@@ -124,21 +125,7 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
                     StartingDate.add(Mese,"months")
                 }while(StartingDate < DataFine)   
             }else{
-                if(StartingDate < DataFine){
-                    Total += parseInt(Costo)
-                }
-            }
-            break;
-        case "Return":
-            Total = 0
-            var DataFine = CreateEndDateLifetime()
-            if(Mese != 0){
-                do{
-                    Total += parseInt(Costo)
-                    StartingDate.add(Mese,"months")
-                }while(StartingDate < DataFine)   
-            }else{
-                if(StartingDate < DataFine){
+                if(StartingDate <= DataFine && StartingDate >= StartingPartialDate){
                     Total += parseInt(Costo)
                 }
             }
