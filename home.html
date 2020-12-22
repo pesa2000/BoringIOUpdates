@@ -221,6 +221,26 @@
                       </a>
                     </li>
                     <li class="nav-item">
+                      <a class="nav-link" href="profiles.html">
+                        <div class="d-flex align-items-center">
+                          <span class="nav-link-icon">
+                            <span class="fas fa-archive"></span>
+                          </span>
+                          <span class="nav-link-text">Profiles</span>
+                        </div>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="release.html">
+                        <div class="d-flex align-items-center">
+                          <span class="nav-link-icon">
+                            <span class="fas fa-globe-europe"></span>
+                          </span>
+                          <span class="nav-link-text">Releases</span>
+                        </div>
+                      </a>
+                    </li>
+                    <li class="nav-item">
                       <a class="nav-link" href="tracking.html">
                         <div class="d-flex align-items-center">
                           <span class="nav-link-icon">
@@ -384,7 +404,7 @@
             <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-3.png');"></div>
               <div class="card-body position-relative">
-                <h6>Sales<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
+                <h6>Sales or Return<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
                 <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success" id = "Sales">0</div>
                 <a class="font-weight-semi-bold fs--1 text-nowrap" href="sales.html">See sales<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>
               </div>
@@ -397,7 +417,7 @@
                     <div class="row flex-between-center">
                       <div class="col">
                         <h4 class="text-white mb-0" id = "Profit"></h4>
-                        <p class="fs--1 font-weight-semi-bold">Return <span class="opacity-50" id="Return"></span></p>
+                        <p class="fs--1 font-weight-semi-bold">Profit without expenses <span class="opacity-50" id="Return"></span></p>
                       </div>
                       <div class="col-auto d-flex"><select class="custom-select custom-select-sm select-month mr-2" id="FilterDate" onchange="Changed()">
                           <option value="1">January</option>
@@ -589,9 +609,9 @@
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
-                      <h5>Return</h5>
+                      <h5>Inventory Sold</h5>
                       <p>
-                        Return is actually pretty similar tot the profit but it doesnt count the expenses for the filtered period.
+                        Inventory sold is simply the sum of each item sold in the selected period.
                       </p>
                     </div>
                   </div>
@@ -613,16 +633,6 @@
                       <h5>Purchases</h5>
                       <p>
                         It is the sum of the prices at which you bought the various items.</p>
-                    </div>
-                  </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
-                    <!--/.bg-holder-->
-                    <div class="card-body position-relative">
-                      <h5>Inventory Sold</h5>
-                      <p>
-                        Inventory sold is simply the sum of each item sold in the selected period.
-                      </p>
                     </div>
                   </div>
                 </div>

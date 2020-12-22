@@ -5,17 +5,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bot</title>
+    <title>Releases</title>
     <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
-
-
     <link rel="manifest" href="assets/img/favicons/manifest.json">
     <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
     <meta name="theme-color" content="#ffffff">
-
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
     <script>window.$ = window.jQuery = require('jquery');</script>
     <script src="assets/js/config.navbar-vertical.min.js"></script>
@@ -37,7 +34,7 @@
       })
     </script>
   </head>
-  <body onload="LoadBots()">
+  <body>
     <style>
       .dot {
         height: 10px;
@@ -299,16 +296,9 @@
               <div class="col">             
                 <!-- Title -->
                 <h1 class="header-title" style="float: left;margin-left: 17px;">
-                  Bot
+                  Releases
                   <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:3px" id="MessageError">Connection error...</span>
                 </h1>
-                <span style="float: right;margin-right: 1%;">                     
-                  <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#newBot">
-                    <span  data-toggle="tooltip" data-placement="top" title="New Bot">
-                    <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                  </span>
-                 </button>  
-               </span>
               </div>
             </div> <!-- / .row -->
           </div>
@@ -324,84 +314,47 @@
                   <h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
                   <p style='margin-top: -20px;'>Start to add something</p>
                   </div>
-                <div class="row" id = "TableBots">
+                <div class="row" id = "ReleasesList">
 
                 </div>
               </div>
               </div>
             </div>
-           <!--MODAL CREAZIONE-->
-           <div class="modal fade" id="newBot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">New Bot</h4>
-                      <p class="fs--1 mb-0">Search your bot and save your key</p>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <div>
-                    <div class="form-row">
-                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
-                        <select id="BotBrandList" class="form-control">
-                            <option value="0" selected disabled>Choose a bot</option>
-                            <option value="kodai">KodaiAIO</option>
-                            <option value="cyber">CyberSole</option>
-                            <option value="nsb">NikeShoeBot</option>
-                            <option value="hawk">Hawk</option>
-                            <option value="wrath">Wrath</option>
-                            <option value="prism">Prism</option>
-                            <option value="velox">Velox</option>
-                            <option value="sole">SoleAio</option>
-                            <option value="fleek">FleekFramework</option>
-                            <option value="phasma">Phasma</option>
-                            <option value="f3">F3ather</option>
-                            <option value="adept">Adept</option>
-                            <option value="ganesh">Ganesh</option>  
-                            <option value="cham">Chameleon</option>
-                            <option value="haselts">Haselts</option>
-                            <option value="pulsar">Pulsar</option>
-                            <option value="snatch">Snatch</option>
-                            <option value="rugg">RugAIO</option>
-                            <option value="tweet">TweetNinja</option>
-                            <option value="hyper">Hyper</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-12"><label for="modal-auth-password">Key</label><input class="form-control" id = "BotKey" type="text"  /></div>
-                      <div class="form-group col-12"><label id = "errorLabel" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
-                    </div>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick = "AddBot()">Add</button></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="modal fade" id="botList" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+        <div class="modal fade" id="raffles" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
           <div class="modal-dialog mt-6" role="document">
             <div class="modal-content border-0">
               <div class="modal-header px-5 text-white position-relative modal-shape-header">
                 <div class="position-relative z-index-1">
                   <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Bot List</h4>
-                    <p class="fs--1 mb-0" id = "description"></p>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Raffles</h4>
+                    <p class="fs--1 mb-0">View raffles for this item</p>
                   </div>
                 </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
               </div>
               <div class="modal-body py-4 px-5">
-                <form>
-                  <div class="form-row" id = "keysList">
-                    
+                <div>
+                  <div class="form-row">
+                    <div class="form-group col-12">
+                      <div class="media align-items-center position-relative" style='background-color: #132238;cursor: pointer;padding: 8px;border-radius: 4px;'>
+                        <img class="rounded border border-200" id="ImgRaffle" width="70" alt="" />
+                        <div class="media-body ml-3">
+                          <h6 class="mb-1 font-weight-semi-bold" id="NameRaffle"></h6>
+                          <p class="font-weight-semi-bold mb-0 text-500"><span class="badge badge-pill fs--2 badge-soft-success" id="DateRaffle"></span></p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group col-12" id="rafflesList">
+                      
+                    </div>
+                    </div>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
           <!--END-->
           <footer>
             <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
@@ -453,7 +406,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
         <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
         <script src="assets/js/theme.min.js"></script>
-        <script src="scripts/bot.js" defer></script>
+        <script src="scripts/release.js" defer></script>
         <script>if(window.module){module = window.module;}</script> 
   </body>
 </html>

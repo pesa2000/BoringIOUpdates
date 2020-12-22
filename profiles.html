@@ -1,0 +1,771 @@
+
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profiles</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
+
+
+    <link rel="manifest" href="assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script src="assets/js/config.navbar-vertical.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
+    <link href="assets/lib/datatables-bs4/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.css" rel="stylesheet">
+    <link href="assets/lib/leaflet/leaflet.css" rel="stylesheet">
+    <link href="assets/lib/leaflet.markercluster/MarkerCluster.css" rel="stylesheet">
+    <link href="assets/lib/leaflet.markercluster/MarkerCluster.Default.css" rel="stylesheet">
+    <link id = "stile" href="assets/css/theme-dark.min.css" rel="stylesheet">
+    <script>
+      const ipc = require('electron').ipcRenderer
+      ipc.send("getUsername")
+      ipc.on("ReturnedUsername",(event,arg) => {
+          console.log("Nome")
+          console.log(arg)
+          $("#nickName").text(arg)
+      })
+    </script>
+  </head>
+  <body>
+    <style>
+      .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+      }
+      .dot1 {
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+    </style>
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+      <div class="preloader" id = "Preloader1">
+        <div style = "position:fixed;top: 50%;left: 50%;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid" data-layout="container">
+        <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;">
+          <script>
+            var navbarStyle = localStorage.getItem("navbarStyle");
+            if (navbarStyle) {
+              document.querySelector('.navbar-vertical').className += ' navbar-' + navbarStyle;
+            }
+          </script>
+          <div class="d-flex align-items-center">
+            <div class="toggle-icon-wrapper">
+              <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-toggle="tooltip" data-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+            </div>
+            <a class="navbar-brand" href="home.html">
+              <div class="d-flex align-items-center py-3">
+                <img class="mr-2" src="img/logo-piccolo.png" alt="" width="40" />
+                <span class="text-sans-serif" style="color: #fafafa;">boring</span>
+              </div>
+            </a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
+            <div class="navbar-vertical-content perfect-scrollbar scrollbar">
+              <ul class="navbar-nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="home.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-chart-pie"></span>
+                      </span>
+                      <span class="nav-link-text">Home</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="inventory.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-copy"></span>
+                      </span>
+                      <span class="nav-link-text">Inventory</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="sales.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-tag"></span>
+                      </span>
+                      <span class="nav-link-text">Sales</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="expenses.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-credit-card"></span>
+                      </span>
+                      <span class="nav-link-text">Expenses</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="bot.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-robot"></span>
+                      </span>
+                      <span class="nav-link-text">Bot</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="profiles.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-archive"></span>
+                      </span>
+                      <span class="nav-link-text">Profiles</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="release.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-globe-europe"></span>
+                      </span>
+                      <span class="nav-link-text">Releases</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="tracking.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-shipping-fast"></span>
+                      </span>
+                      <span class="nav-link-text">Tracking</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="market.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="far fa-chart-bar"></span>
+                      </span>
+                      <span class="nav-link-text">Market</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="log.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-book"></span>
+                      </span>
+                      <span class="nav-link-text">Activity</span>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+              <div class="navbar-vertical-divider">
+                <hr class="navbar-vertical-hr my-2" />
+              </div>
+              <ul class="navbar-nav flex-column" id="navbarVerticalNav">
+                <li class="nav-item">
+                  <a class="nav-link" href="settings.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-user-alt"></span>
+                      </span>
+                      <span class="nav-link-text">Profile</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item" onclick="LogOut()">
+                  <a class="nav-link" href="settings.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-user-alt-slash"></span>
+                      </span>
+                      <span class="nav-link-text">Logout</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-code-branch"></span></span>
+                        <span class="nav-link-text">Changelog</span>
+                        <span class="badge badge-pill ml-2 badge-soft-primary">vBeta</span>
+                      </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;">
+        </nav>
+        <!--INZIO NAVBAR IN MODALITA' PICCOLA-->
+        <div class="content">
+          <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;">
+            <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+            <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
+              <div class="d-flex align-items-center">
+                <img src="img/logo-piccolo.png" alt="" width="40" />
+                <span class="text-sans-serif" style="color:#fafafa">boring</span>
+              </div>
+            </a>
+            <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+              <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "minimize()" data-toggle="tooltip" data-placement="left" title="minimize">
+                <a class="nav-link px-0">
+                  <span class="fas fa-minus fs-4" data-fa-transform="shrink-7" style="margin-right: 8px;"></span>
+                </a>
+              </li>
+              <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "maximize()" data-toggle="tooltip" data-placement="left" title="maximize">
+                <a class="nav-link px-0">
+                  <span class="fas fa-square fs-4" data-fa-transform="shrink-7" style="margin-right: 8px;"></span>
+                </a>
+              </li>
+              <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "quit()" data-toggle="tooltip" data-placement="left" title="close">
+                <a class="nav-link px-0">
+                  <span class="fas fa-times fs-4" data-fa-transform="shrink-7" style="margin-right: 8px;"></span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <script>
+            var navBtn = document.getElementById("btnCloseNav")
+            function OpenClose(){
+              $("#navbarVerticalCollapse").toggle()
+            }
+            var navbarPosition = localStorage.getItem('navbarPosition');
+            var navbarVertical = document.querySelector('.navbar-vertical');
+            var navbarTopVertical = document.querySelector('.content .navbar-top');
+            var navbarTop = document.querySelector('[data-layout] .navbar-top');
+            var navbarTopCombo = document.querySelector('.content .navbar-top-combo');
+
+            if (navbarPosition === 'top') {
+              navbarTop.removeAttribute('style');
+              navbarTopVertical.parentNode.removeChild(navbarTopVertical);
+              navbarVertical.parentNode.removeChild(navbarVertical);
+              navbarTopCombo.parentNode.removeChild(navbarTopCombo);
+            } else if (navbarPosition === 'combo') {
+              navbarVertical.removeAttribute('style');
+              navbarTopCombo.removeAttribute('style');
+              navbarTop.parentNode.removeChild(navbarTop);
+              navbarTopVertical.parentNode.removeChild(navbarTopVertical);
+            } else {
+              navbarVertical.removeAttribute('style');
+              navbarTopVertical.removeAttribute('style');
+              navbarTop.parentNode.removeChild(navbarTop);
+              //navbarTopCombo.parentNode.removeChild(navbarTopCombo);
+            }
+          </script>
+        <div class="content">
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">             
+                <!-- Title -->
+                <h1 class="header-title" style="float: left;margin-left: 17px;">
+                  Profiles
+                  <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:3px" id="MessageError">Connection error...</span>
+                </h1>
+                <span style="float: right;margin-right: 1%;">                     
+                  <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" onclick="AddFirstState()">
+                    <span  data-toggle="tooltip" data-placement="top" title="New profile">
+                    <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+                  </span>
+                 </button>  
+                 <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #f1743f !important;color: #fff;" type="button" onclick="Export()">
+                  <span data-toggle="tooltip" data-placement="top" title="Export your profiles">
+                  <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
+                  </span>
+                  </button>
+               </span>
+              </div>
+            </div> <!-- / .row -->
+          </div>
+          <div class="card mb-3 bg-200">
+            <div>
+              <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
+              <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
+            </div>
+            <div class="card mb-3">
+              <div class="card-body" style="background-color: #061325;border-radius: 4px;cursor: pointer;">
+                <div style='text-align:center;display: none;' id="AlertBot">
+                  <img height = "300px" src='https://i.ibb.co/kKmwkJW/superscene-69-box-removebg-preview.png' alt=''>
+                  <h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
+                  <p style='margin-top: -20px;'>Start to add something</p>
+                  </div>
+                  <table class="table table-borderless table-hover">
+                    <thead class="text-900">
+                      <tr>
+                        <th class="sort pr-1 align-middle">Profile </th>
+                        <th class="sort pr-1 align-middle">Name </th>
+                        <th class="sort pr-1 align-middle">Surname</th>
+                        <th class="sort pr-1 align-middle">First Address</th>
+                        <th class="sort pr-1 align-middle">Last 4 digits</th>
+                        <th></th>
+                        <th class="sort pr-1 align-middle"></th>
+                      </tr>
+                    </thead>
+                    <tbody id = "ProfilesList">
+                      
+                   </tbody>
+                  </table>
+              </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="checkProfile" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog modal-lg mt-2" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Visualize Profile</h4>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-row">
+                    
+                  <div class="form-group col-6"><label for="modal-auth-password">Name</label><h3 class="form-control" id="nomePersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Username</label><h3 class="form-control" id="cognomePersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Email</label><h3 class="form-control" id="emailPersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Telephone</label><h3 class="form-control" id="telefonoPersonaCheck" type="text"></h3></div>
+      
+                  <div class="form-group col-6"><label for="modal-auth-password">Address</label><h3 class="form-control" id="addressPersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Address 2</label><h3 class="form-control" id="address2PersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Country</label><h3 class="form-control" id="statoPersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">State</label><h3 class="form-control" id="regionePersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">City</label><h3 class="form-control" id="cittaPersonaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Zip</label><h3 class="form-control" id="zipPersonaCheck" type="text"></h3></div>
+      
+                  <div class="form-group col-6"><label for="modal-auth-password">Card Number</label><h3 class="form-control" id="numeroCartaCheck" type="text"></h3></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Card Holder</label><h3 class="form-control" id="cardHolderCheck" type="text"></h3></div>
+                  <div class="form-group col-4"><label for="modal-auth-password">Exp.Month</label><h3 class="form-control" id="meseCartaCheck" type="text"></h3></div>
+                  <div class="form-group col-4"><label for="modal-auth-password">Exp.Year</label><h3 class="form-control" id="annoCartaCheck" type="text"></h3></div>
+                  <div class="form-group col-4"><label for="modal-auth-password">CVC</label><h3 class="form-control" id="cvcCartaCheck" type="text"></h3></div>
+                  
+              </div>
+            </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="exportProfile" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog mt-6" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Create</h4>
+                    <p class="fs--1 mb-0">Export Profile</p>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-row">
+                    <div class="form-group col-12">
+                    <select id = "ProfileToExport" class="form-control">
+                      <option value = "SoleAio">SoleAio</option>
+                      <option value = "Adept">Adept</option>
+                      <option value = "Velox">Velox</option>
+                      <option value = "Fleek">Fleek</option>
+                      <option value = "NikeShoeBot">NikeShoeBot</option>
+                      <option value = "Ganesh">Ganesh</option>
+                      <option value = "Mek">Mek</option>
+                      <option value = "Wrath">Wrath</option>
+                      <option value = "TheKickStation">TheKickStation</option>
+                    </select>
+                    </div>
+                  </div>
+                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="ExportProfile()">Export</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal fade" id="addProfile" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog modal-lg mt-2" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">New Profile</h4>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-row">
+                    <div class="form-group col-6"><label for="modal-auth-password">Name Profile</label><input class="form-control" type="text" id="nomeProfiloAdd" /></div>
+                    <div class="form-group col-6"><label for="modal-auth-password"></label>       
+                    </select>
+                  </div>
+                    
+                  <div class="form-group col-6"><label for="modal-auth-password">Name</label><input class="form-control" id="nomePersona" type="text" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Surname</label><input class="form-control" type="text" id="cognomePersona" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Email</label><input class="form-control" id="emailPersona" type="text" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Telephone</label><input class="form-control" id="telefonoPersona" type="text" /></div>
+      
+                  <div class="form-group col-6"><label for="modal-auth-password">Address</label><input class="form-control" id="addressPersona" type="text" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Address 2</label><input class="form-control" id="address2Persona" type="text" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Country</label>
+                      <select class="form-control" id="statoPersona" onchange="ChangeStateRegion()">
+                        <option value="AF">Afghanistan</option>
+                        <option value="AX">Åland Islands</option>
+                        <option value="AL">Albania</option>
+                        <option value="DZ">Algeria</option>
+                        <option value="AS">American Samoa</option>
+                        <option value="AD">Andorra</option>
+                        <option value="AO">Angola</option>
+                        <option value="AI">Anguilla</option>
+                        <option value="AQ">Antarctica</option>
+                        <option value="AG">Antigua and Barbuda</option>
+                        <option value="AR">Argentina</option>
+                        <option value="AM">Armenia</option>
+                        <option value="AW">Aruba</option>
+                        <option value="AU">Australia</option>
+                        <option value="AT">Austria</option>
+                        <option value="AZ">Azerbaijan</option>
+                        <option value="BS">Bahamas</option>
+                        <option value="BH">Bahrain</option>
+                        <option value="BD">Bangladesh</option>
+                        <option value="BB">Barbados</option>
+                        <option value="BY">Belarus</option>
+                        <option value="BE">Belgium</option>
+                        <option value="BZ">Belize</option>
+                        <option value="BJ">Benin</option>
+                        <option value="BM">Bermuda</option>
+                        <option value="BT">Bhutan</option>
+                        <option value="BO">Bolivia, Plurinational State of</option>
+                        <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
+                        <option value="BA">Bosnia and Herzegovina</option>
+                        <option value="BW">Botswana</option>
+                        <option value="BV">Bouvet Island</option>
+                        <option value="BR">Brazil</option>
+                        <option value="IO">British Indian Ocean Territory</option>
+                        <option value="BN">Brunei Darussalam</option>
+                        <option value="BG">Bulgaria</option>
+                        <option value="BF">Burkina Faso</option>
+                        <option value="BI">Burundi</option>
+                        <option value="KH">Cambodia</option>
+                        <option value="CM">Cameroon</option>
+                        <option value="CA">Canada</option>
+                        <option value="CV">Cape Verde</option>
+                        <option value="KY">Cayman Islands</option>
+                        <option value="CF">Central African Republic</option>
+                        <option value="TD">Chad</option>
+                        <option value="CL">Chile</option>
+                        <option value="CN">China</option>
+                        <option value="CX">Christmas Island</option>
+                        <option value="CC">Cocos (Keeling) Islands</option>
+                        <option value="CO">Colombia</option>
+                        <option value="KM">Comoros</option>
+                        <option value="CG">Congo</option>
+                        <option value="CD">Congo, the Democratic Republic of the</option>
+                        <option value="CK">Cook Islands</option>
+                        <option value="CR">Costa Rica</option>
+                        <option value="CI">Côte d'Ivoire</option>
+                        <option value="HR">Croatia</option>
+                        <option value="CU">Cuba</option>
+                        <option value="CW">Curaçao</option>
+                        <option value="CY">Cyprus</option>
+                        <option value="CZ">Czech Republic</option>
+                        <option value="DK">Denmark</option>
+                        <option value="DJ">Djibouti</option>
+                        <option value="DM">Dominica</option>
+                        <option value="DO">Dominican Republic</option>
+                        <option value="EC">Ecuador</option>
+                        <option value="EG">Egypt</option>
+                        <option value="SV">El Salvador</option>
+                        <option value="GQ">Equatorial Guinea</option>
+                        <option value="ER">Eritrea</option>
+                        <option value="EE">Estonia</option>
+                        <option value="ET">Ethiopia</option>
+                        <option value="FK">Falkland Islands (Malvinas)</option>
+                        <option value="FO">Faroe Islands</option>
+                        <option value="FJ">Fiji</option>
+                        <option value="FI">Finland</option>
+                        <option value="FR">France</option>
+                        <option value="GF">French Guiana</option>
+                        <option value="PF">French Polynesia</option>
+                        <option value="TF">French Southern Territories</option>
+                        <option value="GA">Gabon</option>
+                        <option value="GM">Gambia</option>
+                        <option value="GE">Georgia</option>
+                        <option value="DE">Germany</option>
+                        <option value="GH">Ghana</option>
+                        <option value="GI">Gibraltar</option>
+                        <option value="GR">Greece</option>
+                        <option value="GL">Greenland</option>
+                        <option value="GD">Grenada</option>
+                        <option value="GP">Guadeloupe</option>
+                        <option value="GU">Guam</option>
+                        <option value="GT">Guatemala</option>
+                        <option value="GG">Guernsey</option>
+                        <option value="GN">Guinea</option>
+                        <option value="GW">Guinea-Bissau</option>
+                        <option value="GY">Guyana</option>
+                        <option value="HT">Haiti</option>
+                        <option value="HM">Heard Island and McDonald Islands</option>
+                        <option value="VA">Holy See (Vatican City State)</option>
+                        <option value="HN">Honduras</option>
+                        <option value="HK">Hong Kong</option>
+                        <option value="HU">Hungary</option>
+                        <option value="IS">Iceland</option>
+                        <option value="IN">India</option>
+                        <option value="ID">Indonesia</option>
+                        <option value="IR">Iran, Islamic Republic of</option>
+                        <option value="IQ">Iraq</option>
+                        <option value="IE">Ireland</option>
+                        <option value="IM">Isle of Man</option>
+                        <option value="IL">Israel</option>
+                        <option value="IT">Italy</option>
+                        <option value="JM">Jamaica</option>
+                        <option value="JP">Japan</option>
+                        <option value="JE">Jersey</option>
+                        <option value="JO">Jordan</option>
+                        <option value="KZ">Kazakhstan</option>
+                        <option value="KE">Kenya</option>
+                        <option value="KI">Kiribati</option>
+                        <option value="KP">Korea, Democratic People's Republic of</option>
+                        <option value="KR">Korea, Republic of</option>
+                        <option value="KW">Kuwait</option>
+                        <option value="KG">Kyrgyzstan</option>
+                        <option value="LA">Lao People's Democratic Republic</option>
+                        <option value="LV">Latvia</option>
+                        <option value="LB">Lebanon</option>
+                        <option value="LS">Lesotho</option>
+                        <option value="LR">Liberia</option>
+                        <option value="LY">Libya</option>
+                        <option value="LI">Liechtenstein</option>
+                        <option value="LT">Lithuania</option>
+                        <option value="LU">Luxembourg</option>
+                        <option value="MO">Macao</option>
+                        <option value="MK">Macedonia, the former Yugoslav Republic of</option>
+                        <option value="MG">Madagascar</option>
+                        <option value="MW">Malawi</option>
+                        <option value="MY">Malaysia</option>
+                        <option value="MV">Maldives</option>
+                        <option value="ML">Mali</option>
+                        <option value="MT">Malta</option>
+                        <option value="MH">Marshall Islands</option>
+                        <option value="MQ">Martinique</option>
+                        <option value="MR">Mauritania</option>
+                        <option value="MU">Mauritius</option>
+                        <option value="YT">Mayotte</option>
+                        <option value="MX">Mexico</option>
+                        <option value="FM">Micronesia, Federated States of</option>
+                        <option value="MD">Moldova, Republic of</option>
+                        <option value="MC">Monaco</option>
+                        <option value="MN">Mongolia</option>
+                        <option value="ME">Montenegro</option>
+                        <option value="MS">Montserrat</option>
+                        <option value="MA">Morocco</option>
+                        <option value="MZ">Mozambique</option>
+                        <option value="MM">Myanmar</option>
+                        <option value="NA">Namibia</option>
+                        <option value="NR">Nauru</option>
+                        <option value="NP">Nepal</option>
+                        <option value="NL">Netherlands</option>
+                        <option value="NC">New Caledonia</option>
+                        <option value="NZ">New Zealand</option>
+                        <option value="NI">Nicaragua</option>
+                        <option value="NE">Niger</option>
+                        <option value="NG">Nigeria</option>
+                        <option value="NU">Niue</option>
+                        <option value="NF">Norfolk Island</option>
+                        <option value="MP">Northern Mariana Islands</option>
+                        <option value="NO">Norway</option>
+                        <option value="OM">Oman</option>
+                        <option value="PK">Pakistan</option>
+                        <option value="PW">Palau</option>
+                        <option value="PS">Palestinian Territory, Occupied</option>
+                        <option value="PA">Panama</option>
+                        <option value="PG">Papua New Guinea</option>
+                        <option value="PY">Paraguay</option>
+                        <option value="PE">Peru</option>
+                        <option value="PH">Philippines</option>
+                        <option value="PN">Pitcairn</option>
+                        <option value="PL">Poland</option>
+                        <option value="PT">Portugal</option>
+                        <option value="PR">Puerto Rico</option>
+                        <option value="QA">Qatar</option>
+                        <option value="RE">Réunion</option>
+                        <option value="RO">Romania</option>
+                        <option value="RU">Russian Federation</option>
+                        <option value="RW">Rwanda</option>
+                        <option value="BL">Saint Barthélemy</option>
+                        <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+                        <option value="KN">Saint Kitts and Nevis</option>
+                        <option value="LC">Saint Lucia</option>
+                        <option value="MF">Saint Martin (French part)</option>
+                        <option value="PM">Saint Pierre and Miquelon</option>
+                        <option value="VC">Saint Vincent and the Grenadines</option>
+                        <option value="WS">Samoa</option>
+                        <option value="SM">San Marino</option>
+                        <option value="ST">Sao Tome and Principe</option>
+                        <option value="SA">Saudi Arabia</option>
+                        <option value="SN">Senegal</option>
+                        <option value="RS">Serbia</option>
+                        <option value="SC">Seychelles</option>
+                        <option value="SL">Sierra Leone</option>
+                        <option value="SG">Singapore</option>
+                        <option value="SX">Sint Maarten (Dutch part)</option>
+                        <option value="SK">Slovakia</option>
+                        <option value="SI">Slovenia</option>
+                        <option value="SB">Solomon Islands</option>
+                        <option value="SO">Somalia</option>
+                        <option value="ZA">South Africa</option>
+                        <option value="GS">South Georgia and the South Sandwich Islands</option>
+                        <option value="SS">South Sudan</option>
+                        <option value="ES">Spain</option>
+                        <option value="LK">Sri Lanka</option>
+                        <option value="SD">Sudan</option>
+                        <option value="SR">Suriname</option>
+                        <option value="SJ">Svalbard and Jan Mayen</option>
+                        <option value="SZ">Swaziland</option>
+                        <option value="SE">Sweden</option>
+                        <option value="CH">Switzerland</option>
+                        <option value="SY">Syrian Arab Republic</option>
+                        <option value="TW">Taiwan, Province of China</option>
+                        <option value="TJ">Tajikistan</option>
+                        <option value="TZ">Tanzania, United Republic of</option>
+                        <option value="TH">Thailand</option>
+                        <option value="TL">Timor-Leste</option>
+                        <option value="TG">Togo</option>
+                        <option value="TK">Tokelau</option>
+                        <option value="TO">Tonga</option>
+                        <option value="TT">Trinidad and Tobago</option>
+                        <option value="TN">Tunisia</option>
+                        <option value="TR">Turkey</option>
+                        <option value="TM">Turkmenistan</option>
+                        <option value="TC">Turks and Caicos Islands</option>
+                        <option value="TV">Tuvalu</option>
+                        <option value="UG">Uganda</option>
+                        <option value="UA">Ukraine</option>
+                        <option value="AE">United Arab Emirates</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="US">United States</option>
+                        <option value="UM">United States Minor Outlying Islands</option>
+                        <option value="UY">Uruguay</option>
+                        <option value="UZ">Uzbekistan</option>
+                        <option value="VU">Vanuatu</option>
+                        <option value="VE">Venezuela, Bolivarian Republic of</option>
+                        <option value="VN">Viet Nam</option>
+                        <option value="VG">Virgin Islands, British</option>
+                        <option value="VI">Virgin Islands, U.S.</option>
+                        <option value="WF">Wallis and Futuna</option>
+                        <option value="EH">Western Sahara</option>
+                        <option value="YE">Yemen</option>
+                        <option value="ZM">Zambia</option>
+                        <option value="ZW">Zimbabwe</option>
+                        </select>
+                  </div>
+                  <div class="form-group col-6"><label for="modal-auth-password">State</label><select class = "form-control" id = "StateRegionAdd"></select></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">City</label><input class="form-control" id="cittaPersona" type="text" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Zip</label><input class="form-control" id="zipPersona" type="text" /></div>
+      
+                  <div class="form-group col-6"><label for="modal-auth-password">Card Number</label><input class="form-control" id="numeroCarta" type="text" /></div>
+                  <div class="form-group col-6"><label for="modal-auth-password">Card Holder</label><input class="form-control" id="cardHolder" type="text" /></div>
+                  <div class="form-group col-4"><label for="modal-auth-password">Exp.Month</label><input class="form-control" id="meseCarta" type="text" /></div>
+                  <div class="form-group col-4"><label for="modal-auth-password">Exp.Year</label><input class="form-control" id="annoCarta" type="text" /></div>
+                  <div class="form-group col-4"><label for="modal-auth-password">CVC</label><input class="form-control" id="cvcCarta" type="text" /></div>
+                  
+              </div>
+                  <label id = "errorLabelAdd" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label>
+                  <div class="form-group"><button class="btn btn-primary btn-block mt-3" type="submit" name="submit"  id="AddButton" onclick="AddProfile()">Add</button></div>
+            </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          <footer>
+            <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+              <div class="col-12 col-sm-auto text-center">
+              </div>
+              <div class="col-12 col-sm-auto text-center">
+                <p class="mb-0 text-600"></p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+      if (isFluid) {
+        var container = document.querySelector('[data-layout]');
+        container.classList.remove('container');
+        container.classList.add('container-fluid');
+      }
+    </script>
+    <script>if (typeof module === 'object') 
+        {window.module = module; module = undefined;}</script>
+        <script src="assets/js/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
+        <script src="assets/lib/@fortawesome/all.min.js"></script>
+        <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
+        <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
+        <script src="assets/lib/is_js/is.min.js"></script>
+        <script src="assets/lib/lodash/lodash.min.js"></script>
+        <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+        <script src="assets/lib/echarts/echarts.min.js"></script>
+        <script src="assets/lib/chart.js/Chart.min.js"></script>
+        <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
+        <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
+        <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
+        <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
+        <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
+        <script src="assets/lib/leaflet/leaflet.js"></script>
+        <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+        <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
+        <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
+        <script src="assets/js/theme.min.js"></script>
+        <script src="scripts/profile.js" defer></script>
+        <script>if(window.module){module = window.module;}</script> 
+  </body>
+</html>
