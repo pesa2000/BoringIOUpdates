@@ -162,7 +162,7 @@ function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo,Url
         "<td class='align-middle font-weight-semi-bold'>" + Site + "</td>" +
         "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price +"</span></td>" +
         "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " + parseFloat(Conversion * Value).toFixed(2) + "</span></td>" +
-        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span data-fa-transform='shrink-2'></span></span></td>" +
         "<td></td>" +
         "<td class='align-middle'>" +
             "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEdit(" + Id +")'>" +

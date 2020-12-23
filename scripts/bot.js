@@ -75,6 +75,7 @@ function LoadStats(){
       $("#BotsPurchases").text(Valuta + " " + results[0].Acquisti)
       $("#BotsSold").text(Valuta + " " + results[0].Vendite)
       $("#NumberOfBots").text(results[0].Conteggio)
+      $("#ProfitBots").text(Valuta + " " + (results[0].Vendite - results[0].Acquisti))
       connection.release()
     })
   })
@@ -103,7 +104,7 @@ function SingleTemplateBot(Brand,Immagine,Prezzo,Vendita,Note,Id){
         "<td></td>" +
         "<td class='align-middle'>" +
             "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'PrepareEditBot(" + Id +")'>" +
-                "<span class='fas fa-pencil-alt' data-fa-transform='shrink-3 down-2'></span>" +
+                "<span class='fas fa-tags' data-fa-transform='shrink-3 down-2'></span>" +
             "</button>" +
             "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'DeleteBot("+ Id +")'>" +
                 "<span class='fas fa-trash' data-fa-transform='shrink-3 down-2'></span>" +
@@ -168,7 +169,11 @@ function EditBot(){
   }
   if(isNaN(Sold)){
     $("#errorBotModalEdit").text("The field 'Price sold' must be a number!")
-    return 
+    if(Sold == "" || Sold == undefined || Sold == null){
+      Sold = 0
+    }else{
+      return 
+    }
   }
   pool.getConnection(function(error,connection){
     connection.query("UPDATE inventariobot SET PrezzoComprato = ?,PrezzoVenduto = ?,Note = ? WHERE IdBot = ?",[Purc,Sold,Notes,IdToModify],function(err,results,fields){

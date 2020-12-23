@@ -366,7 +366,7 @@
                         <table class="table table-borderless table-hover">
                           <thead class="text-900" id="TableBots">
                             <tr>
-                              <th class="sort pr-1 align-middle">Brand</th>
+                              <th class="sort pr-1 align-middle"></th>
                               <th class="sort pr-1 align-middle">Purchase Price</th>
                               <th class="sort pr-1 align-middle">Selling Price</th>
                               <th class="sort pr-1 align-middle">Notes</th>
@@ -396,6 +396,7 @@
                               <div class="form-group col-12"><label for="modal-auth-confirm-password">Bot</label>
                                 <select class="form-control" id="BotsList">
                                   <option selected >Select a Bot</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1252579140483588102/B7xqRatq_400x400.jpg"  >BoringIO</option>
                                   <option  value="https://pbs.twimg.com/profile_images/1184203863269634048/P98ia02p_400x400.jpg"  >CyberSole</option>
                                   <option  value="https://pbs.twimg.com/profile_images/1241542362121166852/0hQnV9lV_400x400.png"  >Kodai</option>
                                   <option  value="https://pbs.twimg.com/profile_images/917391315746385920/cryapglx_400x400.jpg"  >Splashforce</option>
@@ -452,7 +453,7 @@
                               </div>
                               <div class="form-group col-6"><label for="modal-auth-password">Price purchase</label><input class="form-control" type="text" id = "PricePurchaseBots" /></div>
                               <div class="form-group col-6"><label for="modal-auth-password">Price sold</label><input class="form-control" type="text" id = "PriceSoldBots" /></div>
-                              <div class="form-group col-6"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesBots" /></div>
+                              <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesBots" /></div>
                             </div>
                             <div class="form-group col-12"><label id = "errorBotModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
                             <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="AddBot()">Add</button></div>
@@ -479,8 +480,8 @@
                         <div class="form-group col-6"><label for="modal-auth-password">Price purchase</label><input class="form-control" type="text"  id = "PricePurchaseToModify"/></div>
                         <div class="form-group col-6"><label for="modal-auth-password">Price sold</label><input class="form-control" type="text"  id = "PriceSoldToModify"/></div>
                         <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text"  id = "NotesToModify"/></div>
-                        <input type = "hidden" id = "IdToModify">
                       </div>
+                      <input type = "hidden" id = "IdToModify">
                       <div class="form-group col-12"><label id = "errorBotModalEdit" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
                       <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick ="EditBot()">Edit</button></div>
                     </div>
@@ -511,6 +512,14 @@
                         <div class="card-body position-relative">
                           <h6>Bots Sold</h6>
                           <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="BotsSold"></div>
+                        </div>
+                      </div>
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Bots Profit</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="ProfitBots"></div>
                         </div>
                       </div>
                       <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
