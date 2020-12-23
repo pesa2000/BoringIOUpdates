@@ -259,7 +259,7 @@ function PrintProfiles(){
     console.log(ListProfiles)
     for(var Profile of ListProfiles){
         console.log(Profile)
-        var SingleProfile = TemplateProfile(cont,Profile.nomeProfilo,Profile.nome,Profile.cognome,Profile.indirizzo1,Profile.numeroCarta)
+        var SingleProfile = TemplateProfile(cont,Profile.nomeProfilo,Profile.nome,Profile.cognome,Profile.indirizzo1,Profile.numeroCarta,Profile.country)
         $("#ProfilesList").append(SingleProfile)
         cont+=1
     }
@@ -286,15 +286,16 @@ function Visualize(Index){
     $("#checkProfile").modal()
 }
 
-function TemplateProfile(Index,NameProfile,Nome,Cognome,Indirizzo1,CardNumber){
+function TemplateProfile(Index,NameProfile,Nome,Cognome,Indirizzo1,CardNumber,Country){
     CardNumber=CardNumber.split(" ").join("")
     var Last4Digits = CardNumber.slice(CardNumber.length - 4)
     return `<tr id = "${Index}" >` +
         "<td class='align-middle font-weight-semi-bold'>"+NameProfile+"</td>" +
-        "<td class='align-middle font-weight-semi-bold'>"+Nome+"</td>" +
-        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Cognome + "</span></td>" +
-        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Indirizzo1 + "</span></td>" +
-        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Last4Digits +"<span  data-fa-transform='shrink-2'></span></span></td>" +
+        "<td class='align-middle font-weight-semi-bold'><span class='badge badge rounded-capsule badge-soft-success'>"+Nome+"</span></td>" +
+        "<td class='align-middle font-weight-semi-bold'><span class='badge badge rounded-capsule badge-soft-info'>"+Cognome +"</span></td>" +
+        "<td class='align-middle font-weight-semi-bold'>"+Country+"</td>" +
+        "<td class='align-middle font-weight-semi-bold'>"+Indirizzo1 + "</td>" +
+        "<td class='align-middle font-weight-semi-bold'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Last4Digits +"</span></td>" +
         "<td></td>" +
         "<td class='align-middle'>" +
             "<button class='btn btn-falcon-default btn-sm' type='button' onclick = 'Visualize("+ Index +")'>" +

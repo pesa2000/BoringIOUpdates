@@ -46,10 +46,11 @@ function ChangeDate(DateToChange){
     return moment(DateToChange).format('YYYY[-]MM[-]DD')
 }
 
-function TemplateSingleSale(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price,AveragePriceStockX,Sale,Site,Size){
+function TemplateSingleSale(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,Price,AveragePriceStockX,Sale,Buyer,Size){
     var ProfitLine = "" 
     var l = ""
     if(Site == ""){Site = "No Site"}
+    if(Buyer == ""){Buyer = "No Buyer"}
     AveragePriceStockX = AveragePriceStockX.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
     (Profit >= 0) ? (ProfitLine = "success",l = "+ " + Valuta +"") : (ProfitLine = "danger",Profit *= -1, l = "- " + Valuta);
     console.log(ProfitLine)
@@ -67,6 +68,7 @@ function TemplateSingleSale(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price,Avera
     "</td>" +               
     "<td class='align-middle'>"+SelectedDate+"</td>" +
     "<td class='align-middle'>"+Site+"</td>" +
+    "<td class='align-middle'>"+Buyer+"</td>" +
     "<td class='align-middle'>"+ Valuta +""+ Price+"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+ Valuta +""+ AveragePriceStockX+"</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+ Valuta +""+Sale+"</span></td>" +
@@ -80,11 +82,12 @@ function TemplateSingleSale(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price,Avera
   "</tr>"
 }
 
-function TemplateSingleSaleCustom(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price,Sale,Site,Size){
+function TemplateSingleSaleCustom(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,Price,Sale,Buyer,Size){
     var ProfitLine = "" 
     var l = ""
     if(Photo == "" || Photo == null){Photo = "img/InvEmpty.jpeg"}
     if(Site == ""){Site = "No Site"}
+    if(Buyer == ""){Buyer = "No Buyer"}
     //AveragePriceStockX = AveragePriceStockX.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
     (Profit >= 0) ? (ProfitLine = "success",l = "+ " + Valuta) : (ProfitLine = "danger",Profit *= -1, l = "- " + Valuta);
     console.log(ProfitLine)
@@ -102,6 +105,7 @@ function TemplateSingleSaleCustom(Id,Name,Photo,UrlKey,Profit,SelectedDate,Price
     "</td>" +               
     "<td class='align-middle'>"+SelectedDate+"</td>" +
     "<td class='align-middle'>"+Site+"</td>" +
+    "<td class='align-middle'>"+Buyer+"</td>" +
     "<td class='align-middle'>"+ Valuta +""+Price+"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>€ ?</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+ Valuta +""+Sale+"</span></td>" +
@@ -159,6 +163,7 @@ function LoadAll(){
             var Sold = TemplateSingleSale(
             Sale.IdProdotto,
             Sale.NomeProdotto,
+            Sale.Sito,
             Sale.ImmagineProdotto,
             Sale.UrlKey,
             Sale.Profitto,
@@ -174,6 +179,7 @@ function LoadAll(){
             var SoldCustom = TemplateSingleSaleCustom(
                 SaleCustom.IdProdotto,
                 SaleCustom.NomeProdotto,
+                SaleCustom.Sito,
                 SaleCustom.ImmagineProdotto,
                 SaleCustom.UrlKey,
                 SaleCustom.Profitto,

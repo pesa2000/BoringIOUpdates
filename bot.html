@@ -2,24 +2,33 @@
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bot</title>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>Bots</title>
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
-
-
     <link rel="manifest" href="assets/img/favicons/manifest.json">
     <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
     <meta name="theme-color" content="#ffffff">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
     <script>window.$ = window.jQuery = require('jquery');</script>
     <script src="assets/js/config.navbar-vertical.min.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <!--<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">-->
     <link href="assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
     <link href="assets/lib/datatables-bs4/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.css" rel="stylesheet">
@@ -35,33 +44,54 @@
           console.log(arg)
           $("#nickName").text(arg)
       })
+      function mostraRicerca(){
+        document.getElementById('ricerca').style.display="block";
+      }
+      function visibleSearch(){
+        document.getElementById("Filter").style.display="inline";
+        document.getElementById("cerca").style.display="none";
+      }
+      function FilterTable(){
+        var Filter = $("#Filter").val()
+        var inventory = document.getElementById("Inventory")
+
+        var trList = inventory.getElementsByTagName("tr")
+
+        for(var tr of trList){
+          for(var tr of trList){
+            tr.setAttribute("style","display: table-row")
+          }
+        }
+
+        if(Filter == ""){
+          for(var tr of trList){
+            tr.setAttribute("style","display: table-row")
+          }
+        }
+
+        for(var tr of trList){
+          if(tr.id.toUpperCase().includes(Filter.toUpperCase())){
+            //console.log(tr)
+          }else{
+            tr.setAttribute("style","display: none")
+          }
+        }
+        //console.log(tr)
+      }
     </script>
   </head>
-  <body onload="LoadBots()">
+
+  <body>
     <style>
-      .dot {
-        height: 10px;
-        width: 10px;
-        background-color: #F6635B;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 0px;
+      .button-fixed{
+        bottom: 0;
+        position: fixed;
+        right: 0;
+        border-radius: 4px;
       }
-      .dot1 {
-        height: 10px;
-        width: 10px;
-        background-color: #FABF30;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: .3rem;
-      }
-      .dot2 {
-        height: 10px;
-        width: 10px;
-        background-color: #41C941;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: .3rem;
+      .fas{
+        cursor: pointer;
+        font-size: 24px;
       }
     </style>
     <!-- ===============================================-->
@@ -75,7 +105,7 @@
           </div>
         </div>
       </div>
-      <div class="container-fluid" data-layout="container">
+      <div class="container" data-layout="container">
         <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;">
           <script>
             var navbarStyle = localStorage.getItem("navbarStyle");
@@ -244,7 +274,7 @@
             <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
               <div class="d-flex align-items-center">
                 <img src="img/logo-piccolo.png" alt="" width="40" />
-                <span class="text-sans-serif" style="color:#fafafa">boring</span>
+                <span class="text-sans-serif" style="color:#fafafa;margin-left: 5px;">boring</span>
               </div>
             </a>
             <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
@@ -270,6 +300,7 @@
             function OpenClose(){
               $("#navbarVerticalCollapse").toggle()
             }
+
             var navbarPosition = localStorage.getItem('navbarPosition');
             var navbarVertical = document.querySelector('.navbar-vertical');
             var navbarTopVertical = document.querySelector('.content .navbar-top');
@@ -293,167 +324,244 @@
               //navbarTopCombo.parentNode.removeChild(navbarTopCombo);
             }
           </script>
-        <div class="content">
-          <div class="header-body">
-            <div class="row align-items-end">
-              <div class="col">             
-                <!-- Title -->
-                <h1 class="header-title" style="float: left;margin-left: 17px;">
-                  Bot
-                  <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:3px" id="MessageError">Connection error...</span>
-                </h1>
-                <span style="float: right;margin-right: 1%;">                     
-                  <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#newBot">
-                    <span  data-toggle="tooltip" data-placement="top" title="New Bot">
-                    <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                  </span>
-                 </button>  
-               </span>
-              </div>
-            </div> <!-- / .row -->
-          </div>
-          <div class="card mb-3 bg-200">
-            <div>
-              <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
-              <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
-            </div>
-            <div class="card mb-3">
-              <div class="card-body" style="background-color: #061325;border-radius: 4px;cursor: pointer;">
-                <div style='text-align:center;display: none;' id="AlertBot">
-                  <img height = "300px" src='https://i.ibb.co/kKmwkJW/superscene-69-box-removebg-preview.png' alt=''>
-                  <h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
-                  <p style='margin-top: -20px;'>Start to add something</p>
-                  </div>
-                <div class="row" id = "TableBots">
-
-                </div>
-              </div>
-              </div>
-            </div>
-           <!--MODAL CREAZIONE-->
-           <div class="modal fade" id="newBot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-            <div class="modal-dialog mt-6" role="document">
-              <div class="modal-content border-0">
-                <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                  <div class="position-relative z-index-1">
-                    <div>
-                      <h4 class="mb-0 text-white" id="authentication-modal-label">New Bot</h4>
-                      <p class="fs--1 mb-0">Search your bot and save your key</p>
-                    </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body py-4 px-5">
-                  <div>
-                    <div class="form-row">
-                      <div class="form-group col-12"><label for="modal-auth-confirm-password">Name</label>
-                        <select id="BotBrandList" class="form-control">
-                            <option value="0" selected disabled>Choose a bot</option>
-                            <option value="kodai">KodaiAIO</option>
-                            <option value="cyber">CyberSole</option>
-                            <option value="nsb">NikeShoeBot</option>
-                            <option value="hawk">Hawk</option>
-                            <option value="wrath">Wrath</option>
-                            <option value="prism">Prism</option>
-                            <option value="velox">Velox</option>
-                            <option value="sole">SoleAio</option>
-                            <option value="fleek">FleekFramework</option>
-                            <option value="phasma">Phasma</option>
-                            <option value="f3">F3ather</option>
-                            <option value="adept">Adept</option>
-                            <option value="ganesh">Ganesh</option>  
-                            <option value="cham">Chameleon</option>
-                            <option value="haselts">Haselts</option>
-                            <option value="pulsar">Pulsar</option>
-                            <option value="snatch">Snatch</option>
-                            <option value="rugg">RugAIO</option>
-                            <option value="tweet">TweetNinja</option>
-                            <option value="hyper">Hyper</option>
-                        </select>
+                 <div class="content">
+                  <div class="header-body">
+                    <div class="row align-items-end">
+                      <div class="col">
+                
+                        <!-- Title -->
+                        <h1 class="header-title" style="float: left;margin-left: 12px;">
+                          Bots 
+                          <span class="badge badge-soft-primary" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageExport">Inventory Exported</span>
+                          <span class="badge badge-soft-primary" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageEdit">Item edited</span>
+                          <span class="badge badge-soft-secondary" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageDuplicate">Item duplicated</span>
+                          <span class="badge badge-soft-warning" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageSale">Item sold</span>
+                          <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageDelete">Item deleted</span>
+                          <span class="badge badge-soft-success" style="display: none; float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageAdd">New item added</span>
+                          <span class="badge badge-soft-info" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageSync">Synchronizing prices</span>
+                          <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:7px" id="MessageError">Connection error...</span>
+                        </h1>
+                        <span style="float: right;margin-right: 1%;">                     
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#bot">
+                            <span  data-toggle="tooltip" data-placement="top" title="Add a new bot">
+                              <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+                            </span>
+                          </button>
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
+                            <span data-toggle="tooltip" data-placement="top" title="See all statistics">
+                              <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
+                            </span>
+                          </button>
+                          <input type="text" id = "Filter" style="display:none;" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
+                        </span>
                       </div>
-                      <div class="form-group col-12"><label for="modal-auth-password">Key</label><input class="form-control" id = "BotKey" type="text"  /></div>
-                      <div class="form-group col-12"><label id = "errorLabel" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
                     </div>
-                    <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick = "AddBot()">Add</button></div>
+                  </div>
+                  <div class="card mb-3 bg-200">
+                      <div style='text-align:center;display:none' id="AlertNoItem">
+                        <img style='height:300px' src='https://i.ibb.co/kKmwkJW/superscene-69-box-removebg-preview.png' alt=''>
+                        <h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
+                        <p style='margin-top: -20px;'>Start to add something</p>
+                      </div>
+                        <table class="table table-borderless table-hover">
+                          <thead class="text-900" id="TableBots">
+                            <tr>
+                              <th class="sort pr-1 align-middle">Brand</th>
+                              <th class="sort pr-1 align-middle">Purchase Price</th>
+                              <th class="sort pr-1 align-middle">Selling Price</th>
+                              <th class="sort pr-1 align-middle">Notes</th>
+                              <th></th>
+                              <th class="sort pr-1 align-middle"></th>
+                            </tr>
+                          </thead>
+                          <tbody id = "Bots">
+                            
+                          </tbody>
+                        </table>
+                  </div>
+                  <div class="modal fade" id="bot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+                    <div class="modal-dialog mt-6" role="document">
+                      <div class="modal-content border-0">
+                        <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                          <div class="position-relative z-index-1">
+                            <div>
+                              <h4 class="mb-0 text-white" id="authentication-modal-label">New Bot</h4>
+                              <p class="fs--1 mb-0">Search your bot or write it</p>
+                            </div>
+                          </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body py-4 px-5">
+                          <div>
+                            <div class="form-row">
+                              <div class="form-group col-12"><label for="modal-auth-confirm-password">Bot</label>
+                                <select class="form-control" id="BotsList">
+                                  <option selected >Select a Bot</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1184203863269634048/P98ia02p_400x400.jpg"  >CyberSole</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1241542362121166852/0hQnV9lV_400x400.png"  >Kodai</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/917391315746385920/cryapglx_400x400.jpg"  >Splashforce</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1153440082139000832/X59w9ovJ_400x400.jpg"  >ProjectDestroyer</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1172564159294316544/bVcP_UQA_400x400.png"  >Ganesh</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1301616763742822400/tIE2GRp-_400x400.jpg"  >Wrath</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1289981783816261637/3sXfDk9__400x400.jpg"  >Snatch</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1314031233681235971/7UR98tbB_400x400.jpg"  >Hawk</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1237083907805319169/PoMBrRSV_400x400.jpg"  >Flare</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1291036717886169091/iNqqQrdt_400x400.jpg"  >FlareRaffles</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1322340013707792385/jUFCZSgI_400x400.jpg"  >SoleAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1288738083391909888/Cs3a7gd__400x400.png"  >Nsb</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1011541359382052866/4Ewy9XIw_400x400.jpg"  >Tks</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1329161041121599488/AgISfJ3z_400x400.jpg" >MekPreme</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1317804895123218432/offpE2Hm_400x400.jpg" >Fleek</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1234951189608960009/K3Ii9XCW_400x400.jpg"  >MoonAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1102531579660910594/4sm_POYT_400x400.png"  >RuggAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1303431901999489028/gfG7r54J_400x400.jpg" >Hyper</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1247200861652234240/BH-2GIj5_400x400.jpg"  >Chameleon</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1276900589151162369/_QFgIYsW_400x400.jpg"  >Pulsar</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1306353753197555713/V0eKwilY_400x400.jpg"  >Phantom</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1324316154819727360/G4lppuBB_400x400.jpg"  >Favar</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1308763964764049409/fSNhDRwu_400x400.jpg"  >TweetNinja</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1196288680865996800/xobLvyRg_400x400.jpg"  >ZenyScript</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1267772843258974208/SvfA_v4s_400x400.jpg"  >Solid</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1269979731254001671/MOD8zm10_400x400.jpg"  >Meow</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1294680561269833731/sVuRbkCg_400x400.jpg"  >F3ather</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1177062169231405056/9whojPiW_400x400.jpg"  >BalkoBot</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1249667064282914817/uRUVPqJq_400x400.jpg"  >Haselts</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1180898803538366470/J_0r5Du6_400x400.png"  >Mbot</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/992447533128429568/o5GvdOoY_400x400.jpg"  >Sieupreme</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1268605118548762624/6PRgONNc_400x400.jpg"  >Qbot</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1244679818236567554/wMUSniMz_400x400.jpg"  >DreamAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1202911765065019393/HU7NFGNx_400x400.jpg"  >Orbit</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1227556625365569536/Y1oerHeU_400x400.jpg"  >PolarCop</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1257034100478705669/NB7Ornfp_400x400.jpg"  >Zonoslabs</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1269909060918403073/vlAetZMx_400x400.jpg"  >Polaris</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1214570378854641665/BvgKZ0AB_400x400.jpg" >Calix</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1208657698482458625/q8TnbiFn_400x400.jpg"  >Aiomoji</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1263643514820341760/vcELacP5_400x400.jpg"  >Oosbot</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1273239771704410113/S-QtJ2DG_400x400.png"  >Ophelia</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1270749903870767105/9x44nurI_400x400.jpg"  >Fattye</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1308192468446392333/Bdu-Fs_-_400x400.jpg"  >Stealth</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1122983388913242112/UL7r9FE0_400x400.png"  >EveAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1291135791616401410/tYs4F6qS_400x400.jpg" >Thunder</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1322225536870060032/nbyg0tj8_400x400.jpg"  >Adept</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1236763244896956416/s7NtGsEE_400x400.jpg"  >Venix</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1221980758463655937/n-NfpnHa_400x400.jpg"  >Velox</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1273239771704410113/S-QtJ2DG_400x400.png"  >OpheliaAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1283445337055789056/hnR0P8h4_400x400.jpg"  >PhoenixAIO</option>
+                                  <option  value="https://pbs.twimg.com/profile_images/1320348115933794309/XQQnUgM2_400x400.jpg"  >ImpactSolutions</option>
+                                </select>
+                              </div>
+                              <div class="form-group col-6"><label for="modal-auth-password">Price purchase</label><input class="form-control" type="text" id = "PricePurchaseBots" /></div>
+                              <div class="form-group col-6"><label for="modal-auth-password">Price sold</label><input class="form-control" type="text" id = "PriceSoldBots" /></div>
+                              <div class="form-group col-6"><label for="modal-auth-password">Notes</label><input class="form-control" type="text" id = "NotesBots" /></div>
+                            </div>
+                            <div class="form-group col-12"><label id = "errorBotModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                            <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick="AddBot()">Add</button></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>            
+              
+            <div class="modal fade" id="editBot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+              <div class="modal-dialog mt-6" role="document">
+                <div class="modal-content border-0">
+                  <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                    <div class="position-relative z-index-1">
+                      <div>
+                        <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
+                        <p class="fs--1 mb-0">Edit your item</p>
+                      </div>
+                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body py-4 px-5">
+                    <div>
+                      <div class="form-row">
+                        <div class="form-group col-6"><label for="modal-auth-password">Price purchase</label><input class="form-control" type="text"  id = "PricePurchaseToModify"/></div>
+                        <div class="form-group col-6"><label for="modal-auth-password">Price sold</label><input class="form-control" type="text"  id = "PriceSoldToModify"/></div>
+                        <div class="form-group col-12"><label for="modal-auth-password">Notes</label><input class="form-control" type="text"  id = "NotesToModify"/></div>
+                        <input type = "hidden" id = "IdToModify">
+                      </div>
+                      <div class="form-group col-12"><label id = "errorBotModalEdit" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
+                      <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick ="EditBot()">Edit</button></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="modal fade" id="botList" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
-          <div class="modal-dialog mt-6" role="document">
-            <div class="modal-content border-0">
-              <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                <div class="position-relative z-index-1">
-                  <div>
-                    <h4 class="mb-0 text-white" id="authentication-modal-label">Bot List</h4>
-                    <p class="fs--1 mb-0" id = "description"></p>
+  
+            <div class="modal modal-fixed-right fade" id="stats" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-vertical" role="document">
+                <div class="modal-content border-0 min-vh-100">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalRightLabel">Statistics</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
                   </div>
-                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body py-4 px-5">
-                <form>
-                  <div class="form-row" id = "keysList">
-                    
-                  </div>
-                </form>
+                  <div class="card-deck">
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Bots Purchases</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id="BotsPurchases"></div>
+                        </div>
+                      </div>
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Bots Sold</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="BotsSold"></div>
+                        </div>
+                      </div>
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                        <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
+                        <!--/.bg-holder-->
+                        <div class="card-body position-relative">
+                          <h6>Number of Bots</h6>
+                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="NumberOfBots"></div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
               </div>
             </div>
+            <!---->
+            <footer>
+              <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+                <div class="col-12 col-sm-auto text-center">
+                </div>
+                <div class="col-12 col-sm-auto text-center">
+                  <p class="mb-0 text-600"></p>
+                </div>
+              </div>
+            </footer>
           </div>
-        </div>
-          <!--END-->
-          <footer>
-            <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
-              <div class="col-12 col-sm-auto text-center">
-              </div>
-              <div class="col-12 col-sm-auto text-center">
-                <p class="mb-0 text-600"></p>
-              </div>
-            </div>
-          </footer>
         </div>
       </div>
-    </main><!-- ===============================================-->
-    <!--    End of Main Content-->
-    <!-- ===============================================-->
-
-    <script>
-      var isFluid = JSON.parse(localStorage.getItem('isFluid'));
-      if (isFluid) {
-        var container = document.querySelector('[data-layout]');
-        container.classList.remove('container');
-        container.classList.add('container-fluid');
-      }
-    </script>
-
-    <!-- ===============================================-->
-    <!--    JavaScripts-->
-    <!-- ===============================================-->
+      </main>
     <script>if (typeof module === 'object') 
-        {window.module = module; module = undefined;}</script>
-        <script src="assets/js/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
-        <script src="assets/lib/@fortawesome/all.min.js"></script>
-        <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
-        <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
-        <script src="assets/lib/is_js/is.min.js"></script>
-        <script src="assets/lib/lodash/lodash.min.js"></script>
-        <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
-        <script src="assets/lib/echarts/echarts.min.js"></script>
-        <script src="assets/lib/chart.js/Chart.min.js"></script>
-        <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
-        <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
-        <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
-        <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
-        <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
-        <script src="assets/lib/leaflet/leaflet.js"></script>
-        <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
-        <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
-        <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
-        <script src="assets/js/theme.min.js"></script>
-        <script src="scripts/bot.js" defer></script>
-        <script>if(window.module){module = window.module;}</script> 
-  </body>
-</html>
+      {window.module = module; module = undefined;}</script>
+      <script src="assets/js/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
+      <script src="assets/lib/@fortawesome/all.min.js"></script>
+      <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
+      <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
+      <script src="assets/lib/is_js/is.min.js"></script>
+      <script src="assets/lib/lodash/lodash.min.js"></script>
+      <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+      <script src="assets/lib/echarts/echarts.min.js"></script>
+      <script src="assets/lib/chart.js/Chart.min.js"></script>
+      <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
+      <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
+      <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
+      <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
+      <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
+      <script src="assets/lib/leaflet/leaflet.js"></script>
+      <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+      <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
+      <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
+      <script src="assets/js/theme.min.js"></script>
+      <script src="scripts/bot.js" defer></script>
+      <script>if(window.module){module = window.module;}</script> 
+    </body>
+  </html>

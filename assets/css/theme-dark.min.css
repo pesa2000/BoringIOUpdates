@@ -8515,7 +8515,8 @@ a.close.disabled {
 }
 
 .align-middle {
-    vertical-align: middle !important
+    vertical-align: middle !important;
+    text-align:center;
 }
 
 .align-bottom {
