@@ -32,7 +32,6 @@ console.log(DirectoryLog)
 console.log("Program Version")
 console.log(app.getVersion())
 const {autoUpdater} = require("electron-updater")
-
 const isPackaged = require('electron-is-packaged').isPackaged
 
 var internetAvailable = require("internet-available");
@@ -55,7 +54,7 @@ function GetTodaysMonth(){
   return mm
 }
 
-var FilterMonth = GetTodaysMonth()
+var FilterMonth = "Lifetime"
 
 var DEBUGGER_MODE
 
@@ -684,7 +683,7 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
                 "Product Name":StockXInv[i].NomeProdotto,
                 "Price": StockXInv[i].PrezzoProdotto,
                 "Release Date" : StockXInv[i].ReleaseDate,
-                "Added Date" : StockXInv[i].DataAggiunta,
+                "Value": StockXInv[i].PrezzoMedioResell,
                 "Size": StockXInv[i].Taglia,
                 "Notes": StockXInv[i].Note
               }
@@ -696,7 +695,6 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
                 "Product Name":CustomInv[i].NomeProdotto,
                 "Price": CustomInv[i].PrezzoProdotto,
                 "Release Date" : CustomInv[i].ReleaseDate,
-                "Added Date" : CustomInv[i].DataAggiunta,
                 "Size": CustomInv[i].Taglia,
                 "Notes": CustomInv[i].Note
               }
@@ -709,20 +707,20 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
           if(Path.filePath.includes(".txt")){
             var Txt = "Type Name Price Release-Date Added Size Notes \n"
             for(var i = 0; i < StockXInv.length; i++){
-              Txt += "StockX Item " + StockXInv[i].NomeProdotto + " " + StockXInv[i].PrezzoProdotto + " " + StockXInv[i].ReleaseDate + " " + StockXInv[i].DataAggiunta + " " +StockXInv[i].Taglia + " " +StockXInv[i].Note + "\n"
+              Txt += "StockX Item " + StockXInv[i].NomeProdotto + " " + StockXInv[i].PrezzoProdotto + " " + StockXInv[i].ReleaseDate + " " + StockXInv[i].PrezzoMedioResell + " " +StockXInv[i].Taglia + "\n"
             }
             for(var i = 0; i < CustomInv.length; i++){
-              Txt += "Custom Item " + CustomInv[i].NomeProdotto + " " + CustomInv[i].PrezzoProdotto + " " + CustomInv[i].ReleaseDate + " " + CustomInv[i].DataAggiunta + " " +CustomInv[i].Taglia + " " +CustomInv[i].Note + "\n"
+              Txt += "Custom Item " + CustomInv[i].NomeProdotto + " " + CustomInv[i].PrezzoProdotto + " " + CustomInv[i].ReleaseDate + " " + CustomInv[i].PrezzoMedioResell + " " +CustomInv[i].Taglia + "\n"
             }
             fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
           }
           if(Path.filePath.includes(".csv")){
             var Csv = "Type;Name;Price;Release Date;Added;Size;Notes \n"
             for(var i = 0; i < StockXInv.length; i++){
-              Csv += "StockX Item;" + StockXInv[i].NomeProdotto + ";" + StockXInv[i].PrezzoProdotto + ";" + StockXInv[i].ReleaseDate + ";" + StockXInv[i].DataAggiunta + ";" +StockXInv[i].Taglia + ";" +StockXInv[i].Note + "\n"
+              Csv += "StockX Item;" + StockXInv[i].NomeProdotto + ";" + StockXInv[i].PrezzoProdotto + ";" + StockXInv[i].ReleaseDate + ";" +StockXInv[i].Taglia + "\n"
             }
             for(var i = 0; i < CustomInv.length; i++){
-              Csv += "Custom Item;" + CustomInv[i].NomeProdotto + ";" + CustomInv[i].PrezzoProdotto + ";" + CustomInv[i].ReleaseDate + ";" + CustomInv[i].DataAggiunta + ";" +CustomInv[i].Taglia + ";" +CustomInv[i].Note + "\n"
+              Csv += "Custom Item;" + CustomInv[i].NomeProdotto + ";" + CustomInv[i].PrezzoProdotto + ";" + CustomInv[i].ReleaseDate + ";" +CustomInv[i].Taglia + "\n"
             }
             fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
           }
@@ -757,27 +755,30 @@ ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
                 var SingleItem = {
                   "Type":"StockX Item",
                   "Product Name":InventorySoldRes[i].NomeProdotto,
-                  "Price": InventorySoldRes[i].PrezzoProdotto,
-                  "Release Date" : InventorySoldRes[i].ReleaseDate,
-                  "Added Date" : InventorySoldRes[i].DataAggiunta,
+                  "Purchase Price": InventorySoldRes[i].PrezzoProdotto, 
+                  "Sold Price": InventorySoldRes[i].PrezzoVendita, 
+                  "Profit": InventorySoldRes[i].Profitto ,
+                  "Value": InventorySoldRes[i].PrezzoMedioResell,
+                  "Date Sold": InventorySoldRes[i].DataVendita,
+                  "Site": InventorySoldRes[i].Sito,
+                  "Buyer": InventorySoldRes[i].Compratore,
                   "Size": InventorySoldRes[i].Taglia,
                   "Notes": InventorySoldRes[i].Note,
-                  "Date Sold": InventorySoldRes[i].DataVendita,
-                  "Sold  Price": InventorySoldRes[i].PrezzoVendita 
                 }
                 InventorySold.Inventory_Sold.push(SingleItem)
               }
               for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
-                var SingleItemCustom = {
+                var SingleItem = {
                   "Type":"Custom Item",
-                  "Product Name":InvetoryCustomSoldRes[i].NomeProdotto,
-                  "Price": InvetoryCustomSoldRes[i].PrezzoProdotto,
-                  "Release Date" : InvetoryCustomSoldRes[i].ReleaseDate,
-                  "Added Date" : InvetoryCustomSoldRes[i].DataAggiunta,
-                  "Size": InvetoryCustomSoldRes[i].Taglia,
-                  "Notes": InvetoryCustomSoldRes[i].Note,
-                  "Date Sold": InvetoryCustomSoldRes[i].DataVendita,
-                  "Sold  Price": InvetoryCustomSoldRes[i].PrezzoVendita 
+                  "Product Name":InventorySoldRes[i].NomeProdotto,
+                  "Purchase Price": InventorySoldRes[i].PrezzoProdotto, 
+                  "Sold Price": InventorySoldRes[i].PrezzoVendita, 
+                  "Profit": InventorySoldRes[i].Profitto ,
+                  "Date Sold": InventorySoldRes[i].DataVendita,
+                  "Site": InventorySoldRes[i].Sito,
+                  "Buyer": InventorySoldRes[i].Compratore,
+                  "Size": InventorySoldRes[i].Taglia,
+                  "Notes": InventorySoldRes[i].Note,
                 }
                 InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
               }
@@ -786,22 +787,21 @@ ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
               fs.writeFileSync(path.join(Path.filePath),JSON.stringify(TotalInventorySold,null,4),() => {console.log("Writing new file")})
             }
             if(Path.filePath.includes(".txt")){
-              var Txt = "Type Name Price Release-Date Added Size Notes Date-Sold Price-Sold \n"
               for(var i = 0; i < InventorySoldRes.length; i++){
-                Txt += "StockX Item " + InventorySoldRes[i].NomeProdotto + " " + InventorySoldRes[i].PrezzoProdotto + " " + InventorySoldRes[i].ReleaseDate + " " + InventorySoldRes[i].DataAggiunta + " " +InventorySoldRes[i].Taglia + " " +InventorySoldRes[i].Note + " " +InventorySoldRes[i].DataVendita + " " +InventorySoldRes[i].PrezzoVendita +"\n"
+                Txt += "StockX Item " + InventorySoldRes[i].NomeProdotto + " " + InventorySoldRes[i].PrezzoProdotto + " " + InventorySoldRes[i].PrezzoVendita  + " " +InventorySoldRes[i].Profitto + " " + InvetoryCustomSoldRes[i].PrezzoMedioResell + " " + InvetoryCustomSoldRes[i].DataVendita + " " + InvetoryCustomSoldRes[i].Sito + " " + InvetoryCustomSoldRes[i].Compratore+ " " + InvetoryCustomSoldRes[i].Taglia + " " +InventorySoldRes[i].Note +"\n"
               }
               for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
-                Txt += "Custom Item " + InvetoryCustomSoldRes[i].NomeProdotto + " " + InvetoryCustomSoldRes[i].PrezzoProdotto + " " + InvetoryCustomSoldRes[i].ReleaseDate + " " + InvetoryCustomSoldRes[i].DataAggiunta + " " +InvetoryCustomSoldRes[i].Taglia + " " +InvetoryCustomSoldRes[i].Note + " " +InvetoryCustomSoldRes[i].DataVendita + " " + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+                Txt += "Custom Item " + InvetoryCustomSoldRes[i].NomeProdotto + " " + InvetoryCustomSoldRes[i].PrezzoProdotto + " " + InvetoryCustomSoldRes[i].PrezzoVendita + " " +InventorySoldRes[i].Profitto + " " + 0 + " " +InvetoryCustomSoldRes[i].DataVendita + " " + InvetoryCustomSoldRes[i].Sito + " " + InvetoryCustomSoldRes[i].Compratore + " " +InvetoryCustomSoldRes[i].Taglia + " " +InvetoryCustomSoldRes[i].Note +"\n"
               }
               fs.writeFileSync(path.join(Path.filePath),Txt,() => {console.log("Writing new file")})
             }
             if(Path.filePath.includes(".csv")){
-              var Csv = "Type;Name;Price;Release Date;Added;Size;Notes;Date Sold;Price Sold \n"
+              var Csv = "Type;Name;Product Price;Sold Price;Profit;Resell value;Date Sold;Site;Buyer;Size;Notes \n"
               for(var i = 0; i < InventorySoldRes.length; i++){
-                Csv += "StockX Item;" + InventorySoldRes[i].NomeProdotto + ";" + InventorySoldRes[i].PrezzoProdotto + ";" + InventorySoldRes[i].ReleaseDate + ";" + InventorySoldRes[i].DataAggiunta + ";" +InventorySoldRes[i].Taglia + ";" +InventorySoldRes[i].Note + ";" +InventorySoldRes[i].DataVendita + ";" +InventorySoldRes[i].PrezzoVendita +"\n"
+                Csv += "StockX Item;" + InventorySoldRes[i].NomeProdotto + ";" + InventorySoldRes[i].PrezzoProdotto + ";" + InventorySoldRes[i].PrezzoVendita  + ";" +InventorySoldRes[i].Profitto + ";" + InvetoryCustomSoldRes[i].PrezzoMedioResell + ";" + InvetoryCustomSoldRes[i].DataVendita + ";" + InvetoryCustomSoldRes[i].Sito + ";" + InvetoryCustomSoldRes[i].Compratore+ ";" + InvetoryCustomSoldRes[i].Taglia + ";" +InventorySoldRes[i].Note +"\n"
               }
               for(var i = 0; i < InvetoryCustomSoldRes.length; i++){
-                Csv += "Custom Item;" + InvetoryCustomSoldRes[i].NomeProdotto + ";" + InvetoryCustomSoldRes[i].PrezzoProdotto + ";" + InvetoryCustomSoldRes[i].ReleaseDate + ";" + InvetoryCustomSoldRes[i].DataAggiunta + ";" +InvetoryCustomSoldRes[i].Taglia + ";" +InvetoryCustomSoldRes[i].Note + ";" +InvetoryCustomSoldRes[i].DataVendita + ";" + InvetoryCustomSoldRes[i].PrezzoVendita +"\n"
+                Csv += "Custom Item;" + InvetoryCustomSoldRes[i].NomeProdotto + ";" + InvetoryCustomSoldRes[i].PrezzoProdotto + ";" + InvetoryCustomSoldRes[i].PrezzoVendita + ";" +InventorySoldRes[i].Profitto + ";" + 0 + ";" +InvetoryCustomSoldRes[i].DataVendita + ";" + InvetoryCustomSoldRes[i].Sito + ";" + InvetoryCustomSoldRes[i].Compratore + ";" +InvetoryCustomSoldRes[i].Taglia + ";" +InvetoryCustomSoldRes[i].Note +"\n"
               }
               fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
             }
@@ -899,114 +899,44 @@ function GetFormattedNumber(Number){
   return N[0]
 }
 
-ipcMain.on("RequestedStats",(event,arg) => {
-  pool.getConnection(function(err,connection){
+ipcMain.on("RequestedStats",async (event,arg) => {
+  pool.getConnection(async function(err,connection){
     if(err)console.log(err)
     UserId = GlobalIdUtente
     GlobalFilter = arg.Filter
-    var Purchases = 0
-    var Profit = 0
-    var InventorySales = 0
-    var InventoryValue = 0
-    var PurchasesStats = 0
-
+    var Url = ""
+    var ObjToSend
     if(GlobalFilter == "Year"){
-      Values = [UserId,parseInt(GetNewDateYear())]
-      Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ?"
-      Query2 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ?"
-      Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ?"
-      Query4 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ?"
-      Query5 = "SELECT SUM(PrezzoProdotto) as PurchasesAlone,Count(*) as Conteggio FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
-      Query6 = "SELECT SUM(PrezzoProdotto) as PurchasesAlone,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
-      Query7 = "SELECT SUM(PrezzoVendita) as ReturnTot FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
-      Query8 = "SELECT SUM(PrezzoVendita) as ReturnTot FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
+      Url = "https://www.boringio.com:5666/GetHomepageStatsYearDesktop"
+      ObjToSend = {
+        UserId: UserId
+      }
     }else if(GlobalFilter == "Lifetime"){
-      Values = [UserId]
-      Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1"
-      Query2 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0"
-      Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1"
-      Query4 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0"
-      Query5 = "SELECT SUM(PrezzoProdotto) as PurchasesAlone,Count(*) as Conteggio FROM inventario WHERE IdUtente = ?"
-      Query6 = "SELECT SUM(PrezzoProdotto) as PurchasesAlone,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ?"
-      Query7 = "SELECT SUM(PrezzoVendita) as ReturnTot FROM inventario WHERE IdUtente = ?"
-      Query8 = "SELECT SUM(PrezzoVendita) as ReturnTot FROM inventariocustom WHERE IdUtente = ?"
+      Url = "https://www.boringio.com:5666/GetHomepageStatsLifetimeDesktop"
+      ObjToSend = {
+        UserId: UserId
+      }
     }else{
-      Values = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
-      Query1 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio, SUM(PrezzoMedioResell) as Value FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-      Query2 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
-      Query3 = "SELECT SUM(PrezzoProdotto) as Purchases,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1 AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-      Query4 = "SELECT SUM(Profitto) as Profitto,Count(*) as Conteggio, SUM(PrezzoVendita) as PrezzoVendita FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
-      Query5 = "SELECT SUM(PrezzoProdotto) as PurchasesAlone,Count(*) as Conteggio FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-      Query6 = "SELECT SUM(PrezzoProdotto) as PurchasesAlone,Count(*) as Conteggio FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
-      Query7 = "SELECT SUM(PrezzoVendita) as ReturnTot FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0"
-      Query8 = "SELECT SUM(PrezzoVendita) as ReturnTot FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0"
+      Url = "https://www.boringio.com:5666/GetHomepageStatsMonthDesktop"
+      ObjToSend = {
+        UserId: UserId,
+        Month: parseInt(GlobalFilter)
+      }
     }
-    console.log(GlobalFilter)
-    console.log(Query1)
-    console.log(Query2)
-    console.log(Query3)
-    console.log(Query4)
-    console.log(Query5)
-    console.log(Query6)
-    connection.query(Query1,Values,function(error,results1,fields) {
-      console.log(results1)
-      Purchases = results1[0].Purchases
-      NumberTot = results1[0].Conteggio
-      InventoryValue = results1[0].Value
-      connection.query(Query2,Values,function(error,results2,fields) {
-        console.log(results2)
-        Profit = results2[0].Profitto
-        NumberSold = results2[0].Conteggio
-        InventorySales = results2[0].PrezzoVendita
-        connection.query(Query3,Values,function(error,results3,fields) {
-          console.log(results3)
-          Purchases += results3[0].Purchases
-          NumberTot += results3[0].Conteggio
-          connection.query(Query4,Values,function(error,results4,fields) {
-            console.log(results4)
-            Profit += results4[0].Profitto
-            NumberSold += results4[0].Conteggio
-            InventorySales += results4[0].PrezzoVendita
-            connection.query(Query5,Values,function(error1,results5,fields) {
-              if(error1)console.log(error1)
-              connection.query(Query6,Values,function(error2,results6,fields) {
-                if(error2)console.log(error2)
-                connection.query(Query7,Values,function(error3,results7,fields) {
-                  if(error3)console.log(error3)
-                  connection.query(Query8,Values,function(error4,results8,fields) {
-                    if(error4)console.log(error4)
-                    connection.release()
-                    PurchasesStats = results5[0].PurchasesAlone + results6[0].PurchasesAlone
-                    var Return = results7[0].ReturnTot + results8[0].ReturnTot
-                    if(Return == null){
-                      Return = 0
-                    }
-                    if(InventoryValue == null){
-                      InventoryValue = 0
-                    }
-                    if(Purchases == null){
-                      Purchases = 0
-                    } 
-                    if(Profit == null){
-                      Profit = 0
-                    }
-                    if(InventorySales == null){
-                      InventorySales = 0
-                    }
-                    console.log(InventoryValue)
-                    var Inv = GetFormattedNumber(InventoryValue)
-                    var Prof = Profit - Purchases
-                    var PurStats = GetFormattedNumber(PurchasesStats)
-                    var Sal = GetFormattedNumber(InventorySales)
-                    event.sender.send("ReturnedStats",{Inv:Inv,Pur: PurStats,Prof:Prof,Sal:Sal,Return:Return})
-                  })
-                })
-              })
-            })
-          })
-        })
-      })
-    })
+
+    console.log(ObjToSend)
+    var Response = await fetch(Url, {
+      method: 'POST',
+      headers: {
+        "Access-Control-Request-Method" : "POST",
+        'Content-Type': 'application/json',
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify(ObjToSend)
+    });
+
+    var Res = await Response.json()
+    event.sender.send("ReturnedStats",Res)
   })
 })
 

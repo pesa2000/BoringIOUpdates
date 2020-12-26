@@ -61,7 +61,7 @@ function TemplateSingleSale(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,Price,
         "<div class='media-body ml-3'>" +
           "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+Name+"</h6>" +
           "<span class='badge badge rounded-capsule badge-soft-"+ProfitLine+"' style=cursor:pointer>" +
-             l + "" + Profit + 
+             l + "" + parseInt(Profit) + 
           "</span>" +
         "</div>" +
       "</div>" +
@@ -69,9 +69,9 @@ function TemplateSingleSale(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,Price,
     "<td class='align-middle'>"+SelectedDate+"</td>" +
     "<td class='align-middle'>"+Site+"</td>" +
     "<td class='align-middle'>"+Buyer+"</td>" +
-    "<td class='align-middle'>"+ Valuta +""+ Price+"</td>" +
+    "<td class='align-middle'>"+ Valuta +""+ parseInt(Price)+"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+ Valuta +""+ AveragePriceStockX+"</span></td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+ Valuta +""+Sale+"</span></td>" +
+    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+ Valuta +""+parseInt(Sale)+"</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+Size+"<span  data-fa-transform='shrink-2'></span></span></td>" +
     "<td></td>" +
     "<td class='align-middle'>" +
@@ -98,7 +98,7 @@ function TemplateSingleSaleCustom(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,
         "<div class='media-body ml-3'>" +
           "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+Name+"</h6>" +
           "<span class='badge badge rounded-capsule badge-soft-"+ProfitLine+"' style=cursor:pointer>" +
-             l + "" + Profit + 
+             l + "" + parseInt(Profit) + 
           "</span>" +
         "</div>" +
       "</div>" +
@@ -106,9 +106,9 @@ function TemplateSingleSaleCustom(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,
     "<td class='align-middle'>"+SelectedDate+"</td>" +
     "<td class='align-middle'>"+Site+"</td>" +
     "<td class='align-middle'>"+Buyer+"</td>" +
-    "<td class='align-middle'>"+ Valuta +""+Price+"</td>" +
+    "<td class='align-middle'>"+ Valuta +""+parseInt(Price)+"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>€ ?</span></td>" +
-    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+ Valuta +""+Sale+"</span></td>" +
+    "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+ Valuta +""+parseInt(Sale)+"</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+Size+"<span  data-fa-transform='shrink-2'></span></span></td>" +
     "<td></td>" +
     "<td class='align-middle'>" +

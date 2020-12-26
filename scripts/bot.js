@@ -131,8 +131,12 @@ function AddBot(){
     return 
   }
   if(isNaN(Sold)){
-    $("#errorBotModal").text("The field 'Price sold' must be a number!")
-    return 
+    if(Sold == ""){
+      Sold = 0
+    }else{
+      $("#errorBotModal").text("The field 'Price sold' must be a number!")
+      return 
+    }
   }
   pool.getConnection(function(error,connection){
     connection.query("INSERT INTO inventariobot (BrandBot,ImmagineBot,PrezzoComprato,PrezzoVenduto,Note,IdUtente) VALUES (?,?,?,?,?,?)",[Brand,Img,Purc,Sold,Notes,UserId],function(err,results,fields){

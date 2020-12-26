@@ -317,6 +317,7 @@ function TemplateProfile(Index,NameProfile,Nome,Cognome,Indirizzo1,CardNumber,Co
 function Export(){
     $("#exportProfile").modal("toggle")
 }
+
 function ExportProfile(){
     var Bot = document.getElementById("ProfileToExport").value
     switch(Bot){
