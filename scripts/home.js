@@ -18,6 +18,7 @@ var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion
 
 var Valuta = ""
 var flag = true
+var Conversion = 1
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
@@ -28,7 +29,17 @@ function GetValutaAsUtf8(Id){
             //console.log(results[0].Valuta1)
             Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
             connection.release()
-            //console.log(Valuta)
+            switch(Valuta){
+                case "$":
+                    Conversion = 1
+                break;
+                case "€":
+                    Conversion = 0.86
+                break;
+                case "£":
+                    Conversion = 0.78
+                break;
+            }
         })
     })
 }
@@ -114,7 +125,7 @@ function ChangeValues(){
 ipc.on("ReturnedStats",(event,arg1) => {
     var Res = arg1
     console.log(Res)
-    $("#InventoryValue").text(Valuta + "" + parseInt(Res.InventoryValue).toString())
+    $("#InventoryValue").text(Valuta + "" + parseInt(Conversion * Res.InventoryValue).toString())
     $("#InventoryValueNumber").text(Res.NumberOfItemsRetailResell + " items")
     $("#InventoryRetail").text(Valuta + "" + parseInt(Res.InventoryRetail).toString())
     $("#InventoryRetailNumber").text(Res.NumberOfItemsRetailResell + " items")
