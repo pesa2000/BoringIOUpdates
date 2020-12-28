@@ -28,7 +28,7 @@ switch(Currency){
         Conversion = 1
     break;
     case "€":
-        Conversion = 0.82
+        Conversion = 0.86
     break;
     case "£":
         Conversion = 0.78
