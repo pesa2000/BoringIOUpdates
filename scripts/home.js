@@ -12,8 +12,6 @@ const { isParameter } = require('typescript')
 const { parse } = require('path')
 
 var UserId = require('electron').remote.getGlobal('UserId')
-/*console.log("Id Utente")
-console.log(UserId)*/
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
 var Valuta = ""

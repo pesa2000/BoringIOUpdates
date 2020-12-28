@@ -868,25 +868,6 @@ function TranslateDate(DateChosen){
 
 global.DataMainGraphs = DATAGRAPHS
 
-var TotMonth1 = 0
-var TotMonth2 = 0
-var TotMonth3 = 0
-var TotMonth4 = 0
-var TotMonth5 = 0
-var TotMonth6 = 0
-var TotMonth7 = 0
-var TotMonth8 = 0
-var TotMonth9 = 0
-var TotMonth10 = 0
-var TotMonth11 = 0
-var TotMonth12 = 0
-
-var TotWeek1 = 0
-var TotWeek2 = 0
-var TotWeek3 = 0
-var TotWeek4 = 0
-var TotWeek5 = 0
-
 var Tot = 0
 var FinalArray = []
 var ArrayYears = []
@@ -905,7 +886,9 @@ ipcMain.on("RequestedStats",async (event,arg) => {
     UserId = GlobalIdUtente
     GlobalFilter = arg.Filter
     var Url = ""
-    var ObjToSend
+    var ObjToSend = {
+      
+    }
     if(GlobalFilter == "Year"){
       Url = "https://www.boringio.com:5666/GetHomepageStatsYearDesktop"
       ObjToSend = {
@@ -920,7 +903,7 @@ ipcMain.on("RequestedStats",async (event,arg) => {
       Url = "https://www.boringio.com:5666/GetHomepageStatsMonthDesktop"
       ObjToSend = {
         UserId: UserId,
-        Month: parseInt(GlobalFilter)
+        Month: GlobalFilter
       }
     }
 
@@ -940,146 +923,200 @@ ipcMain.on("RequestedStats",async (event,arg) => {
   })
 })
 
+var TotWeek1 = 0
+var TotWeek2 = 0
+var TotWeek3 = 0
+var TotWeek4 = 0
+var TotWeek5 = 0
 
 
+var ArrayMonth = []
+var ArrayYear = {
+  2016: 0,
+  2017: 0,
+  2018: 0,
+  2019: 0,
+  2020: 0,
+  2021: 0,
+  2022: 0
+}
 
-ipcMain.on("RequestedDataGraphs", (event,arg) => {
+ipcMain.on("RequestedDataGraphs", async(event,arg) => {
+  var Url = ""
+  var ObjToSend = ""
   pool.getConnection(function(err,connection){
-    ResetVar()
     DATAGRAPHS = []
     ArrayYears = []
     FinalArray = []
+    ArrayMonth = [0,0,0,0,0,0,0,0,0,0,0,0]
+    
     if(FilterMonth == "Year"){
-      connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()],  function (error, results, fields) {
-        for(var k of results){
-          SetMonthLifetime(k)
-        }
-        connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()], function(error,results,fields){
+      ResetVarMonth()
+      var Values = [GlobalIdUtente,GetNewDateYear()]
+      var QueryCostiInv = "SELECT IFNULL(PrezzoProdotto,0) as PrezzoProdotto,Month(ReleaseDate) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
+      var QueryCostiInvCustom = "SELECT IFNULL(PrezzoProdotto,0) as PrezzoProdotto,Month(ReleaseDate) as Mese FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
+      var QueryRicaviInv = "SELECT IFNULL(PrezzoVendita,0) as PrezzoVendita,Month(DataVendita) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
+      var QueryRicaviInvCustom = "SELECT IFNULL(PrezzoVendita,0) as PrezzoVendita,Month(DataVendita) as Mese FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
+      connection.query(QueryCostiInv,Values,function(error,results1,fields){
+        if(error)console.log(error)
+        console.log(results1)
+        connection.query(QueryCostiInvCustom,Values,function(error,results2,fields){
           if(error)console.log(error)
-          for(var c of results){
-            SetMonthLifetime(c)
-          }
-          connection.query("SELECT PrezzoProdotto,MONTH(ReleaseDate) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND QuantitaAttuale = 1 ORDER BY ReleaseDate ASC",[GlobalIdUtente,GetNewDateYear()],  function (error, results, fields) {
-            for(var k of results){
-              SetMonthExpensesLifetime(k)
-            }
-            connection.query("SELECT PrezzoProdotto,MONTH(ReleaseDate) as Mese FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND QuantitaAttuale = 1 ORDER BY ReleaseDate ASC",[GlobalIdUtente,GetNewDateYear()], function(error,results,fields){
-              if(error)console.log(error)
-              for(var c of results){
-                SetMonthExpensesLifetime(c)
-              }
-              DATAGRAPHS.push({y: `Jan`, item1: TotMonth1})
-              DATAGRAPHS.push({y: `Feb`, item1: TotMonth2})
-              DATAGRAPHS.push({y: `Mar`, item1: TotMonth3})
-              DATAGRAPHS.push({y: 'Apr', item1: TotMonth4})
-              DATAGRAPHS.push({y: `May`, item1: TotMonth5})
-              DATAGRAPHS.push({y: `Jun`, item1: TotMonth6})
-              DATAGRAPHS.push({y: 'Jul', item1: TotMonth7})
-              DATAGRAPHS.push({y: `Aug`, item1: TotMonth8})
-              DATAGRAPHS.push({y: `Sep`, item1: TotMonth9})
-              DATAGRAPHS.push({y: `Oct`, item1: TotMonth10})
-              DATAGRAPHS.push({y: `Nov`, item1: TotMonth11})
-              DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
-              event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
+          console.log(results2)
+          connection.query(QueryRicaviInv,Values,function(error,results3,fields){
+            if(error)console.log(error)
+            console.log(results3)
+            connection.query(QueryRicaviInvCustom,Values,function(error,results4,fields){
               connection.release()
+              console.log(results4)
+              for(var k of results1){
+                if(k.Mese != null){
+                  //console.log("Set month")
+                  SetMonthCosti(k)
+                }
+              }
+              for(var k of results2){
+                if(k.Mese != null){
+                  //console.log("Set month")
+                  SetMonthCosti(k)
+                }
+              }
+              for(var k of results3){
+                if(k.Mese != null){
+                  //console.log("Set month")
+                  SetMonthRicavi(k)
+                }
+              }
+              for(var k of results4){
+                if(k.Mese != null){
+                  //console.log("Set month")
+                  SetMonthRicavi(k)
+                }
+              }
+              DATAGRAPHS.push({y: `Jan`, item1: ArrayMonth[0]})
+              DATAGRAPHS.push({y: `Feb`, item1: ArrayMonth[1]})
+              DATAGRAPHS.push({y: `Mar`, item1: ArrayMonth[2]})
+              DATAGRAPHS.push({y: 'Apr', item1: ArrayMonth[3]})
+              DATAGRAPHS.push({y: `May`, item1: ArrayMonth[4]})
+              DATAGRAPHS.push({y: `Jun`, item1: ArrayMonth[5]})
+              DATAGRAPHS.push({y: 'Jul', item1: ArrayMonth[6]})
+              DATAGRAPHS.push({y: `Aug`, item1: ArrayMonth[7]})
+              DATAGRAPHS.push({y: `Sep`, item1: ArrayMonth[8]})
+              DATAGRAPHS.push({y: `Oct`, item1: ArrayMonth[9]})
+              DATAGRAPHS.push({y: `Nov`, item1: ArrayMonth[10]})
+              DATAGRAPHS.push({y: `Dec`, item1: ArrayMonth[11]})
+              event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
             })
           })
         })
       })
     }else if(FilterMonth == "Lifetime"){
-      connection.query("SELECT SUM(Profitto) as SUM, YEAR(DataVendita) as Anno FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita) DESC",[GlobalIdUtente],  function (error, results1, fields) {
-        if(error) console.log(error)
-        connection.query("SELECT SUM(Profitto) as SUM, YEAR(DataVendita) as Anno FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita) DESC",[GlobalIdUtente], function(error,results2,fields){
+      ArrayYear = {
+        "2016": 0,
+        "2017": 0,
+        "2018": 0,
+        "2019": 0,
+        "2020": 0,
+        "2021": 0,
+        "2022": 0
+      }
+      var Values = GlobalIdUtente
+      var QueryCostiInv = "SELECT IFNULL(PrezzoProdotto,0) as PrezzoProdotto,YEAR(ReleaseDate) as Anno FROM inventario WHERE IdUtente = ?"
+      var QueryCostiInvCustom = "SELECT IFNULL(PrezzoProdotto,0) as PrezzoProdotto,YEAR(ReleaseDate) as Anno FROM inventariocustom WHERE IdUtente = ?"
+      var QueryRicaviInv = "SELECT IFNULL(PrezzoVendita,0) as PrezzoVendita,YEAR(DataVendita) as Anno FROM inventario WHERE IdUtente = ?"
+      var QueryRicaviInvCustom = "SELECT IFNULL(PrezzoVendita,0) as PrezzoVendita,YEAR(DataVendita) as Anno FROM inventariocustom WHERE IdUtente = ?"
+
+      connection.query(QueryCostiInv,Values,function(error,results1,fields){
+        if(error)console.log(error)
+        console.log(results1)
+        connection.query(QueryCostiInvCustom,Values,function(error,results2,fields){
           if(error)console.log(error)
-          var Arr = FinalArray.concat(results1,results2)
-          console.log(Arr)
-          for(var FullYear of Arr){
-            if(!ArrayYears.includes(FullYear.Anno)){
-              ArrayYears.push(FullYear.Anno)
-            }
-            var Cont = ArrayYears.indexOf(FullYear.Anno)
-            ArrayProfit[Cont] += FullYear.SUM
-          }
-          connection.query("SELECT SUM(PrezzoProdotto) as SUM, YEAR(ReleaseDate) as Anno FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 1 GROUP BY YEAR(ReleaseDate) DESC",[GlobalIdUtente],  function (error, results1, fields) {
-            if(error) console.log(error)
-            connection.query("SELECT SUM(PrezzoProdotto) as SUM, YEAR(ReleaseDate) as Anno FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 1 GROUP BY YEAR(ReleaseDate) DESC",[GlobalIdUtente], function(error,results2,fields){
-              if(error)console.log(error)
-              var Arr = FinalArray.concat(results1,results2)
-              console.log(Arr)
+          console.log(results2)
+          connection.query(QueryRicaviInv,Values,function(error,results3,fields){
+            if(error)console.log(error)
+            console.log(results3)
+            connection.query(QueryRicaviInvCustom,Values,function(error,results4,fields){
               connection.release()
-              for(var FullYear of Arr){
-                if(!ArrayYears.includes(FullYear.Anno)){
-                  ArrayYears.push(FullYear.Anno)
+              console.log(results4)
+              for(var k of results1){
+                if(k.Anno != null){
+                  SetYearCosti(k)
                 }
-                var Cont = ArrayYears.indexOf(FullYear.Anno)
-                ArrayProfit[Cont] -= FullYear.SUM
               }
-              for(var i = ArrayYears.length - 1; i >= 0; i-=1){
-                DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
+              for(var k of results2){
+                if(k.Anno != null){
+                  SetYearCosti(k)
+                }
               }
+              for(var k of results3){
+                if(k.Anno != null){
+                  SetYearRicavi(k)
+                }
+              }
+              for(var k of results4){
+                if(k.Anno != null){
+                  SetYearRicavi(k)
+                }
+              }
+              DATAGRAPHS.push({y: "2016", item1: ArrayYear["2016"]})
+              DATAGRAPHS.push({y: "2017", item1: ArrayYear["2017"]})
+              DATAGRAPHS.push({y: "2018", item1: ArrayYear["2018"]})
+              DATAGRAPHS.push({y: "2019", item1: ArrayYear["2019"]})
+              DATAGRAPHS.push({y: "2020", item1: ArrayYear["2020"]})
+              DATAGRAPHS.push({y: "2021", item1: ArrayYear["2021"]})
+              DATAGRAPHS.push({y: "2022", item1: ArrayYear["2022"]})
               console.log(DATAGRAPHS)
               event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
             })
           })
         })
       })
-    }else if(FilterMonth == "Return"){
-      connection.query("SELECT SUM(PrezzoVendita) as SUM, YEAR(DataVendita) as Anno FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente],  function (error, results1, fields) {
-        if(error) console.log(error)
-        connection.query("SELECT SUM(PrezzoVendita) as SUM, YEAR(DataVendita) as Anno FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente], function(error,results2,fields){
+    }else{
+      ResetVarWeek()
+      var Values = [GlobalIdUtente,GetNewDateYear(),parseInt(FilterMonth)]
+      var QueryCostiInv = "SELECT IFNULL(PrezzoProdotto,0) as PrezzoProdotto,Day(ReleaseDate) as Giorno FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
+      var QueryCostiInvCustom = "SELECT IFNULL(PrezzoProdotto,0) as PrezzoProdotto,Day(ReleaseDate) as Giorno FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
+      var QueryRicaviInv = "SELECT IFNULL(PrezzoVendita,0) as PrezzoVendita,Day(DataVendita) as Giorno FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
+      var QueryRicaviInvCustom = "SELECT IFNULL(PrezzoVendita,0) as PrezzoVendita,Day(DataVendita) as Giorno FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ?"
+      connection.query(QueryCostiInv,Values,function(error,results1,fields){
+        if(error)console.log(error)
+        console.log(results1)
+        connection.query(QueryCostiInvCustom,Values,function(error,results2,fields){
           if(error)console.log(error)
-          console.log("Graphs Return")
-          console.log(results1)
           console.log(results2)
-          var Arr = FinalArray.concat(results1,results2)
-          console.log(Arr)
-          connection.release()
-          for(var FullYear of Arr){
-            if(!ArrayYears.includes(FullYear.Anno)){
-              ArrayYears.push(FullYear.Anno)
-            }
-            var Cont = ArrayYears.indexOf(FullYear.Anno)
-            ArrayProfit[Cont] += FullYear.SUM
-            console.log(Cont)
-          }
-          
-          for(var i = ArrayYears.length - 1; i >= 0 ; i-=1){
-            DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
-          }
-          console.log(DATAGRAPHS)
-          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
-        })
-      })
-    }
-    else{
-      connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],  function (error, results, fields) {
-        if(error) console.log(error)
-        ResetVar2()
-        for(var k of results){
-          SetWeekProfit(k)
-        }
-        connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(ReleaseDate) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ? AND QuantitaAttuale = 1 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],function(error,results,fields){
-          if(error)console.log(error)
-          for(var c of results){
-            SetWeekExpenses(c)
-          }
-          connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],function(error,results,fields){
+          connection.query(QueryRicaviInv,Values,function(error,results3,fields){
             if(error)console.log(error)
-            for(var c of results){
-              SetWeekProfit(c)
-            }
-            connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(ReleaseDate) as Giorno,Profitto FROM inventariocustom WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ? AND QuantitaAttuale = 1 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],function(error,results,fields){
-              if(error)console.log(error)
-              for(var c of results){
-                SetWeekExpenses(c)
-              }
-              DATAGRAPHS.push({y: `Week 1`, item1: TotWeek1})
-              DATAGRAPHS.push({y: `Week 2`, item1: TotWeek2})
-              DATAGRAPHS.push({y: `Week 3`, item1: TotWeek3})
-              DATAGRAPHS.push({y: `Week 4`, item1: TotWeek4})
-              DATAGRAPHS.push({y: `Week 5`, item1: TotWeek5})
-              event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
+            console.log(results3)
+            connection.query(QueryRicaviInvCustom,Values,function(error,results4,fields){
+              console.log(results4)
               connection.release()
+              for(var k of results1){
+                if(k.Giorno != null){
+                  SetWeekCosti(k)
+                }
+              }
+              for(var k of results2){
+                if(k.Giorno != null){
+                  SetWeekCosti(k)
+                }
+              }
+              for(var k of results3){
+                if(k.Giorno != null){
+                  SetWeekRicavi(k)
+                }
+              }
+              for(var k of results4){
+                if(k.Giorno != null){
+                  SetWeekRicavi(k)
+                }
+              }
+              DATAGRAPHS.push({y: "Week 1", item1: TotWeek1})
+              DATAGRAPHS.push({y: "Week 2", item1: TotWeek2})
+              DATAGRAPHS.push({y: "Week 3", item1: TotWeek3})
+              DATAGRAPHS.push({y: "Week 4", item1: TotWeek4})
+              DATAGRAPHS.push({y: "Week 5", item1: TotWeek5})
+              console.log(DATAGRAPHS)
+              event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
             })
           })
         })
@@ -1102,176 +1139,111 @@ ipcMain.on("RequestedExpensesFetched",(event,arg) => {
   })
 })
 
-
-function SetMonthExpensesLifetime(k){
-  switch(k.Mese){
-    case 1:
-      TotMonth1 -= parseInt(k.PrezzoProdotto)
+function SetWeekRicavi(Shoe){
+  console.log("Scarpa nei ricavi")
+  console.log(Shoe)
+  switch(true){
+    case parseInt(Shoe.Giorno) < 8 :
+      if(Shoe.PrezzoVendita >= 0){
+        TotWeek1 += parseInt(Shoe.PrezzoVendita)
+      }else{
+        TotWeek1 -= parseInt(Shoe.PrezzoVendita)
+      }
       break;
-    case 2:
-      TotMonth2 -=  parseInt(k.PrezzoProdotto)
+    case parseInt(Shoe.Giorno) < 15:
+      if(Shoe.PrezzoVendita >= 0){
+        TotWeek2 += parseInt(Shoe.PrezzoVendita)
+      }else{
+        TotWeek2 -= parseInt(Shoe.PrezzoVendita)
+      }
       break;
-    case 3:
-      TotMonth3 -=  parseInt(k.PrezzoProdotto)
+    case parseInt(Shoe.Giorno) < 22:
+      if(Shoe.PrezzoVendita >= 0){
+        TotWeek3 += parseInt(Shoe.PrezzoVendita)
+      }else{
+        TotWeek3 -= parseInt(Shoe.PrezzoVendita)
+      }
       break;
-    case 4:
-      TotMonth4 -=  parseInt(k.PrezzoProdotto)
+    case parseInt(Shoe.Giorno) < 31:
+      if(Shoe.PrezzoVendita >= 0){
+        TotWeek4 += parseInt(Shoe.PrezzoVendita)
+      }else{
+        TotWeek4 -= parseInt(Shoe.PrezzoVendita)
+      }
       break;
-    case 5:
-      TotMonth5 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 6:
-      TotMonth6 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 7:
-      TotMonth7 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 8:
-      TotMonth8 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 9:
-      TotMonth9 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 10:
-      TotMonth10 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 11:
-      TotMonth11 -=  parseInt(k.PrezzoProdotto)
-      break;
-    case 12:
-      TotMonth12 -=  parseInt(k.PrezzoProdotto)
-      break;
-  }
-}
-
-
-function SetMonthLifetime(k){
-  switch(k.Mese){
-    case 1:
-      TotMonth1 += parseInt(k.Profitto)
-      break;
-    case 2:
-      TotMonth2 +=  parseInt(k.Profitto)
-      break;
-    case 3:
-      TotMonth3 +=  parseInt(k.Profitto)
-      break;
-    case 4:
-      TotMonth4 +=  parseInt(k.Profitto)
-      break;
-    case 5:
-      TotMonth5 +=  parseInt(k.Profitto)
-      break;
-    case 6:
-      TotMonth6 +=  parseInt(k.Profitto)
-      break;
-    case 7:
-      TotMonth7 +=  parseInt(k.Profitto)
-      break;
-    case 8:
-      TotMonth8 +=  parseInt(k.Profitto)
-      break;
-    case 9:
-      TotMonth9 +=  parseInt(k.Profitto)
-      break;
-    case 10:
-      TotMonth10 +=  parseInt(k.Profitto)
-      break;
-    case 11:
-      TotMonth11 +=  parseInt(k.Profitto)
-      break;
-    case 12:
-      TotMonth12 +=  parseInt(k.Profitto)
+    case parseInt(Shoe.Giorno) > 30:
+      if(Shoe.PrezzoVendita >= 0){
+        TotWeek5 += parseInt(Shoe.PrezzoVendita)
+      }else{
+        TotWeek5 -= parseInt(Shoe.PrezzoVendita)
+      }
+      break;  
+    default:
+        console.log("Non entra nello switch")
       break;
   }
 }
 
-function ResetVar2(){
+function SetWeekCosti(Shoe){
+  console.log("Scarpa nei costi")
+  console.log(Shoe)
+  switch(true){
+    case parseInt(Shoe.Giorno) < 8:
+        TotWeek1 -= parseInt(Shoe.PrezzoProdotto)
+      break;
+    case parseInt(Shoe.Giorno) < 15:
+        TotWeek2 -= parseInt(Shoe.PrezzoProdotto)
+      break;
+    case parseInt(Shoe.Giorno) < 22:
+        TotWeek3 -= parseInt(Shoe.PrezzoProdotto)
+      break;
+    case parseInt(Shoe.Giorno) < 31:
+        TotWeek4 -= parseInt(Shoe.PrezzoProdotto)
+      break;
+    case parseInt(Shoe.Giorno) > 30:
+        TotWeek5 -= parseInt(Shoe.PrezzoProdotto)
+      break;
+    default:
+      console.log("Non entra nello switch")
+      break;
+  }
+}
+
+function SetMonthCosti(Shoe){
+  ArrayMonth[Shoe.Mese - 1] -= Shoe.PrezzoProdotto
+}
+
+function SetMonthRicavi(Shoe){
+  if(Shoe.PrezzoVendita >= 0){
+    ArrayMonth[Shoe.Mese - 1] += Shoe.PrezzoVendita
+  }else{
+    ArrayMonth[Shoe.Mese - 1] -= Shoe.PrezzoVendita
+  }
+}
+
+function SetYearCosti(Shoe){
+  console.log(Shoe.Anno)
+  ArrayYear[Shoe.Anno] -= Shoe.PrezzoProdotto
+}
+
+function SetYearRicavi(Shoe){
+  if(Shoe.PrezzoVendita >= 0){
+    ArrayYear[Shoe.Anno] += Shoe.PrezzoVendita
+  }else{
+    ArrayYear[Shoe.Anno] -= Shoe.PrezzoVendita
+  }
+} 
+
+function ResetVarWeek(){
   TotWeek1 = 0
   TotWeek2 = 0
   TotWeek3 = 0
   TotWeek4 = 0
   TotWeek5 = 0
 }
-function ResetVar(){
-  TotMonth1 = 0
-  TotMonth2 = 0
-  TotMonth3 = 0
-  TotMonth4 = 0
-  TotMonth5 = 0
-  TotMonth6 = 0
-  TotMonth7 = 0
-  TotMonth8 = 0
-  TotMonth9 = 0
-  TotMonth10 = 0
-  TotMonth11 = 0
-  TotMonth12 = 0
-}
 
-function SetWeekExpenses(k){
-  switch(true){
-    case parseInt(k.Giorno) < 8 :
-        TotWeek1 -= k.PrezzoProdotto
-      break;
-    case parseInt(k.Giorno) < 15:
-      TotWeek2 -= k.PrezzoProdotto
-      break;
-    case parseInt(k.Giorno) < 22:
-      TotWeek3 -= k.PrezzoProdotto
-      break;
-    case parseInt(k.Giorno) < 31:
-      TotWeek4 -= k.PrezzoProdotto
-      break;
-    case parseInt(k.Giorno) > 30:
-      TotWeek5 -= k.PrezzoProdotto
-      break;
-    default:
-      console.log("Non entra nello switch")
-      break;
-  }
-}
-
-function SetWeekProfit(k){
-  switch(true){
-    case parseInt(k.Giorno) < 8 :
-      if(k.Profitto > 0){
-        TotWeek1 += k.Profitto
-      }else{
-        TotWeek1 -= k.Profitto
-      }
-      break;
-    case parseInt(k.Giorno) < 15:
-      if(k.Profitto > 0){
-        TotWeek2 += k.Profitto
-      }else{
-        TotWeek2 -= k.Profitto
-      }
-      break;
-    case parseInt(k.Giorno) < 22:
-      if(k.Profitto > 0){
-        TotWeek3 += k.Profitto
-      }else{
-        TotWeek3 -= k.Profitto
-      }
-      break;
-    case parseInt(k.Giorno) < 31:
-      if(k.Profitto > 0){
-        TotWeek4 += k.Profitto
-      }else{
-        TotWeek4 -= k.Profitto
-      }
-      break;
-    case parseInt(k.Giorno) > 30:
-      if(k.Profitto > 0){
-        TotWeek5 += k.Profitto
-      }else{
-        TotWeek5 -= k.Profitto
-      }
-      break;
-    default:
-      console.log("Non entra nello switch")
-      break;
-  }
+function ResetVarMonth(){
+  ArrayMonth = [0,0,0,0,0,0,0,0,0,0,0,0]
 }
 
 ipcMain.on("CreateWindow",(event,arg) => {

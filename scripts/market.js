@@ -28,7 +28,7 @@ switch(Currency){
         Conversion = 1
     break;
     case "€":
-        Conversion = 0.86
+        Conversion = 0.82
     break;
     case "£":
         Conversion = 0.78
@@ -95,8 +95,8 @@ function CreateTemplateVariant(Variant){
                         "Value: " + Currency + "" + parseFloat(Conversion * Variant.market.averageDeadstockPrice).toFixed(2) +
                         "</h3>" +
                         "<br>" +
-                        "<span class='badge badge rounded-capsule badge-soft-success'>Highest: " + Currency + "" + parseFloat(Conversion * Variant.market.highestBid).toFixed(2) + "</span>&nbsp&nbsp" +
-                        "<span class='badge badge rounded-capsule badge-soft-danger'>Lowest: "+ Currency + "" + parseFloat(Conversion * Variant.market.lowestAsk).toFixed(2) + "</span>" +
+                        "<span class='badge badge rounded-capsule badge-soft-success'>Lowest: "+ Currency + "" + parseFloat(Conversion * Variant.market.lowestAsk).toFixed(2) + "</span>&nbsp&nbsp" +
+                        "<span class='badge badge rounded-capsule badge-soft-danger'>Highest: " + Currency + "" + parseFloat(Conversion * Variant.market.highestBid).toFixed(2) + "</span>" +
                     "</div>" +
                     "</div>" +
                 "</div>" +

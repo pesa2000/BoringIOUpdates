@@ -1,6 +1,6 @@
 {
   "name": "BoringIO",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "First official release with AutoUpdater",
   "main": "login/main.js",
   "scripts": {
