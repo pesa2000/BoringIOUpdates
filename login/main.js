@@ -149,8 +149,8 @@ function GetTodaysDateDashFormat1(){
 const stockX = new StockxAPI();
 var connection
 var config = {
-  waitForConnections : false,
-  connectionLimit: 50,
+  waitForConnections : true,
+  connectionLimit: 100,
   host     : 'www.boringio.com',
   user     : 'desktopuser',
   password : 'anfi1812',
@@ -671,6 +671,7 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
     var Query = "SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1"
     pool.getConnection(function(err,connection){
       connection.query(Query,userId,function(error,results){
+      connection.release()
       if(error) console.log(error)
       var StockXInv = results
         connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,function(error,results){
@@ -749,6 +750,7 @@ ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
         var InventorySoldRes = results
           connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 0",UserId,function(error,results){
             if(error) console.log(error)
+            connection.release()
             var InvetoryCustomSoldRes = results
             if(Path.filePath.includes(".json")){
               for(var i = 0; i < InventorySoldRes.length; i++){
@@ -919,6 +921,7 @@ ipcMain.on("RequestedStats",async (event,arg) => {
     });
 
     var Res = await Response.json()
+    connection.release()
     event.sender.send("ReturnedStats",Res)
   })
 })
@@ -949,7 +952,6 @@ ipcMain.on("RequestedDataGraphs", async(event,arg) => {
     ArrayYears = []
     FinalArray = []
     ArrayMonth = [0,0,0,0,0,0,0,0,0,0,0,0]
-    
     if(FilterMonth == "Year"){
       ResetVarMonth()
       var Values = [GlobalIdUtente,GetNewDateYear()]

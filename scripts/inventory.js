@@ -553,12 +553,7 @@ var LoadShoesModal = function(SelectedUrl){
         }else{
             $("#prodPrice"+ContSaved).val(SelectedProd[0].searchable_traits["Retail Price"])  
         }
-
-        /*if(){
-            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
-        }else{
-            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
-        }*/
+        $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
         $("#prodSite"+ContSaved).val("No site")
         $("#NameSingle"+ContSaved).val(SelectedProd[0].name)
         $("#Red"+ContSaved).hide()
