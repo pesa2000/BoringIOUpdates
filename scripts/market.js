@@ -5,6 +5,7 @@ var connection = require('electron').remote.getGlobal('conn')
 var windowStats = require('electron').remote.getGlobal('windowStats')
 var https = require('https')
 var http = require('http')
+const pool = require('electron').remote.getGlobal('pool')
 
 var timer
 var GlobalIndex = 0
@@ -21,18 +22,35 @@ console.log("Id Utente")
 console.log(UserId)
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
-var Currency = UtilCurr.GetCurrencyFromUTF8(Valuta)
-var Conversion = 1
-switch(Currency){
-    case "$":
-        Conversion = 1
-    break;
-    case "€":
-        Conversion = 0.86
-    break;
-    case "£":
-        Conversion = 0.78
-    break;
+var Conversion = " "
+var StringValuta = " "
+
+GetValutaAsUtf8(UserId)
+function GetValutaAsUtf8(Id){
+    pool.getConnection(function(err,connection){
+        if(err)console.log(err)
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+            if(error)console.log(error)
+            console.log(results[0].Valuta1)
+            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+            Currency = Valuta
+            switch(Valuta){
+                case "$":
+                    StringValuta = "USD"
+                break;
+                case "€":
+                    StringValuta = "EUR"
+                break;
+                case "£":
+                    StringValuta = "GBP"
+                break;
+            }
+            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
+                connection.release()
+                Conversion = results[0].Conversione
+            })
+        })
+    })
 }
 
 window.setInterval(CheckConnection,5000)

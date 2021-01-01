@@ -31,35 +31,36 @@ var Flag = false
 console.log("User attached") 
 console.log(UserAttachedInventory)
 
+var Conversion = " "
+var StringValuta = " "
+
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    if(Flag == false){
-        console.log("Entrato nella funzione")
-        Flag = true
-        pool.getConnection(function(err,connection){
-            connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-                if(error)console.log(error)
-                console.log(results[0].Valuta1)
-                Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-                console.log(Valuta)
-                switch(Valuta){
-                    case "$":
-                        Conversion = 1
-                    break;
-                    case "€":
-                        Conversion = 0.86
-                    break;
-                    case "£":
-                        Conversion = 0.78
-                    break;
-                }
-                console.log("Coversione valuta")
-                console.log(Conversion)
+    pool.getConnection(function(err,connection){
+        if(err)console.log(err)
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+            if(error)console.log(error)
+            console.log(results[0].Valuta1)
+            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+            Currency = Valuta
+            switch(Valuta){
+                case "$":
+                    StringValuta = "USD"
+                break;
+                case "€":
+                    StringValuta = "EUR"
+                break;
+                case "£":
+                    StringValuta = "GBP"
+                break;
+            }
+            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
                 connection.release()
+                Conversion = results[0].Conversione
                 LoadShoes()
             })
         })
-    }
+    })
 }
 
 

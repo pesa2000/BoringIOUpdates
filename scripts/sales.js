@@ -8,18 +8,34 @@ var SalesListCustom = []
 var UserId = 0
 
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_sales.js"))
-
+var UserId = require('electron').remote.getGlobal('UserId')
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
-var Valuta = ""
+var Valuta = " "
+GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
     pool.getConnection(function(err,connection){
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+        if(err)console.log(err)
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",UserId,function(error,results,fileds){
             if(error)console.log(error)
             console.log(results[0].Valuta1)
             Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            console.log(Valuta)
-            connection.release()
+            Currency = Valuta
+            switch(Valuta){
+                case "$":
+                    StringValuta = "USD"
+                break;
+                case "€":
+                    StringValuta = "EUR"
+                break;
+                case "£":
+                    StringValuta = "GBP"
+                break;
+            }
+            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
+                connection.release()
+                Conversion = results[0].Conversione
+            })
         })
     })
 }

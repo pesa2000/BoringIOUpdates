@@ -16,14 +16,41 @@ var CostsOthersList = []
 
 var UserId = require('electron').remote.getGlobal('UserId')
 var Valuta = require('electron').remote.getGlobal('ValutaAcc')
+var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 console.log("Valuta")
 console.log(Valuta)
 console.log("Id Utente")
 console.log(UserId)
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
-var Currency = UtilCurr.GetCurrencyFromUTF8(Valuta)
-console.log(Currency)
+var Currency = ""
+
+GetValutaAsUtf8(UserId)
+function GetValutaAsUtf8(Id){
+    pool.getConnection(function(err,connection){
+        if(err)console.log(err)
+        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
+            if(error)console.log(error)
+            console.log(results[0].Valuta1)
+            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+            Currency = Valuta
+            switch(Valuta){
+                case "$":
+                    StringValuta = "USD"
+                break;
+                case "€":
+                    StringValuta = "EUR"
+                break;
+                case "£":
+                    StringValuta = "GBP"
+                break;
+            }
+            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
+                connection.release()
+                Conversion = results[0].Conversione
+            })
+        })
+    })
+}
  
 var Price = 0
 var Name = ""
