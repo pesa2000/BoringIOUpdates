@@ -122,9 +122,9 @@ function LoadExpenses(){
         if(error) console.log(error)
         GlobalList = results
         SplitArrays(results)
-        Util.SetTypes(results)
+        /*Util.SetTypes(results)
         Util.YearExpenses(results)
-        Util.MonthExpenses(results)
+        Util.MonthExpenses(results)*/
       })
     })
   })

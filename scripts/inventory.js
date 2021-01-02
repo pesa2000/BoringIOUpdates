@@ -21,6 +21,8 @@ var Urls = []
 
 var Selected = false
 
+var Loaded = false
+
 if(UserAttachedInventory != null){
     UserId = UserAttachedInventory
 }
@@ -414,7 +416,7 @@ function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
         "</div>" +
         "<div class='form-group col-3'>" +
           "<label for='modal-auth-password'>Date</label>" +
-          "<input class='form-control datetimepicker' id='prodDate"+ActualCont+"' type='text' data-options='{'dateFormat':'d/m/Y'}' />" +
+          "<input class='form-control' id='prodDate"+ActualCont+"' type='text'/>" +
         "</div>" +
         "<div class='form-group col-3'>" +
           "<label for='modal-auth-password'>Price</label>" + 
@@ -545,8 +547,18 @@ var LoadShoesModal = function(SelectedUrl){
         })
         console.log("Selected product")
         console.log(SelectedProd[0])
-        var ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].media.imageUrl,SelectedProd[0].name,SelectedProd[0].searchable_traits["Retail Price"],FlipDate(SelectedProd[0].release_date),ContSaved)
-        $("#ContainerSaved").append(ShoeToSave)
+        var ShoeToSave
+        //alert(ContSaved)
+        if(SelectedProd[0].release_date == null || SelectedProd[0].release_date == undefined){
+            SelectedProd[0].release_date = GetTodaysDateSlashFormat()
+            ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].media.imageUrl,SelectedProd[0].name,SelectedProd[0].searchable_traits["Retail Price"],SelectedProd[0].release_date,ContSaved)
+            $("#ContainerSaved").append(ShoeToSave)
+            $("#prodDate"+ContSaved).val(GetTodaysDateSlashFormat())
+        }else{
+            ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].media.imageUrl,SelectedProd[0].name,SelectedProd[0].searchable_traits["Retail Price"],FlipDate(SelectedProd[0].release_date),ContSaved)
+            $("#ContainerSaved").append(ShoeToSave)
+            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
+        }
         $("#Save"+ContSaved).hide()
         var Price = SelectedProd[0].searchable_traits["Retail Price"]
         if(Price == undefined || Price == null || Price == "undefined"){
@@ -554,7 +566,6 @@ var LoadShoesModal = function(SelectedUrl){
         }else{
             $("#prodPrice"+ContSaved).val(SelectedProd[0].searchable_traits["Retail Price"])  
         }
-        $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
         $("#prodSite"+ContSaved).val("No site")
         $("#NameSingle"+ContSaved).val(SelectedProd[0].name)
         $("#Red"+ContSaved).hide()
@@ -564,6 +575,15 @@ var LoadShoesModal = function(SelectedUrl){
     }
 }
 
+function GetTodaysDateSlashFormat(){
+    var today = new Date()
+    var dd = String(today.getDate()).padStart(2, '0')
+    var mm = String(today.getMonth() + 1).padStart(2, '0')
+    var yyyy = today.getFullYear()
+    today = dd + '/' + mm + '/' + yyyy;
+    return today
+}
+
 function SearchNewShoes(){
     clearTimeout(timer)
     timer = setTimeout(Searching, 600)
@@ -571,25 +591,28 @@ function SearchNewShoes(){
 
 function LoadShoes(){
     Index = 0
-    pool.getConnection(function(err,connection){
-        connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-            if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-            ShoesList = results
-            console.log(ShoesList)
-            Util.StockXItems(ShoesList,Valuta)
-            connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+    if(Loaded == false){
+        pool.getConnection(function(err,connection){
+            connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
                 if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-                CustomList = results
-                console.log(CustomList)
-                Util.CustomItems(CustomList,Valuta)
-                Util.Retail(ShoesList,CustomList,Valuta)
-                Util.Average(ShoesList,Valuta)
-                Populate()
-                connection.release()
+                ShoesList = results
+                console.log(ShoesList)
+                Util.StockXItems(ShoesList,Valuta)
+                connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
+                    if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
+                    CustomList = results
+                    console.log(CustomList)
+                    Util.CustomItems(CustomList,Valuta)
+                    Util.Retail(ShoesList,CustomList,Valuta)
+                    Util.Average(ShoesList,Valuta)
+                    Loaded = true
+                    Populate()
+                    connection.release()
+                })
             })
         })
-    })
-    console.log("Loaded")
+        console.log("Loaded")
+    }
 }
 /* UTILITY METHODS */
 function FlipDateAndChange(DateToChange){
@@ -945,7 +968,7 @@ function LogOut(){
 }
 
 function CheckConnection(){
-    ipc.send("CheckConnection")
+    //ipc.send("CheckConnection")
 }
 
 ipc.on("CheckedConnection", (event,arg) =>{
