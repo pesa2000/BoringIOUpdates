@@ -31,6 +31,7 @@ var GLS2 = "&tipo_codice=nazionale";
 var SDA = "https://www.sda.it/wps/portal/Servizi_online/ricerca_spedizioni?locale=it&tracing.letteraVettura=";
 var DPD = "https://www.dpd.co.uk/tracking/quicktrack.do?search.parcelNumber=";
 var POSTAT = "https://www.post.at/sv/sendungsdetails?snr=";
+var USPS = "https://tools.usps.com/go/TrackConfirm"
 
 
 function TemplateTracking(Id,Photo,UrlKey,Name,Code,Date,Courier,Size){
@@ -39,7 +40,7 @@ function TemplateTracking(Id,Photo,UrlKey,Name,Code,Date,Courier,Size){
         "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt='' />" +
          "<div class='media-body ml-3'>" +
            "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+Name+"</h6>" +
-           "<span class='badge badge rounded-capsule badge-soft-info' style=cursor:pointer>" +
+           "<span class='badge badge rounded-capsule badge-soft-info' style='cursor:pointer;user-select:text;'>" +
               Code +
           "</span>" +
         "</div>" +
@@ -119,7 +120,6 @@ function Add(){
                 ShoeName = Shoe.NomeProdotto
             }
         }
-
         $("#newTracking").modal('toggle')
         var Obj = CompleteUrlByCourier(TrackingCodeChosen,Corriere)
         console.log(Obj)
@@ -207,6 +207,10 @@ function CompleteUrlByCourier(Code,Type){
         case "FEDEX":
             Url = Fedex1 + Code + Fedex2
             UrlPhoto = '../assets/images/fedex.png'
+        break;
+        case "USPS":
+            Url = USPS
+            UrlPhoto = '../assets/images/usps.png'
         break;
     }
     return {Url,UrlPhoto,NameCourier}

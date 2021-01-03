@@ -116,15 +116,32 @@ function LoadExpenses(){
   ipc.send("getUserId")
   ipc.on("ReturnedId",async (event,arg) => {
     UserId = arg
-    console.log(UserId)
     pool.getConnection(function(err,connection){
-      connection.query("SELECT * FROM costi WHERE IdUtente = ?",UserId,  function (error, results, fields) {
-        if(error) console.log(error)
-        GlobalList = results
-        SplitArrays(results)
-        /*Util.SetTypes(results)
-        Util.YearExpenses(results)
-        Util.MonthExpenses(results)*/
+      connection.query("SELECT * FROM ProxiesList",[],function(error, results, fields){
+        for(var Proxy of results){
+          $('#ProxiesList').append(`<option data-value="${Proxy.ImmagineProxy}"> ${Proxy.NomeProxy} </option>`);
+        }
+        connection.query("SELECT * FROM CookGroupsList",[],function(error, results, fields){
+          for(var CookGroup of results){
+            $('#CookGroupsList').append(`<option data-value="${CookGroup.ImmagineCookGroup}"> ${CookGroup.NomeCookGroup} </option>`);
+          }
+          connection.query("SELECT * FROM BotsList",[],function(error, results, fields){
+            for(var Bot of results){
+              $('#BotsList').append(`<option data-value="${Bot.ImmagineBot}"> ${Bot.NomeBot} </option>`);
+            }
+          })
+          connection.query("SELECT * FROM ShipsList",[],function(error, results, fields){
+            for(var Ship of results){
+              $('#ShipsList').append(`<option data-value="${Ship.ImmagineShip}"> ${Ship.NomeShip} </option>`);
+            }
+            connection.query("SELECT * FROM costi WHERE IdUtente = ?",UserId,  function (error, results, fields) {
+              if(error) console.log(error)
+              GlobalList = results
+              connection.release()
+              SplitArrays(results)
+            })
+          })
+        })
       })
     })
   })

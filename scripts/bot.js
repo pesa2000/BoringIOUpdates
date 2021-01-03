@@ -56,15 +56,20 @@ $(function(){
 function LoadBots(){
   LoadStats()
   pool.getConnection(function(error,connection){
-    connection.query("SELECT * FROM inventariobot WHERE IdUtente = ?",[UserId],function(err,results,fields){
-      console.log(results)
-      BotsList = results
+    connection.query("SELECT * FROM BotsList",[],function(error, results, fields){
       for(var Bot of results){
-        var Element = SingleTemplateBot(Bot.BrandBot,Bot.ImmagineBot,Bot.PrezzoComprato,Bot.PrezzoVenduto,Bot.Note,Bot.IdBot)
-        $("#Bots").append(Element)
+        $('#BotsList').append(`<option value="${Bot.ImmagineBot}"> ${Bot.NomeBot} </option>`);
       }
-      $("#Preloader1").css("display","none")
-      connection.release()
+      connection.query("SELECT * FROM inventariobot WHERE IdUtente = ?",[UserId],function(err,results,fields){
+        connection.release()
+        console.log(results)
+        BotsList = results
+        for(var Bot of results){
+          var Element = SingleTemplateBot(Bot.BrandBot,Bot.ImmagineBot,Bot.PrezzoComprato,Bot.PrezzoVenduto,Bot.Note,Bot.IdBot)
+          $("#Bots").append(Element)
+        }
+        $("#Preloader1").css("display","none")
+      })
     })
   })
 }
