@@ -20,6 +20,10 @@ var Conversion = 1
 
 var StringValuta = "USD"
 
+console.log("UserId")
+console.log(UserId)
+
+
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
     pool.getConnection(function(err,connection){

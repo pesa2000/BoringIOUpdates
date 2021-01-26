@@ -44,8 +44,9 @@ function CreateWindow(){
 }
 
 ipc.on("ReturnedSub",async(event,arg) => {
+    console.log(arg)
     var user = arg.User
-    var img = user.Immagine
+    var img = user.DiscordAvatar
     console.log(img)
     document.getElementById("Immagine").value = img
     $("#ImmagineProfilo").attr("src",img)
@@ -69,7 +70,7 @@ ipc.on("ReturnedSub",async(event,arg) => {
             document.getElementById("SelectCurrency").value = "EUROS"
             break;
     }
-    document.getElementById("Username").innerHTML = user.Username + "<small class='fas fa-check-circle text-primary ml-1' data-toggle='tooltip' data-placement='right' title='Verified' data-fa-transform='shrink-4 down-2'></small>"
+    document.getElementById("Username").innerHTML = user.DiscordUsername + "<small class='fas fa-check-circle text-primary ml-1' data-toggle='tooltip' data-placement='right' title='Verified' data-fa-transform='shrink-4 down-2'></small>"
     document.getElementById("Membership").innerHTML += " " + GetDateRightFormat(user.DataCreazione)
     document.getElementById("Content").style.display = "block"
     document.getElementById("Preloader1").style.display = "none"

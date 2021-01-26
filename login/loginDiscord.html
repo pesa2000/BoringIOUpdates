@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+    <title>Tasks</title>
+    <script src="../assets/libs/feather-icons/index.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/favicon.ico">
+    <link rel="manifest" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/mstile-150x150.png">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
+    <link rel="manifest" href="../assets/img/favicons/manifest.json">
+    <meta name="theme-color" content="#000000">
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/js/config.navbar-vertical.min.js"></script>
+    <link id = "stile" href="../assets/css/theme-dark.min.css" rel="stylesheet">
+    <script>
+      const ipc = require("electron").ipcRenderer
+      function Login(){
+        ipc.send("OpenDiscordAuth")
+      }
+      function maximize(){
+        ipc.send("maximize")
+      }
+
+      function minimize(){
+        ipc.send("minimize")
+      }
+
+      function quit(){
+        ipc.send("close")
+      }
+
+      ipc.on("LoginError",(event,arg) => {
+        alert("Login failed: \n - this discord account doesnt exist \n - your sub is expired")
+      })
+    </script>
+  </head>
+
+  <body style="background-color: #061325; width: 100%; height: 100%;">
+    <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand">
+      <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+      <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3">
+        <div class="d-flex align-items-center">
+          <img src="../img/logo-piccolo.png" alt="" width="40" />
+          <span class="text-sans-serif" style="color:#fafafa">boring</span>
+        </div>
+      </a>
+      <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
+        <li class="nav-item" style ="-webkit-app-region: no-drag;" onclick = "minimize()" data-toggle="tooltip" data-placement="left" title="minimize">
+          <a class="nav-link px-0">
+            <span>
+              <i data-feather="minus"></i>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item" style ="-webkit-app-region: no-drag; margin-left:5px;" onclick = "maximize()" data-toggle="tooltip" data-placement="left" title="maximize">
+          <a class="nav-link px-0">
+            <span>
+              <i data-feather="square"></i>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item" style ="-webkit-app-region: no-drag; margin-left:5px;margin-right: 14px;" onclick = "quit()" data-toggle="tooltip" data-placement="left" title="close">
+          <a class="nav-link px-0">
+            <span>
+              <i data-feather="x"></i>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <section class="min-vh-100 py-5" style="margin-top:10%;">
+      <div class="container">
+        <div class="row justify-content-center mb-md-6">
+        </div>
+        <div class="row justify-content-center pt-6">
+          <div class="col-xl-4 col-lg-5 col-md-6">
+            <div class="text-center mb-4">
+              <h1 class="mb-1">Welcome back</h1>
+              <span>The discord Auth is now enable!</span>
+            </div>
+            <div>
+            <div class="form-group">
+                <button class="btn-block btn btn-outline-primary" onclick="Login()">Login with Discord</button>
+                <!--<div class="preloader" id = "Preloader">
+                  <div style = "position:fixed;margin-top:30px;z-index: 1000;">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                </div>-->
+              </div>
+              <div id="ErrorLabel">
+                
+              </div>
+              <hr>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+  <script>
+    feather.replace()
+  </script>
+</html>
