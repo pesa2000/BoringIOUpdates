@@ -2,7 +2,7 @@
   "name": "BoringIO",
   "version": "1.3.8",
   "description": "First official release with AutoUpdater",
-  "main": "login/mainCopy.js",
+  "main": "login/main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-packager ./ --overwrite --platform=all --arch=x64 --out ./builds --overwrite --icon=./icon.ico",
