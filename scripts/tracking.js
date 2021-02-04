@@ -1,8 +1,9 @@
 var mysql = require('mysql')
 var moment = require('moment')
+const { SSL_OP_NETSCAPE_CHALLENGE_BUG } = require('constants')
 var config = require('electron').remote.getGlobal('configuration')
-var pool = require('electron').remote.getGlobal('pool')
 var UserId = require('electron').remote.getGlobal('UserId')
+var JwtToken = require('electron').remote.getGlobal('JwtToken')
 
 window.setInterval(CheckConnection,5000)
 
@@ -71,27 +72,33 @@ function ChangeDate(DateToChange){
 }
 
 function LoadTrackings(){
-    pool.getConnection(function(err,connection){
-        document.getElementById("ShoesListModal").innerHTML = ""
-        document.getElementById("TrackingTable").innerHTML = ""
-        connection.query("SELECT * FROM spedizioni INNER JOIN inventario on inventario.IdProdotto = spedizioni.IdProdotto WHERE spedizioni.IdUtente = ?",UserId,  function (error, results, fields) {
-            if(error) console.log(error)
-            TrackingList = results
-            console.log(TrackingList)
-            LoadAll()
-            $("#Preloader1").css("display","none")
-            connection.query("SELECT * FROM inventario WHERE IdUtente = ?",UserId,function(error,results,fields){
-                connection.release()
-                if(error) console.log(error)
-                ShoesList = results
-                for(var Shoe of ShoesList){
-                    console.log(Shoe)
-                    document.getElementById("ShoesListModal").innerHTML += "<option value = '" + Shoe.IdProdotto + "'>"+Shoe.NomeProdotto+" " + Shoe.Taglia + "</option>"
-                }
-            })
-        })
+    console.log(JwtToken)
+    fetch("https://www.boringio.com:9001/GetTrackingList",{
+        method: 'POST',
+        body: "",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            return response.json();
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+        console.log(data.Results)
+        TrackingList = data.Results
+        ShoesList = data.Results1
+        LoadAll()
+        for(var Shoe of ShoesList){
+            console.log(Shoe)
+            document.getElementById("ShoesListModal").innerHTML += "<option value = '" + Shoe.IdProdotto + "'>"+Shoe.NomeProdotto+" " + Shoe.Taglia + "</option>"
+        }
+        $("#Preloader1").css("display","none")
     })
-    //ipc.send("getUserId")
 }
 
 function LoadAll(){
@@ -113,27 +120,42 @@ function Add(){
     var Corriere = $("#Corriere option:selected").val()
 
     if(ItemIdChosen && TrackingCodeChosen && DateSplitted){
-
         var ShoeName = ""
         for(var Shoe of ShoesList){
             if(Shoe.IdProdotto == ItemIdChosen){
                 ShoeName = Shoe.NomeProdotto
             }
         }
-        $("#newTracking").modal('toggle')
         var Obj = CompleteUrlByCourier(TrackingCodeChosen,Corriere)
+        var Data = {
+            UrlPhoto: Obj.UrlPhoto,
+            TrackingCodeChosen: TrackingCodeChosen,
+            NameCourier: Obj.NameCourier,
+            Url: Obj.Url,
+            RegularDate: RegularDate,
+            ItemIdChosen: ItemIdChosen
+        }
+        $("#newTracking").modal('toggle')
         console.log(Obj)
-        var Query = "INSERT INTO spedizioni (UrlFotoCorriere,TrackingCode,Corriere,Note,UrlSpedizione,DataAggiunta,IdProdotto,IdUtente) values (?)"
-        var Values = [
-            [Obj.UrlPhoto,TrackingCodeChosen,Obj.NameCourier,"CreatedWithDesktopApp",Obj.Url,RegularDate,ItemIdChosen,UserId]
-        ]
-        pool.getConnection(function(err,connection){
-            connection.query(Query,Values,function(error,results,fields){
-                if(error) console.log(error)
+
+        fetch("https://www.boringio.com:9001/AddTracking",{
+            method: 'POST',
+            body: JSON.stringify(Data),
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
                 CreateLog(`Added a tracking to ${ShoeName}`,"Track","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                connection.release()
-                location.reload()
-            })
+                window.location.reload()
+            } else {
+                window.alert("Something went wrong")
+            }
+        }).then(async function(data){
+            console.log(data)
         })
     }else{
         $("#errorLabel").text("You need to add every field before continuing")
@@ -141,19 +163,30 @@ function Add(){
 }
 
 function Delete(Id){
-    pool.getConnection(function(err,connection){
-        var ShoeName = ""
-        for(var Shoe of ShoesList){
-            if(Shoe.IdProdotto == Id){
-                ShoeName = Shoe.NomeProdotto
-            }
+    var ShoeName = ""
+    for(var Shoe of ShoesList){
+        if(Shoe.IdProdotto == Id){
+            ShoeName = Shoe.NomeProdotto
         }
-        connection.query("DELETE FROM spedizioni WHERE IdSpedizione = ?",Id,function(error,results,fields){
-            if(error) console.log(error)
+    }
+    fetch("https://www.boringio.com:9001/DeleteTracking",{
+        method: 'POST',
+        body: JSON.stringify({TrackId: Id}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
             CreateLog(`Deleted a tracking of ${ShoeName}`,"Track","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            connection.release()
-            location.reload()
-        })
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+        console.log(data)
     })
 }
 

@@ -1,11 +1,10 @@
 var moment = require('moment')
 const { idText } = require('typescript')
 var config = require('electron').remote.getGlobal('configuration')
-var connection = require('electron').remote.getGlobal('conn')
 var windowStats = require('electron').remote.getGlobal('windowStats')
+var JwtToken = require('electron').remote.getGlobal('JwtToken')
 var https = require('https')
 var http = require('http')
-const pool = require('electron').remote.getGlobal('pool')
 
 var timer
 var GlobalIndex = 0
@@ -15,43 +14,36 @@ var GlobalProducts = []
 var GlobalProductsDetails = []
 
 var UserId = require('electron').remote.getGlobal('UserId')
-var Valuta = require('electron').remote.getGlobal('ValutaAcc')
-console.log("Valuta")
-console.log(Valuta)
-console.log("Id Utente")
-console.log(UserId)
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
 var Conversion = " "
 var StringValuta = " "
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            Currency = Valuta
-            switch(Valuta){
-                case "$":
-                    StringValuta = "USD"
-                break;
-                case "€":
-                    StringValuta = "EUR"
-                break;
-                case "£":
-                    StringValuta = "GBP"
-                break;
+    return new Promise((resolve,reject) => {
+        fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
+            method: 'POST',
+            body: "",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
+              return response.json()
+            } else {
+              window.alert("Something went wrong")
             }
-            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
-                connection.release()
-                Conversion = results[0].Conversione
-            })
-        })
+        }).then(async function(data){
+            console.log(data)
+            Currency = data.Symbol
+            Conversion = data.Conversion
+            resolve()
+        })  
     })
-}
+  }
 
 window.setInterval(CheckConnection,5000)
 

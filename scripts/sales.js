@@ -1,8 +1,9 @@
 var mysql = require('mysql')
 var path = require('path')
 var moment = require('moment')
+const { resolve } = require('path')
 var config = require('electron').remote.getGlobal('configuration')
-var pool = require('electron').remote.getGlobal('pool')
+var JwtToken = require('electron').remote.getGlobal('JwtToken')
 var SalesList = []
 var SalesListCustom = [] 
 var UserId = 0
@@ -11,32 +12,32 @@ var Util = require(path.join(__dirname,"/utilityScripts/query_stats_sales.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
+var Conversion
+var Currency
 var Valuta = " "
-GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",UserId,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            Currency = Valuta
-            switch(Valuta){
-                case "$":
-                    StringValuta = "USD"
-                break;
-                case "€":
-                    StringValuta = "EUR"
-                break;
-                case "£":
-                    StringValuta = "GBP"
-                break;
+    return new Promise((resolve,reject) => {
+        fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
+            method: 'POST',
+            body: "",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
+              return response.json()
+            } else {
+              window.alert("Something went wrong")
             }
-            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
-                connection.release()
-                Conversion = results[0].Conversione
-            })
-        })
+        }).then(async function(data){
+            console.log(data)
+            Valuta = data.Symbol
+            Conversion = data.Conversion
+            resolve()
+        })  
     })
 }
 
@@ -135,31 +136,36 @@ function TemplateSingleSaleCustom(Id,Name,Site,Photo,UrlKey,Profit,SelectedDate,
   "</tr>"
 }
 
-function LoadSales(){
+async function LoadSales(){
     document.getElementById("SalesTable").innerHTML = ""
-    pool.getConnection(function(err,connection){
-        ipc.send("getUserId")
-        ipc.on("ReturnedId",(event,arg) => {
-            UserId = arg
-            GetValutaAsUtf8(UserId)
-            var Query = "SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
-            if(err)console.log(err)
-            connection.query(Query,UserId,function(error,results,fields){
-                console.log(results)
-                SalesList = results
-                var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
-                connection.query(Query,UserId,function(error,results,fields){
-                    console.log(results)
-                    SalesListCustom = results
-                    LoadAll()
-                    Util.Profit(SalesList,SalesListCustom)
-                    Util.TotalSold(SalesList,SalesListCustom)
-                    Util.StockXItemsSold(SalesList)
-                    Util.CustomItemsSold(SalesListCustom)
-                    $("#Preloader1").css("display","none")
-                    connection.release()
-                })
-            })
+    ipc.send("getUserId")
+    ipc.on("ReturnedId",async (event,arg) => {
+        UserId = arg
+        await GetValutaAsUtf8(UserId)
+        fetch("https://www.boringio.com:9003/GetSalesList",{
+            method: 'POST',
+            body: "",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
+                return response.json()
+            } else {
+                window.alert("Something went wrong")
+            }
+        }).then(async function(data){
+            SalesList = data.Results1
+            SalesListCustom = data.Results2
+            LoadAll()
+            Util.Profit(SalesList,SalesListCustom)
+            Util.TotalSold(SalesList,SalesListCustom)
+            Util.StockXItemsSold(SalesList)
+            Util.CustomItemsSold(SalesListCustom)
+            $("#Preloader1").css("display","none")
         })
     })
 }
@@ -210,24 +216,46 @@ function LoadAll(){
 }
 
 function Delete(Id){
-    pool.getConnection(function(err,connection){
-        connection.query("DELETE FROM inventario WHERE IdProdotto = ?",Id,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            connection.release()
-            location.reload()
-        })
+    fetch("https://www.boringio.com:9003/DeleteSales",{
+        method: 'POST',
+        body: JSON.stringify({SalesId:Id}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+          CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+          window.location.reload()
+        } else {
+            window.alert("Something went wrong, delete every tracking associated with this first")
+        }
+    }).then(async function(data){
+        
     })
 }
 
 function DeleteCustom(Id){
-    pool.getConnection(function(err,connection){
-        connection.query("DELETE FROM inventariocustom WHERE IdProdotto = ?",Id,function(error,results,fields){
-            if(error) console.log(error)
-            CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            connection.release()
-            location.reload()
-        })
+    fetch("https://www.boringio.com:9003/DeleteSalesCustom",{
+        method: 'POST',
+        body: JSON.stringify({SalesId:Id}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+          CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+          window.location.reload()
+        } else {
+          window.alert("Something went wrong, delete every tracking associated with this first")
+        }
+    }).then(async function(data){
+        
     })
 }
 
@@ -274,12 +302,24 @@ ipc.on("ReturnedProductDetailsArr",async function(event,arg){
 async function EditPriceDeadStock(Id,Price){
     var Query = "UPDATE inventario SET PrezzoMedioResell = ? WHERE IdProdotto = ?"
     var Values = [Price,Id]
-    pool.getConnection(async function(err,connection){
-        await connection.query(Query,Values,function(error,fields,results){
-            if(error) console.log(error)
-            console.log("UPDATED")
-            connection.release()
-        })
+    fetch("https://www.boringio.com:9003/EditPriceStockX",{
+        method: 'POST',
+        body: JSON.stringify({Price:Price,SalesId:Id}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+          CreateLog("Deleted a pair of sold shoes","Sales","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+          window.location.reload()
+        } else {
+          window.alert("Something went wrong, delete every tracking associated with this first")
+        }
+    }).then(async function(data){
+        
     })
 }
 

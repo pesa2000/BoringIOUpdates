@@ -1,41 +1,33 @@
 var moment = require('moment')
 var config = require('electron').remote.getGlobal('configuration')
-var pool = require('electron').remote.getGlobal('pool')
-console.log("All connections: " + pool._allConnections.length)
-console.log("Free connections: " + pool._freeConnections.length)
-console.log(pool)
-var Valuta = require('electron').remote.getGlobal("ValutaAcc")
 var path = require('path')
-var Util = require(path.join(__dirname,"/utilityScripts/query_stats_inventory.js"))
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
+var JwtToken = require('electron').remote.getGlobal('JwtToken')
 var BotsList = []
 
 function GetValutaAsUtf8(Id){
-  console.log("Entrato nella funzione")
-  Flag = true
-  pool.getConnection(function(err,connection){
-      connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-          if(error)console.log(error)
-          console.log(results[0].Valuta1)
-          Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-          console.log(Valuta)
-          switch(Valuta){
-              case "$":
-                  Conversion = 1
-              break;
-              case "€":
-                  Conversion = 0.86
-              break;
-              case "£":
-                  Conversion = 0.78
-              break;
+  return new Promise((resolve,reject) => {
+      fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
+          method: 'POST',
+          body: "",
+          headers: {
+              'Content-Type': 'application/json',
+              "Authorization": JwtToken
+          },
+          referrer: 'no-referrer'
+      }).then(function (response) {
+          console.log(response.status)
+          if(response.ok){
+            return response.json()
+          } else {
+            window.alert("Something went wrong")
           }
-          console.log("Coversione valuta")
-          console.log(Conversion)
-          connection.release()
-          LoadBots()
-      })
+      }).then(async function(data){
+          console.log(data)
+          Currency = data.Symbol
+          Conversion = data.Conversion
+          resolve()
+      })  
   })
 }
 
@@ -50,40 +42,42 @@ function quit(){
 }
 
 $(function(){
-  GetValutaAsUtf8(UserId)
+  //GetValutaAsUtf8(UserId)
+  LoadBots()
 })
 
-function LoadBots(){
-  LoadStats()
-  pool.getConnection(function(error,connection){
-    connection.query("SELECT * FROM BotsList",[],function(error, results, fields){
-      for(var Bot of results){
+async function LoadBots(){
+  await GetValutaAsUtf8(UserId)
+  fetch("https://www.boringio.com:9005/GetBotsList",{
+      method: 'POST',
+      body: "",
+      headers: {
+          'Content-Type': 'application/json',
+          "Authorization": JwtToken
+      },
+      referrer: 'no-referrer'
+  }).then(function (response) {
+      console.log(response.status)
+      if(response.ok){
+        return response.json()
+      } else {
+        window.alert("Something went wrong")
+      }
+  }).then(async function(data){
+      $("#BotsPurchases").text(Currency + " " + data.Results3.Acquisti)
+      $("#BotsSold").text(Currency + " " + data.Results3.Vendite)
+      $("#NumberOfBots").text(data.Results3.Conteggio)
+      $("#ProfitBots").text(Currency + " " + (data.Results3.Vendite - data.Results3.Acquisti))
+      BotsList = data.Results2
+      for(var Bot of data.Results2){
+        var Element = SingleTemplateBot(Bot.BrandBot,Bot.ImmagineBot,Bot.PrezzoComprato,Bot.PrezzoVenduto,Bot.Note,Bot.IdBot)
+        $("#Bots").append(Element)
+      }
+      for(var Bot of data.Results1){
         $('#BotsList').append(`<option value="${Bot.ImmagineBot}"> ${Bot.NomeBot} </option>`);
       }
-      connection.query("SELECT * FROM inventariobot WHERE IdUtente = ?",[UserId],function(err,results,fields){
-        connection.release()
-        console.log(results)
-        BotsList = results
-        for(var Bot of results){
-          var Element = SingleTemplateBot(Bot.BrandBot,Bot.ImmagineBot,Bot.PrezzoComprato,Bot.PrezzoVenduto,Bot.Note,Bot.IdBot)
-          $("#Bots").append(Element)
-        }
-        $("#Preloader1").css("display","none")
-      })
-    })
-  })
-}
-
-function LoadStats(){
-  pool.getConnection(function(error,connection){
-    connection.query("SELECT Count(*) as Conteggio,SUM(PrezzoComprato) as Acquisti,SUM(PrezzoVenduto) as Vendite FROM inventariobot WHERE IdUtente = ?",UserId,function(err,results,fields){
-      $("#BotsPurchases").text(Valuta + " " + results[0].Acquisti)
-      $("#BotsSold").text(Valuta + " " + results[0].Vendite)
-      $("#NumberOfBots").text(results[0].Conteggio)
-      $("#ProfitBots").text(Valuta + " " + (results[0].Vendite - results[0].Acquisti))
-      connection.release()
-    })
-  })
+      $("#Preloader1").css("display","none")
+  }) 
 }
 
 function SingleTemplateBot(Brand,Immagine,Prezzo,Vendita,Note,Id){
@@ -103,8 +97,8 @@ function SingleTemplateBot(Brand,Immagine,Prezzo,Vendita,Note,Id){
         </div>
       </div>` +
       "</td>" +
-        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Prezzo +"</span></td>" +
-        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " + Vendita +"</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Currency + " " + Prezzo +"</span></td>" +
+        "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Currency + " " + Vendita +"</span></td>" +
         "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Note+"</span></td>" +
         "<td></td>" +
         "<td class='align-middle'>" +
@@ -143,15 +137,25 @@ function AddBot(){
       return 
     }
   }
-  pool.getConnection(function(error,connection){
-    connection.query("INSERT INTO inventariobot (BrandBot,ImmagineBot,PrezzoComprato,PrezzoVenduto,Note,IdUtente) VALUES (?,?,?,?,?,?)",[Brand,Img,Purc,Sold,Notes,UserId],function(err,results,fields){
-      if(err){
-        console.log(err)
+  var Values = [Brand,Img,Purc,Sold,Notes]
+  fetch("https://www.boringio.com:9005/AddBot",{
+      method: 'POST',
+      body: JSON.stringify({Values:Values}),
+      headers: {
+          'Content-Type': 'application/json',
+          "Authorization": JwtToken
+      },
+      referrer: 'no-referrer'
+  }).then(function (response) {
+      console.log(response.status)
+      if(response.ok){
+        window.location.reload()
+      } else {
+        window.alert("Something went wrong")
       }
-      connection.release()
-      location.reload()
-    })
-  })
+  }).then(async function(data){
+
+  }) 
 }
 
 function PrepareEditBot(IdBot){
@@ -184,25 +188,44 @@ function EditBot(){
       return 
     }
   }
-  pool.getConnection(function(error,connection){
-    connection.query("UPDATE inventariobot SET PrezzoComprato = ?,PrezzoVenduto = ?,Note = ? WHERE IdBot = ?",[Purc,Sold,Notes,IdToModify],function(err,results,fields){
-      if(err){
-        console.log(err)
+  var Values = [Purc,Sold,Notes,IdToModify]
+  fetch("https://www.boringio.com:9005/EditBot",{
+      method: 'POST',
+      body: JSON.stringify({Values:Values}),
+      headers: {
+          'Content-Type': 'application/json',
+          "Authorization": JwtToken
+      },
+      referrer: 'no-referrer'
+  }).then(function (response) {
+      console.log(response.status)
+      if(response.ok){
+        window.location.reload()
+      } else {
+        window.alert("Something went wrong")
       }
-      connection.release()
-      location.reload()
-    })
+  }).then(async function(data){
+
   })
 }
 
 function DeleteBot(IdBot){
-  pool.getConnection(function(error,connection){
-    connection.query("DELETE FROM inventariobot WHERE IdBot = ?",[IdBot],function(err,results,fields){
-      if(err){
-        console.log(err)
+  fetch("https://www.boringio.com:9005/DeleteBot",{
+      method: 'POST',
+      body: JSON.stringify({IdBot: IdBot}),
+      headers: {
+          'Content-Type': 'application/json',
+          "Authorization": JwtToken
+      },
+      referrer: 'no-referrer'
+  }).then(function (response) {
+      console.log(response.status)
+      if(response.ok){
+        window.location.reload()
+      } else {
+        window.alert("Something went wrong")
       }
-      connection.release()
-      location.reload()
-    })
+  }).then(async function(data){
+
   })
 }

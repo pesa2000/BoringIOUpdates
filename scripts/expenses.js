@@ -3,8 +3,9 @@ var moment = require('moment');
 const { loadavg } = require('os');
 const { each } = require('jquery');
 var config = require('electron').remote.getGlobal('configuration')
-var pool = require('electron').remote.getGlobal('pool')
-var path = require("path")
+var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var path = require("path");
+const { json } = require('express');
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_expenses.js"))
 
 var GlobalList = []
@@ -15,41 +16,35 @@ var CostsShipsList = []
 var CostsOthersList = []
 
 var UserId = require('electron').remote.getGlobal('UserId')
-var Valuta = require('electron').remote.getGlobal('ValutaAcc')
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
-console.log("Valuta")
-console.log(Valuta)
-console.log("Id Utente")
-console.log(UserId)
+/*var Valuta = require('electron').remote.getGlobal('ValutaAcc')
+var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))*/
 
 var Currency = ""
 
-GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            Currency = Valuta
-            switch(Valuta){
-                case "$":
-                    StringValuta = "USD"
-                break;
-                case "€":
-                    StringValuta = "EUR"
-                break;
-                case "£":
-                    StringValuta = "GBP"
-                break;
-            }
-            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
-                connection.release()
-                Conversion = results[0].Conversione
-            })
-        })
-    })
+  return new Promise((resolve,reject) => {
+      fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
+          method: 'POST',
+          body: "",
+          headers: {
+              'Content-Type': 'application/json',
+              "Authorization": JwtToken
+          },
+          referrer: 'no-referrer'
+      }).then(function (response) {
+          console.log(response.status)
+          if(response.ok){
+            return response.json()
+          } else {
+            window.alert("Something went wrong")
+          }
+      }).then(async function(data){
+          console.log(data)
+          Currency = data.Symbol
+          Conversion = data.Conversion
+          resolve()
+      })  
+  })
 }
  
 var Price = 0
@@ -116,33 +111,38 @@ function LoadExpenses(){
   ipc.send("getUserId")
   ipc.on("ReturnedId",async (event,arg) => {
     UserId = arg
-    pool.getConnection(function(err,connection){
-      connection.query("SELECT * FROM ProxiesList",[],function(error, results, fields){
-        for(var Proxy of results){
-          $('#ProxiesList').append(`<option data-value="${Proxy.ImmagineProxy}"> ${Proxy.NomeProxy} </option>`);
+    await GetValutaAsUtf8(UserId)
+    fetch("https://www.boringio.com:9002/GetExpensesList",{
+        method: 'POST',
+        body: "",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            return response.json()
+        } else {
+            window.alert("Something went wrong")
         }
-        connection.query("SELECT * FROM CookGroupsList",[],function(error, results, fields){
-          for(var CookGroup of results){
-            $('#CookGroupsList').append(`<option data-value="${CookGroup.ImmagineCookGroup}"> ${CookGroup.NomeCookGroup} </option>`);
-          }
-          connection.query("SELECT * FROM BotsList",[],function(error, results, fields){
-            for(var Bot of results){
-              $('#BotsList').append(`<option data-value="${Bot.ImmagineBot}"> ${Bot.NomeBot} </option>`);
-            }
-          })
-          connection.query("SELECT * FROM ShipsList",[],function(error, results, fields){
-            for(var Ship of results){
-              $('#ShipsList').append(`<option data-value="${Ship.ImmagineShip}"> ${Ship.NomeShip} </option>`);
-            }
-            connection.query("SELECT * FROM costi WHERE IdUtente = ?",UserId,  function (error, results, fields) {
-              if(error) console.log(error)
-              GlobalList = results
-              connection.release()
-              SplitArrays(results)
-            })
-          })
-        })
-      })
+    }).then(async function(data){
+      console.log(data)
+      for(var Proxy of data.Results1){
+        $('#ProxiesList').append(`<option data-value="${Proxy.ImmagineProxy}"> ${Proxy.NomeProxy} </option>`);
+      }
+      for(var CookGroup of data.Results2){
+        $('#CookGroupsList').append(`<option data-value="${CookGroup.ImmagineCookGroup}"> ${CookGroup.NomeCookGroup} </option>`);
+      }
+      for(var Bot of data.Results3){
+        $('#BotsList').append(`<option data-value="${Bot.ImmagineBot}"> ${Bot.NomeBot} </option>`);
+      }
+      for(var Ship of data.Results4){
+        $('#ShipsList').append(`<option data-value="${Ship.ImmagineShip}"> ${Ship.NomeShip} </option>`);
+      }
+      GlobalList = data.Results5
+      SplitArrays(GlobalList)
     })
   })
 }
@@ -493,27 +493,49 @@ function SendToDB(Obj){
   var Values = [
     [Obj.NomeSelezioneCosto,Obj.DescrizioneCosto,Obj.UrlFoto,Obj.DataCosto,Obj.DataProssimoCosto,Obj.DataAggiunta,Obj.PrezzoCosto,Obj.MesiRicorrenza,ArrMonths.join(" "),1023,UserId]
   ]
-  var Query = "INSERT INTO costi (NomeSelezioneCosto,DescrizioneCosto,UrlFoto,DataCosto,DataProssimoCosto,DataAggiunta,PrezzoCosto,MesiRicorrenza,PagamentoMesi,IdConto,IdUtente) VALUES (?)"
-  pool.getConnection(function(err,connection){
-    connection.query(Query,Values,function(err,results,fields){
-      if(err)console.log(err)
-      CreateLog(`Added a new expenses (${Values[0][0]})`,"Expenses","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-      connection.release()
-      location.reload()
-    })
+
+  fetch("https://www.boringio.com:9002/AddExpenses",{
+      method: 'POST',
+      body: JSON.stringify({Values:Values}),
+      headers: {
+          'Content-Type': 'application/json',
+          "Authorization": JwtToken
+      },
+      referrer: 'no-referrer'
+  }).then(function (response) {
+      console.log(response.status)
+      if(response.ok){
+        CreateLog(`Added a new expenses (${Values[0][0]})`,"Expenses","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+        window.location.reload()
+      } else {
+        window.alert("Something went wrong")
+      }
+  }).then(async function(data){
+    
   })
 }
 
 function Delete(Id){
   for(var Exp of GlobalList){
     if(Exp.IdCosto == Id){
-      var Query = "DELETE FROM costi WHERE IdCosto = ?"
-      pool.getConnection(function(err,connection){
-        connection.query(Query,Id,function(error,results,fields){
-            if(error) console.log(error)
+      fetch("https://www.boringio.com:9002/DeleteExpenses",{
+          method: 'POST',
+          body: JSON.stringify({ExpensesId: Id}),
+          headers: {
+              'Content-Type': 'application/json',
+              "Authorization": JwtToken
+          },
+          referrer: 'no-referrer'
+      }).then(function (response) {
+          console.log(response.status)
+          if(response.ok){
             CreateLog(`Deleted an expenses (${Exp.NomeSelezioneCosto})`,"Expenses","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            location.reload()
-        })
+            window.location.reload()
+          } else {
+            window.alert("Something went wrong")
+          }
+      }).then(async function(data){
+        
       })
     }
   }

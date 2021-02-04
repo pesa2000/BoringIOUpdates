@@ -1,7 +1,7 @@
 const moment = require("moment")
 const ipc = require('electron').ipcRenderer
-const pool = require('electron').remote.getGlobal('pool')
 const bcrypt = require("bcrypt")
+const JwtToken = require('electron').remote.getGlobal("JwtToken")
 const { createConnection } = require("net")
 
 var UserId = 0
@@ -47,8 +47,6 @@ ipc.on("ReturnedSub",async(event,arg) => {
     console.log(arg)
     var user = arg.User
     var img = user.DiscordAvatar
-    console.log(img)
-    document.getElementById("Immagine").value = img
     $("#ImmagineProfilo").attr("src",img)
     var sub = arg.Subscription
     if(sub != null){
@@ -90,65 +88,63 @@ function GetDateRightFormat(DateToChange){
 }
 
 function changeLanguage(){
-    pool.getConnection(function(err,connection){
-        connection.query("UPDATE utenti SET Lingua = ? WHERE UserId = ?",[document.getElementById("SelectLanguage").value,UserId],function(err,results,fields){
-            connection.release()
-            if(err){
-                console.log(err)
-            }else{
-                alert("Restart the app for apply the changes")
-            }
-        })
-    })
-}
+    fetch("https://www.boringio.com:9006/SetLingua",{
+        method: 'POST',
+        body: JSON.stringify({Lingua: document.getElementById("SelectLanguage").value}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
 
-function changeImg(){
-    var NewImg = $("#Immagine").val()
-    pool.getConnection(function(err,connection){
-        connection.query("UPDATE utenti SET Immagine = ? WHERE UserId = ?",[NewImg,UserId],function(err,results,fields){
-            connection.release()
-            if(err){
-                console.log(err)
-            }else{
-                alert("Restart the app for apply the changes")
-            }
-        })
     })
 }
 
 function changeCurrency(){
     var Valuta
-    var ConversioneValuta
     var ValutaStringa
     switch(document.getElementById("SelectCurrency").value){
         case "DOLLARS":
             ValutaStringa = "DOLLARS"
             Valuta = "&#36"
-            ConversioneValuta = 1
         break;
         case "EUROS":
             ValutaStringa = "EUROS"
             Valuta = "â‚¬"
-            ConversioneValuta = 0.8600
         break;
         case "POUNDS":
             ValutaStringa = "POUNDS"
             Valuta = "Â£"
-            ConversioneValuta = 0.7500
         break;
     }
     console.log(ValutaStringa)
     console.log(Valuta)
-    console.log(ConversioneValuta)
-    pool.getConnection(function(err,connection){
-        connection.query("UPDATE utenti SET Valuta = ?, ValutaStringa = ?, ConversioneValuta = ?  WHERE UserId like ?",[Valuta,ValutaStringa,ConversioneValuta,UserId],function(err,results,fields){
-            connection.release()
-            if(err){
-                console.log(err)
-            }else{
-                console.log("Fatto")
-                alert("Restart the app for apply the changes")
-            }
-        })
+
+    fetch("https://www.boringio.com:9006/SetValuta",{
+        method: 'POST',
+        body: JSON.stringify({Values:[Valuta,ValutaStringa]}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+
     })
+
 }

@@ -1,17 +1,11 @@
 var moment = require('moment')
 var config = require('electron').remote.getGlobal('configuration')
-var pool = require('electron').remote.getGlobal('pool')
-console.log("All connections: " + pool._allConnections.length)
-console.log("Free connections: " + pool._freeConnections.length)
-console.log(pool)
 var windowStats = require('electron').remote.getGlobal('windowStats')
 var LatestAlert = require('electron').remote.getGlobal("AlertInventory")
 var Valuta = require('electron').remote.getGlobal("ValutaAcc")
-var https = require('https')
-var http = require('http');
+var JwtToken = require("electron").remote.getGlobal("JwtToken")
 var path = require('path')
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_inventory.js"))
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
 var UserAttachedInventory = require('electron').remote.getGlobal('UserIdAttached')
 
@@ -35,33 +29,29 @@ console.log(UserAttachedInventory)
 
 var Conversion = " "
 var StringValuta = " "
-
-GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            Currency = Valuta
-            switch(Valuta){
-                case "$":
-                    StringValuta = "USD"
-                break;
-                case "€":
-                    StringValuta = "EUR"
-                break;
-                case "£":
-                    StringValuta = "GBP"
-                break;
+    return new Promise((resolve,reject) => {
+        fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
+            method: 'POST',
+            body: "",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
+              return response.json()
+            } else {
+              window.alert("Something went wrong")
             }
-            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
-                connection.release()
-                Conversion = results[0].Conversione
-                LoadShoes()
-            })
-        })
+        }).then(async function(data){
+            console.log(data)
+            Valuta = data.Symbol
+            Conversion = data.Conversion
+            resolve()
+        })  
     })
 }
 
@@ -199,12 +189,23 @@ function ChangedImg(){
     console.log(ImgUrl)
     console.log("Id")
     console.log(IdCustomToChange)
-    pool.getConnection(function(err,connection){
-        connection.query("UPDATE inventariocustom SET ImmagineProdotto = ? WHERE IdProdotto = ?",[ImgUrl,IdCustomToChange],function(error,results,fields){
-            if(error)console.log(error)
-            connection.release()
-            location.reload()
-        })
+    fetch("https://www.boringio.com:9007/EditImageCustom",{
+        method: 'POST',
+        body: JSON.stringify({Img:ImgUrl,IdProduct: IdCustomToChange}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+          window.location.reload()
+        } else {
+          window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+
     })
 }
 
@@ -295,9 +296,9 @@ function quit(){
     ipc.send("AppQuit")
 }
 
-/*$(document).ready(() => {
+$(document).ready(() => {
     LoadShoes()
-})*/
+})
 
 function Searching(){
     var ShoesToSearch = $('#newShoe');
@@ -589,28 +590,36 @@ function SearchNewShoes(){
     timer = setTimeout(Searching, 600)
 }
 
-function LoadShoes(){
+async function LoadShoes(){
     Index = 0
+    await GetValutaAsUtf8(UserId)
     if(Loaded == false){
-        pool.getConnection(function(err,connection){
-            connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-                if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-                ShoesList = results
-                console.log(ShoesList)
-                Util.StockXItems(ShoesList,Valuta)
-                connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
-                    if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
-                    CustomList = results
-                    console.log(CustomList)
-                    Util.CustomItems(CustomList,Valuta)
-                    Util.Retail(ShoesList,CustomList,Valuta)
-                    Util.Average(ShoesList,Valuta)
-                    Loaded = true
-                    Populate()
-                    connection.release()
-                })
-            })
-        })
+        fetch("https://www.boringio.com:9007/GetInventory",{
+            method: 'POST',
+            body: "",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
+              return response.json()
+            } else {
+              window.alert("Something went wrong")
+            }
+        }).then(async function(data){
+            console.log(data)
+            ShoesList = data.Results1
+            CustomList = data.Results2
+            Util.StockXItems(ShoesList,Valuta)
+            Util.CustomItems(CustomList,Valuta)
+            Util.Retail(ShoesList,CustomList,Valuta)
+            Util.Average(ShoesList,Valuta)
+            Loaded = true
+            Populate()
+        }) 
         console.log("Loaded")
     }
 }
@@ -713,7 +722,7 @@ async function SendMultipleToDB(){
             CreateLog(`Added a pair of ${Name}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
         }
     }
-    var Query = ("INSERT INTO inventario (PidProdotto,NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,UrlKey,PrezzoMedioResell,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values ?")
+    /*var Query = ("INSERT INTO inventario (PidProdotto,NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,UrlKey,PrezzoMedioResell,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values ?")
     console.log(Values)
     pool.getConnection(async function(err,connection){
         connection.query(Query,[Values],function(error,results,fields){
@@ -721,7 +730,26 @@ async function SendMultipleToDB(){
             if(err)console.log(err)
             location.reload()
         })
-    })
+    })*/
+    fetch("https://www.boringio.com:9007/AddMultiple",{
+        method: 'POST',
+        body: JSON.stringify({Values: Values}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong, if you have a tracking associated delete it first")
+        }
+    }).then(async function(data){
+        
+    }) 
+
 }
 
 function Delete(IdDelete){
@@ -734,19 +762,26 @@ function Delete(IdDelete){
         }
     }
     console.log(NameProdDeleted)
-    pool.getConnection(function(err,connection){
-        connection.query("DELETE FROM inventario WHERE IdProdotto = ?",IdDelete,function (error,results,fields){
-            connection.release()
-            if(error){
-                console.log(error)
-                alert("You have a tracking associated with this item, delete it first!")
-            }else{
-                CreateLog(`Deleted a pair of ${NameProdDeleted}`,"Inventory","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                ipc.send("SetAlert","Delete")
-                location.reload()
-            }
-        })
-    })
+    fetch("https://www.boringio.com:9007/Delete",{
+        method: 'POST',
+        body: JSON.stringify({ProductId: IdDelete}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            CreateLog(`Deleted a pair of ${NameProdDeleted}`,"Inventory","Delete",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Delete")
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong, if you have a tracking associated delete it first")
+        }
+    }).then(async function(data){
+        
+    }) 
 }
 
 
@@ -758,18 +793,33 @@ function Duplicate(Id){
     var S = Object.values(ShoeToDuplicate)
     console.log(S)
     var Today = moment().format('YYYY[-]MM[-]DD')
+    if(S[1] == null){
+        S[1] = getRndInteger()
+    }
     var Values = [
-        [S[1],S[2],ChangeDate(S[3]),S[4],S[5],1,1,S[8],S[9],S[12],S[13],S[14],0,-S[4],S[18],Today,S[21],S[22]]
+        [S[1],S[2],ChangeDate(S[3]),S[4],S[5],1,1,S[8],S[9],S[12],S[13],S[14],0,-S[4],S[18],Today,S[21]]
     ]
-    pool.getConnection(function(err,connection){
-        connection.query(Query,[Values],function(error,results,fields){
-            if(error) throw error
+
+    fetch("https://www.boringio.com:9007/Duplicate",{
+        method: 'POST',
+        body: JSON.stringify({Values: Values}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
             CreateLog(`Duplicated a pair of ${ShoeToDuplicate.NomeProdotto}`,"Inventory","Duplicate",moment().format('MMMM Do YYYY, h:mm:ss a'))
             ipc.send("SetAlert","Duplicate")
-            connection.release()
-            location.reload()
-        })
-    })
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+        
+    }) 
 }
 
 
@@ -809,14 +859,24 @@ function SaleShoe(){
     var Res = CheckValuesBeforeSale(Values)
     if(Res == true){
         console.log(Values)
-        pool.getConnection(function(err,connection){
-            connection.query(Query,Values,function(error,results,fields){
-                if(error) console.log(error)
+        fetch("https://www.boringio.com:9003/AddSales",{
+            method: 'POST',
+            body: JSON.stringify({Values:Values}),
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
                 CreateLog(`Sold a pair of ${NameProdDeleted}`,"Bot","Sold",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                ipc.send("SetAlert","Sold")
-                connection.release()
-                location.reload()
-            })
+                window.location.reload()
+            } else {
+                window.alert("Something went wrong, delete every tracking associated with this first")
+            }
+        }).then(async function(data){
+            
         })
     }else{
         console.log(Res)
@@ -868,9 +928,29 @@ function Edit(Id){
     var AvgPrice = $("#SizeToModify option:selected").val()
     var Site = $("#SiteToModify").val()
     var Note = $("#NotesToModify").val()
-    var Query = "UPDATE inventario SET PrezzoProdotto = ?, ReleaseDate = ?, Taglia = ?,Sito = ?,Note = ?, PrezzoMedioResell = ?,Profitto = ? WHERE IdProdotto = ?"
     var Values = [PrezzoProdotto,ReleaseDate,Taglia,Site,Note,AvgPrice,0 - PrezzoProdotto,Id]
-    pool.getConnection(function(err,connection){
+
+    fetch("https://www.boringio.com:9007/Edit",{
+        method: 'POST',
+        body: JSON.stringify({Values:Values}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            CreateLog(`Edited a pair of ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Edit")
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+        
+    }) 
+    /*pool.getConnection(function(err,connection){
         connection.query(Query,Values,function(err,results,fields){
             if(err)console.log(err)
             console.log("Edited")
@@ -879,7 +959,7 @@ function Edit(Id){
             connection.release()
             location.reload()
         })
-    })
+    })*/
 }
 
 function ErrorCreation(target, message){
@@ -1002,9 +1082,29 @@ function AddCustom(){
     if(Res == true){
         var Query = "INSERT INTO inventariocustom (NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values (?)"
         var Values = [
-            [Name,DateToAdd,Price,Size,1,1,Site,"",UrlImg,0,-Price,Notes,GetTodaysDateDashFormat(),0,UserId]
+            [Name,DateToAdd,Price,Size,1,1,Site,"",UrlImg,0,-Price,Notes,GetTodaysDateDashFormat(),0]
         ]
-        pool.getConnection(function(err,connection){
+        fetch("https://www.boringio.com:9007/AddCustom",{
+            method: 'POST',
+            body: JSON.stringify({Values: Values}),
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
+                CreateLog(`Added ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
+                ipc.send("SetAlert","Add")
+                window.location.reload()
+            } else {
+                window.alert("Something went wrong")
+            }
+        }).then(async function(data){
+            
+        }) 
+        /*pool.getConnection(function(err,connection){
             connection.query(Query,Values,function(error,results,fields){
                 if(error) console.log(error)
                 CreateLog(`Added ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
@@ -1012,7 +1112,7 @@ function AddCustom(){
                 connection.release()
                 location.reload()
             })
-        })
+        })*/
     }else{
         ErrorCreation("errorLabelAddCustom",Res)
     }
@@ -1026,34 +1126,55 @@ function CheckValuesBeforeAddCustom(Price,Name){
 }
 
 function DeleteCustom(Id){
-    var Query = "DELETE FROM inventariocustom WHERE IdProdotto = ?"
-    pool.getConnection(function(err,connection){
-        connection.query(Query,Id,function(error,results,fields){
-            if(error) console.log(error)
+    fetch("https://www.boringio.com:9007/DeleteCustom",{
+        method: 'POST',
+        body: JSON.stringify({ProductId: Id}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
             ipc.send("SetAlert","Delete")
-            connection.release()
-            location.reload()
-        })
-    })
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+        
+    }) 
 }
 
 function DuplicateCustom(Id){
     for(var CustomSelected of CustomList){
         if(CustomSelected.IdProdotto == Id){    
             console.log("trovato")
-            var Query = "INSERT INTO inventariocustom (NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values (?)"
             var Values = [
-                [CustomSelected.NomeProdotto,CustomSelected.ReleaseDate,CustomSelected.PrezzoProdotto,CustomSelected.Taglia,1,1,CustomSelected.Sito,"",CustomSelected.ImmagineProdotto,0,-CustomSelected.PrezzoProdotto,CustomSelected.Note,GetTodaysDateDashFormat(),0,UserId]
+                [CustomSelected.NomeProdotto,ChangeDate(CustomSelected.ReleaseDate),CustomSelected.PrezzoProdotto,CustomSelected.Taglia,1,1,CustomSelected.Sito,"",CustomSelected.ImmagineProdotto,0,-CustomSelected.PrezzoProdotto,CustomSelected.Note,GetTodaysDateDashFormat(),0]
             ]
-            pool.getConnection(function(err,connection){
-                connection.query(Query,Values,function(error,results,fields){
-                    if(error) console.log(error)
+
+            fetch("https://www.boringio.com:9007/DuplicateCustom",{
+                method: 'POST',
+                body: JSON.stringify({Values:Values}),
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": JwtToken
+                },
+                referrer: 'no-referrer'
+            }).then(function (response) {
+                console.log(response.status)
+                if(response.ok){
                     CreateLog(`Duplicated ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
                     ipc.send("SetAlert","Duplicate")
-                    connection.release()
-                    location.reload()
-                })
-            })
+                    window.location.reload()
+                } else {
+                    window.alert("Something went wrong")
+                }
+            }).then(async function(data){
+                
+            }) 
         }
     }
 }
@@ -1074,7 +1195,7 @@ function SaleCustom(Id){
     var Res = CheckValuesBeforeSaleCustom(Price)
     if(Res){
         var Buyer = $("#prodSiteSellCustom").val()
-        var Query = "UPDATE inventariocustom SET Profitto = ?,QuantitaAttuale = ?,Compratore = ?,immagineCompratore = ?,FlagComprata = ?,PrezzoVendita = ?,DataVendita = ? WHERE IdProdotto like ?"
+        //var Query = "UPDATE inventariocustom SET Profitto = ?,QuantitaAttuale = ?,Compratore = ?,immagineCompratore = ?,FlagComprata = ?,PrezzoVendita = ?,DataVendita = ? WHERE IdProdotto like ?"
         var Profitto = Price - $("#PrezzoProdottoCustom").val()
         var DateToAdd = $("#prodDateSellCustom").val()
         if(DateToAdd != ""){
@@ -1084,14 +1205,24 @@ function SaleCustom(Id){
             FinalDate = GetTodaysDateDashFormat()
         }
         var Values = [Profitto,0,Buyer,"",1,Price,FinalDate,$("#IdToSellCustom").val()]
-        pool.getConnection(function(err,connection){
-            connection.query(Query,Values,function(error,results,fields){
-                if(error) console.log(error)
+        fetch("https://www.boringio.com:9003/AddSalesCustom",{
+            method: 'POST',
+            body: JSON.stringify({Values:Values}),
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": JwtToken
+            },
+            referrer: 'no-referrer'
+        }).then(function (response) {
+            console.log(response.status)
+            if(response.ok){
                 CreateLog(`Sold ${$("#newShoeCustom").val()}`,"Inventory","Sale",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                ipc.send("SetAlert","Sold")
-                connection.release()
-                location.reload()
-            })
+                window.location.reload()
+            } else {
+                window.alert("Something went wrong, delete every tracking associated with this first")
+            }
+        }).then(async function(data){
+            
         })
     }else{
         ErrorCreation("errorLabelSaleCustom",Res)
@@ -1133,8 +1264,29 @@ function EditCustom(){
     var Site = $("#SiteToModifyCustom").val()
     var Note = $("#NotesToModifyCustom").val()
     var Query = "UPDATE inventariocustom SET PrezzoProdotto = ?, ReleaseDate = ?, Taglia = ?,Sito = ?,Note = ?,Profitto = ? WHERE IdProdotto = ?"
-    var Values = [PrezzoProdotto,ReleaseDate,Taglia,Site,Note,0 - PrezzoProdotto,Id]
-    pool.getConnection(function(err,connection){
+    var Values = [PrezzoProdotto,ReleaseDate,Taglia,Site,Note,0 - PrezzoProdotto]
+
+    fetch("https://www.boringio.com:9007/EditCustom",{
+        method: 'POST',
+        body: JSON.stringify({Values:Values}),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            CreateLog(`Edited ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
+            ipc.send("SetAlert","Edit")
+            window.location.reload()
+        } else {
+            window.alert("Something went wrong, delete every tracking associated with this first")
+        }
+    }).then(async function(data){
+        
+    })
+    /*pool.getConnection(function(err,connection){
         connection.query(Query,Values,function(err,results,fields){
             if(err)console.log(err)
             console.log("Edited")
@@ -1143,7 +1295,7 @@ function EditCustom(){
             connection.release()
             location.reload()
         })
-    })
+    })*/
 }
 
 ipc.on("ErrorFoundResearch",function(event,arg){
