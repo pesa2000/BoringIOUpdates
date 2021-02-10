@@ -1,15 +1,7 @@
 var Offsett = 0
 
 var UserId = require('electron').remote.getGlobal('UserId')
-var Valuta = require('electron').remote.getGlobal('ValutaAcc')
-console.log("Valuta")
-console.log(Valuta)
-console.log("Id Utente")
-console.log(UserId)
-var UtilCurr =  require(path.join(__dirname,"/currency-conversion.js"))
-
-var Currency = UtilCurr.GetCurrencyFromUTF8(Valuta)
-console.log(Currency)
+var Valuta = require('electron').remote.getGlobal('Valuta')
 
 function GetDateFormat(DateChosen){
     var DateChanged = moment(DateChosen).format('DD[-]MM[-]YYYY')
@@ -74,7 +66,7 @@ function SetThisYearExpenses(ExpensesList){
         Total += parTot
     }
     //console.log("Total year costs" + Total)
-    document.getElementById("TotalYear").innerHTML = Currency + "" +Total.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
+    document.getElementById("TotalYear").innerHTML = Valuta + "" +Total.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 function SetThisMonthExpenses(ExpensesList){
@@ -86,7 +78,7 @@ function SetThisMonthExpenses(ExpensesList){
         Total += parseInt(ArrMonths[LastIndex + parseInt(GetMonth(Expense.DataCosto)) - 1])
     }
     //console.log("Total month costs" + Total)
-    document.getElementById("TotalMonth").innerHTML = Currency + "" +Total.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
+    document.getElementById("TotalMonth").innerHTML = Valuta + "" +Total.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 function SetNumberOfItemsPerType(ExpensesList){

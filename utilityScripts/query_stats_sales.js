@@ -4,15 +4,7 @@ var ResNrStockX = 0
 var ResNrCustom = 0
 
 var UserId = require('electron').remote.getGlobal('UserId')
-var Valuta = require('electron').remote.getGlobal('ValutaAcc')
-console.log("Valuta")
-console.log(Valuta)
-console.log("Id Utente")
-console.log(UserId)
-var UtilCurr =  require(path.join(__dirname,"/currency-conversion.js"))
-
-var Currency = UtilCurr.GetCurrencyFromUTF8(Valuta)
-console.log(Currency)
+var Valuta = require('electron').remote.getGlobal('Valuta')
 
 function SetSalesTotalProfit(ListStockX,ListCustom){
     for(var Shoe of ListStockX){
@@ -21,7 +13,7 @@ function SetSalesTotalProfit(ListStockX,ListCustom){
     for(var Item of ListCustom){
         ResProfit += Item.Profitto
     }
-    $("#TotalProfit").text(Currency +  "" + ResProfit.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
+    $("#TotalProfit").text(Valuta +  "" + ResProfit.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
 }
 
 function SetSalesTotal(ListStockX,ListCustom){
@@ -31,7 +23,7 @@ function SetSalesTotal(ListStockX,ListCustom){
     for(var Item of ListCustom){
         ResTotalSold += Item.PrezzoVendita
     }
-    $("#TotalSales").text(Currency + "" +ResTotalSold.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
+    $("#TotalSales").text(Valuta + "" +ResTotalSold.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
 }
 
 function SetSalesNrStockX(ListStockX){

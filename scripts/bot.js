@@ -3,33 +3,8 @@ var config = require('electron').remote.getGlobal('configuration')
 var path = require('path')
 var UserId = require('electron').remote.getGlobal('UserId')
 var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var Currency = require('electron').remote.getGlobal('Valuta')
 var BotsList = []
-
-function GetValutaAsUtf8(Id){
-  return new Promise((resolve,reject) => {
-      fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
-          method: 'POST',
-          body: "",
-          headers: {
-              'Content-Type': 'application/json',
-              "Authorization": JwtToken
-          },
-          referrer: 'no-referrer'
-      }).then(function (response) {
-          console.log(response.status)
-          if(response.ok){
-            return response.json()
-          } else {
-            window.alert("Something went wrong")
-          }
-      }).then(async function(data){
-          console.log(data)
-          Currency = data.Symbol
-          Conversion = data.Conversion
-          resolve()
-      })  
-  })
-}
 
 function minimize(){
   ipc.send("Minimize")
@@ -47,7 +22,6 @@ $(function(){
 })
 
 async function LoadBots(){
-  await GetValutaAsUtf8(UserId)
   fetch("https://www.boringio.com:9005/GetBotsList",{
       method: 'POST',
       body: "",

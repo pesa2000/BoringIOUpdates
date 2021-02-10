@@ -58,7 +58,7 @@ var TotalShip = 0
 var TotalProxy = 0
 var TotalCustom = 0
 
-function IterateResults(Filtro,Array){
+function IterateResults(Filtro1,Filtro2,Array){
     var i = 0
     TotalBots = 0
     TotalCookGroups = 0
@@ -67,7 +67,9 @@ function IterateResults(Filtro,Array){
     TotalCustom = 0
     for(var Exp of Array){
         var DataInizio = moment(Exp.DataCosto).format("DD-MM-YYYY")
-        var Res = ReturnPriceFilter(DataInizio,Filtro,Exp.MesiRicorrenza,Exp.PrezzoCosto)
+        var Res = ReturnPriceFilter(DataInizio,Filtro1,Filtro2,Exp.MesiRicorrenza,Exp.PrezzoCosto)
+        console.log("------------------------------------")
+        console.log("------------------------------------")
         switch(Exp.NomeSelezioneCosto){
             case "CookGroup":
                 TotalCookGroups += parseInt(Res)
@@ -95,13 +97,15 @@ function IterateResults(Filtro,Array){
     }
 }
 
-function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
+function ReturnPriceFilter(DataInizio,FiltroYear,FiltroMonth,Mese,Costo){
     var DataFine
     var app = DataInizio.split("-")
     var StartingDate = moment([app[2],app[1]-1,app[0]])
+    console.log("Data Inizio")
+    console.log(StartingDate.toString())
     var Total = 0
-    switch(Filtro){
-        case "Lifetime":
+    switch(true){
+        case FiltroYear == "Lifetime":
             Total = 0
             var DataFine = CreateEndDateLifetime()
             if(Mese != 0){
@@ -115,16 +119,14 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
                 }
             }
             break;
-        case "Year":
-            var StartingPartialDate = moment([GetYear(),0,1])
+        case FiltroYear != "Lifetime" && FiltroMonth == "All":
+            console.log("Filtro per Year")
+            var StartingPartialDate = moment([FiltroYear,0,1])
             Total = 0
-            var DataFine = CreateEndDateYear()
+            var DataFine = CreateEndDateYear(FiltroYear)
+            console.log(DataFine.toString())
             if(Mese != 0){
                 do{
-                  console.log("Starting date")
-                  console.log(StartingDate)
-                  console.log("End date")
-                  console.log(DataFine)
                   if(StartingDate <= DataFine && StartingDate >= StartingPartialDate){
                     Total += parseInt(Costo)
                     console.log("Entra")
@@ -140,16 +142,21 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
             }
             break;
         default :
+        console.log("CASO MENSILE")
             var MonthToday = parseInt(GetTodaysMonth())
-            var MonthFilter = parseInt(Filtro)
-
-            console.log(MonthToday)
-            console.log(MonthFilter)
+            var MonthFilter = parseInt(FiltroMonth)
+            var YearToday = parseInt(GetTodaysYear())    
+            var YearFilter = parseInt(FiltroYear)
+            console.log("Mese oggi: " + MonthToday)
+            console.log("Mese filtrato: " + FiltroMonth)
+            console.log("Anno oggi: " + YearToday)
+            console.log("Anno filtrato: " + FiltroYear)
             var DataFine
             Total = 0
-            if(MonthFilter < MonthToday){
-              console.log("Filtro minore del giorno di oggi")
-              DataFine = CreateEndDateMonth(Filtro)
+            if((YearFilter == YearToday && MonthFilter < MonthToday) || (YearFilter < YearToday)){
+              DataFine = CreateEndDateMonth(FiltroYear,FiltroMonth)
+              console.log("Data Fine mensile minore")
+              console.log(DataFine.toString())
               if(Mese != 0){
                 do{
                   if(StartingDate.isSame(DataFine,"month") && DataFine >= StartingDate){
@@ -158,16 +165,15 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
                   StartingDate.add(Mese,"months")
                 }while(StartingDate <= DataFine)
               }else{
-                  console.log(DataFine.toString())
-                  console.log(StartingDate.toString())
-                  if(DataFine.isSame(StartingDate,"month") && DataFine >= StartingDate){
-                      console.log("Le date coincidono")
-                      Total += parseInt(Costo)
-                  }
+                if(DataFine.isSame(StartingDate,"month") && DataFine >= StartingDate){
+                    console.log("Le date coincidono")
+                    Total += parseInt(Costo)
+                }
               }
-            }else if(MonthToday == MonthFilter){
-              console.log("Filtro uguale al mese di oggi")
+            }else if(MonthToday == MonthFilter && YearFilter == YearToday){
               DataFine = GetTodaysDate()
+              console.log("Data Fine mensile uguale")
+              console.log(DataFine.toString())
               if(Mese != 0){
                 do{
                   if(StartingDate.isSame(DataFine,"month") && DataFine >= StartingDate){
@@ -176,18 +182,14 @@ function ReturnPriceFilter(DataInizio,Filtro,Mese,Costo){
                   StartingDate.add(Mese,"months")
                 }while(StartingDate <= DataFine)
               }else{
-                  console.log(DataFine.toString())
-                  console.log(StartingDate.toString())
-                  if(DataFine.isSame(StartingDate,"month") && DataFine >= StartingDate){
-                      console.log("Le date coincidono")
-                      Total += parseInt(Costo)
-                  }
+                if(DataFine.isSame(StartingDate,"month") && DataFine >= StartingDate){
+                    Total += parseInt(Costo)
+                }
               }
             }else{
-              console.log("Filtro maggiore al mese di oggi")
-              Total += 0
+                console.log("Vado qui")
+                Total += 0
             }
-            console.log(DataFine)
         break;
     }
     return Total
@@ -209,23 +211,21 @@ function GetTodaysMonth(){
       return end
   }
   
-  function CreateEndDateMonth(filter){
+  function CreateEndDateMonth(YearFiltered,MonthFiltered){
     var start = new Date();
     var yyyy = start.getFullYear();
-    var StartDate = moment([yyyy,filter-1])
+    var StartDate = moment([YearFiltered,MonthFiltered-1])
     var EndDate = moment(StartDate).endOf('month')
     return EndDate
   }
   
   
-  function CreateEndDateYear(){
+  function CreateEndDateYear(YearFiltered){
       var end = new Date();
       var yyyy = end.getFullYear();
       var dd = String(end.getDate()).padStart(2, '0');
       var mm = String(end.getMonth() + 1).padStart(2, '0');
-      end = moment([yyyy,parseInt(mm) - 1,dd]); //Cambiare in yyyy/mm - 1/dd - 1
-      console.log("End date")
-      console.log(end)
+      end = moment([YearFiltered,11,31]); //Cambiare in yyyy/mm - 1/dd - 1
       return end
   }
   

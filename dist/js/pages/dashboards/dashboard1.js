@@ -4,14 +4,19 @@ const moment = require("moment")
 
 var Select = document.getElementById("FilterDate")
 var Filter1 = parseInt(GetNewDateMonth())
+var Filter2 = parseInt(GetNewDateYear())
+
+var FilterMonth = ""
+var FilterYear = ""
 
 $(document).ready(() => {
     Request()
 })
 
 Select.addEventListener("change", () => {
-    Filter = $("#FilterDate").val() 
-    Request(Filter)
+    Filter1 = $("#FilterDateMonths").val() 
+    Filter2 = $("#FilterDateYears").val() 
+    Request()
 })
 
 function GetNewDateMonth(){
@@ -25,7 +30,7 @@ function GetNewDateYear(){
 }
 
 function Request(){
-    ipc.send("RequestedExpensesFetched",{Filter:Filter1})
+    ipc.send("RequestedExpensesFetched",{Filter:Filter1,Filter2: Filter2})
 }
 
 ipc.on("ReturnedExpensesFetched",(event,arg) => {
@@ -33,6 +38,7 @@ ipc.on("ReturnedExpensesFetched",(event,arg) => {
 })
 
 function CreateGraph(Res){
+    console.log("Creato il grafico spero")
     var Tot = Res.Bot + Res.Cook + Res.Ship + Res.Proxy + Res.Custom
     var p1 = parseInt((Res.Bot/Tot) * 100) 
     var p2 = parseInt((Res.Cook/Tot) * 100) 

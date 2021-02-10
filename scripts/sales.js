@@ -4,42 +4,14 @@ var moment = require('moment')
 const { resolve } = require('path')
 var config = require('electron').remote.getGlobal('configuration')
 var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var Valuta = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
 var SalesList = []
 var SalesListCustom = [] 
 var UserId = 0
 
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_sales.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
-
-var Conversion
-var Currency
-var Valuta = " "
-function GetValutaAsUtf8(Id){
-    return new Promise((resolve,reject) => {
-        fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
-            method: 'POST',
-            body: "",
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": JwtToken
-            },
-            referrer: 'no-referrer'
-        }).then(function (response) {
-            console.log(response.status)
-            if(response.ok){
-              return response.json()
-            } else {
-              window.alert("Something went wrong")
-            }
-        }).then(async function(data){
-            console.log(data)
-            Valuta = data.Symbol
-            Conversion = data.Conversion
-            resolve()
-        })  
-    })
-}
 
 console.log(Util)
 
@@ -141,7 +113,6 @@ async function LoadSales(){
     ipc.send("getUserId")
     ipc.on("ReturnedId",async (event,arg) => {
         UserId = arg
-        await GetValutaAsUtf8(UserId)
         fetch("https://www.boringio.com:9003/GetSalesList",{
             method: 'POST',
             body: "",

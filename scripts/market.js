@@ -3,6 +3,8 @@ const { idText } = require('typescript')
 var config = require('electron').remote.getGlobal('configuration')
 var windowStats = require('electron').remote.getGlobal('windowStats')
 var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var Currency = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
 var https = require('https')
 var http = require('http')
 
@@ -14,36 +16,6 @@ var GlobalProducts = []
 var GlobalProductsDetails = []
 
 var UserId = require('electron').remote.getGlobal('UserId')
-
-var Conversion = " "
-var StringValuta = " "
-
-GetValutaAsUtf8(UserId)
-function GetValutaAsUtf8(Id){
-    return new Promise((resolve,reject) => {
-        fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
-            method: 'POST',
-            body: "",
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": JwtToken
-            },
-            referrer: 'no-referrer'
-        }).then(function (response) {
-            console.log(response.status)
-            if(response.ok){
-              return response.json()
-            } else {
-              window.alert("Something went wrong")
-            }
-        }).then(async function(data){
-            console.log(data)
-            Currency = data.Symbol
-            Conversion = data.Conversion
-            resolve()
-        })  
-    })
-  }
 
 window.setInterval(CheckConnection,5000)
 
@@ -60,7 +32,6 @@ function quit(){
 function FlipDateAndChange(DateToChange){
     return moment(DateToChange).format('DD[/]MM[/]YYYY')
 }
-
 
 function SelectedShoesNr(Index){
     var SelectedShoes = GlobalProducts[Index]
@@ -95,7 +66,7 @@ ipc.on("ReturnedProductDetails", async(event,arg) => {
 })
 function CreateTemplateVariant(Variant){
     return "<div class='mb-4 col-md-6 col-lg-4'>" +
-            "<div class='card-body' style='background-color: #132238;border-radius: 4px;cursor: pointer;'>" +
+            "<div class='card-body' style='background-color: #0A0A50;border-radius: 4px;cursor: pointer;'>" +
                 "<div class='row justify-content-between align-items-center'>" +
                 "<div class='col'>" +
                 "<div class='media'>" +

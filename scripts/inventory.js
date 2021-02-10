@@ -8,7 +8,8 @@ var path = require('path')
 var Util = require(path.join(__dirname,"/utilityScripts/query_stats_inventory.js"))
 var UserId = require('electron').remote.getGlobal('UserId')
 var UserAttachedInventory = require('electron').remote.getGlobal('UserIdAttached')
-
+var Valuta = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
 var ContSaved = 0
 
 var Urls = []
@@ -27,9 +28,7 @@ var Flag = false
 console.log("User attached") 
 console.log(UserAttachedInventory)
 
-var Conversion = " "
-var StringValuta = " "
-function GetValutaAsUtf8(Id){
+/*function GetValutaAsUtf8(Id){
     return new Promise((resolve,reject) => {
         fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
             method: 'POST',
@@ -53,7 +52,7 @@ function GetValutaAsUtf8(Id){
             resolve()
         })  
     })
-}
+}*/
 
 
 function sleep(ms) {
@@ -383,7 +382,7 @@ function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
     }
     return `<div class="col-md-6 col-lg-12" >` +
     `<img class="card-img-top"/>`+ 
-    `<div id='DivShoe${ActualCont}' class='card-body' style='background-color: #132238;border-radius: 4px;cursor: pointer;'>` +
+    `<div id='DivShoe${ActualCont}' class='card-body' style='background-color: #0A0A50;border-radius: 4px;cursor: pointer;'>` +
     "<div class='row justify-content-between align-items-center'>" +
       "<div class='col'>" +
         "<div class='media'>" +
@@ -592,7 +591,7 @@ function SearchNewShoes(){
 
 async function LoadShoes(){
     Index = 0
-    await GetValutaAsUtf8(UserId)
+    //await GetValutaAsUtf8(UserId)
     if(Loaded == false){
         fetch("https://www.boringio.com:9007/GetInventory",{
             method: 'POST',
@@ -722,15 +721,6 @@ async function SendMultipleToDB(){
             CreateLog(`Added a pair of ${Name}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
         }
     }
-    /*var Query = ("INSERT INTO inventario (PidProdotto,NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,UrlKey,PrezzoMedioResell,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values ?")
-    console.log(Values)
-    pool.getConnection(async function(err,connection){
-        connection.query(Query,[Values],function(error,results,fields){
-            connection.release()
-            if(err)console.log(err)
-            location.reload()
-        })
-    })*/
     fetch("https://www.boringio.com:9007/AddMultiple",{
         method: 'POST',
         body: JSON.stringify({Values: Values}),
@@ -950,16 +940,6 @@ function Edit(Id){
     }).then(async function(data){
         
     }) 
-    /*pool.getConnection(function(err,connection){
-        connection.query(Query,Values,function(err,results,fields){
-            if(err)console.log(err)
-            console.log("Edited")
-            CreateLog(`Edited a pair of ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Edit")
-            connection.release()
-            location.reload()
-        })
-    })*/
 }
 
 function ErrorCreation(target, message){
@@ -1021,7 +1001,7 @@ ipc.on("ReturnedProductDetailsArr",async function(event,arg){
 })
 
 async function EditPriceDeadStock(Id,Price){
-    return new Promise((resolve,reject) => {
+   /* return new Promise((resolve,reject) => {
         if(Price == null || Price == undefined){
             Price = 0
         }
@@ -1035,7 +1015,9 @@ async function EditPriceDeadStock(Id,Price){
                 resolve()
             })
         })
-    })
+    })*/
+
+    /* DA FARE */ 
 }
 
 ipc.on("NewSyncReceived",(event,arg)=>{
@@ -1104,15 +1086,6 @@ function AddCustom(){
         }).then(async function(data){
             
         }) 
-        /*pool.getConnection(function(err,connection){
-            connection.query(Query,Values,function(error,results,fields){
-                if(error) console.log(error)
-                CreateLog(`Added ${$("#newShoeCustom").val()}`,"Inventory","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-                ipc.send("SetAlert","Add")
-                connection.release()
-                location.reload()
-            })
-        })*/
     }else{
         ErrorCreation("errorLabelAddCustom",Res)
     }
@@ -1286,16 +1259,6 @@ function EditCustom(){
     }).then(async function(data){
         
     })
-    /*pool.getConnection(function(err,connection){
-        connection.query(Query,Values,function(err,results,fields){
-            if(err)console.log(err)
-            console.log("Edited")
-            CreateLog(`Edited ${NameProdEdited}`,"Inventory","Edit",moment().format('MMMM Do YYYY, h:mm:ss a'))
-            ipc.send("SetAlert","Edit")
-            connection.release()
-            location.reload()
-        })
-    })*/
 }
 
 ipc.on("ErrorFoundResearch",function(event,arg){

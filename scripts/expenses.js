@@ -4,9 +4,9 @@ const { loadavg } = require('os');
 const { each } = require('jquery');
 var config = require('electron').remote.getGlobal('configuration')
 var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var Currency = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
 var path = require("path");
-const { json } = require('express');
-var Util = require(path.join(__dirname,"/utilityScripts/query_stats_expenses.js"))
 
 var GlobalList = []
 var CostsBotList = []
@@ -16,36 +16,6 @@ var CostsShipsList = []
 var CostsOthersList = []
 
 var UserId = require('electron').remote.getGlobal('UserId')
-/*var Valuta = require('electron').remote.getGlobal('ValutaAcc')
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))*/
-
-var Currency = ""
-
-function GetValutaAsUtf8(Id){
-  return new Promise((resolve,reject) => {
-      fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
-          method: 'POST',
-          body: "",
-          headers: {
-              'Content-Type': 'application/json',
-              "Authorization": JwtToken
-          },
-          referrer: 'no-referrer'
-      }).then(function (response) {
-          console.log(response.status)
-          if(response.ok){
-            return response.json()
-          } else {
-            window.alert("Something went wrong")
-          }
-      }).then(async function(data){
-          console.log(data)
-          Currency = data.Symbol
-          Conversion = data.Conversion
-          resolve()
-      })  
-  })
-}
  
 var Price = 0
 var Name = ""
@@ -111,7 +81,6 @@ function LoadExpenses(){
   ipc.send("getUserId")
   ipc.on("ReturnedId",async (event,arg) => {
     UserId = arg
-    await GetValutaAsUtf8(UserId)
     fetch("https://www.boringio.com:9002/GetExpensesList",{
         method: 'POST',
         body: "",
@@ -222,7 +191,7 @@ function CreateCard(Cost){
   }
 
   return "<div class='kanban-item'>" +
-  "<div class='card kanban-item-card hover-actions-trigger' data-toggle='modal' data-target='#kanban-modal-1'>" +
+  "<div class='card kanban-item-card hover-actions-trigger' data-toggle='modal' data-target='#kanban-modal-1' style='background-color:#0A0A50 !important;'>" +
     "<div class='card-body position-relative'>" +
       `<div class='mb-2'><span class='badge d-inline-block py-1 mr-1 mb-1 badge-soft-success'>Date: ${FlipDateAndChange(Cost.DataCosto)}</span><span class='badge d-inline-block py-1 mr-1 mb-1 badge-soft-primary'>Price: ${Cost.PrezzoCosto + " " + Currency} </span></div>`+
       `<p class='mb-0 font-weight-medium text-sans-serif'>${Cost.DescrizioneCosto}</p>`+ 

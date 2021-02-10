@@ -2,56 +2,26 @@ var windowStats = require('electron').remote.getGlobal('windowStats')
 var https = require('https')
 var http = require('http')
 //const moment = require("moment")
-const pool = require('electron').remote.getGlobal('pool')
-console.log("All connections: " + pool._allConnections.length)
-console.log("Free connections: " + pool._freeConnections.length)
-console.log(pool)
+//const JwtToken = require('electron').remote.getGlobal("JwtToken")
 var path = require("path")
 const moment = require("moment")
 const { isParameter } = require('typescript')
 const { parse } = require('path')
+var Valuta = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
+//const { IterateResults } = require(path.join(__dirname,"/utilityScripts/query_graphs_expenses.js"));
 
 var UserId = require('electron').remote.getGlobal('UserId')
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
-var Valuta = ""
 var flag = true
-var Conversion = 1
 
 var StringValuta = "USD"
 
 console.log("UserId")
 console.log(UserId)
 
-
-GetValutaAsUtf8(UserId)
-function GetValutaAsUtf8(Id){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            switch(Valuta){
-                case "$":
-                    StringValuta = "USD"
-                break;
-                case "€":
-                    StringValuta = "EUR"
-                break;
-                case "£":
-                    StringValuta = "GBP"
-                break;
-            }
-            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
-                connection.release()
-                Conversion = results[0].Conversione
-            })
-        })
-    })
-}
-
-var GlobalFilter = parseInt($("#FilterDate").val())
+var GlobalFilterMonth = parseInt($("#FilterDateMonths").val())
+var GlobalFilterYear = parseInt($("#FilterDateYears").val())
 var PrimoCaricamento = true
 
 var Done = false
@@ -97,10 +67,31 @@ $(document).ready(async () => {
 })
 
 ipc.on("ReturnedSub",(event,arg) => {
-    ipc.send("RequestedMonthFilter")
+    ipc.send("RequestedFilters")
 })
-ipc.on("ReturnedMonthFilter",(event,arg) => {
+
+ipc.on("ReturnedFilters",(event,arg) => {
+    var YearFilter = arg.FilterYear
+    var MonthFilter = arg.FilterMonth
+    console.log(YearFilter)
+    console.log(MonthFilter)
     if(flag == true){
+        flag = false
+        if(YearFilter == "Lifetime"){
+            $("#FilterDateYears").val("Lifetime")
+            $("#FilterDateMonths").val("All")
+        }else{
+            $("#FilterDateYears").val(parseInt(YearFilter))
+            if(MonthFilter == "All"){
+                $("#FilterDateMonths").val("All")
+            }else{
+                $("#FilterDateMonths").val(parseInt(MonthFilter))
+            }
+        }
+        LoadStats(YearFilter,MonthFilter)        
+        ChangeLog()
+    }
+    /*if(flag == true){
         flag = false
         if(arg == "Year"){
             $("#FilterDate").val("Year")
@@ -111,37 +102,49 @@ ipc.on("ReturnedMonthFilter",(event,arg) => {
         }
         LoadStats(arg)
         ChangeLog()
-    }
+    }*/
 })
 
-async function Changed(){
-    ipc.send("StoreSavedMonthFilter",$("#FilterDate").val())
+async function ChangedYears(){
+    ipc.send("StoreSavedYearFilter",$("#FilterDateYears").val())
     location.reload()
 }
 
-async function LoadStats(Filter){
+async function ChangedMonths(){
+    ipc.send("StoreSavedMonthFilter",$("#FilterDateMonths").val())
+    location.reload()
+}
+
+async function LoadStats(FilterYear,FilterMonth){
     console.log("Funzione Load stats")
-    GlobalFilter = Filter
+    GlobalFilterYear = FilterYear
+    GlobalFilterMonth = FilterMonth
     ChangeValues()
 }
 
 function ChangeValues(){
-    ipc.send("RequestedStats",{Filter:GlobalFilter})
+    ipc.send("RequestedStats",{FilterYear:GlobalFilterYear,FilterMonth:GlobalFilterMonth})
 }
 
 ipc.on("ReturnedStats",(event,arg1) => {
     var Res = arg1
     console.log(Res)
+    var TotExpenses = IterateResults(GlobalFilterYear,GlobalFilterMonth,arg1.Expenses)
+    console.log("Expenses Totals")
+    console.log(TotExpenses)
+    var Profit = parseInt(arg1.Return - (TotExpenses.Cook + TotExpenses.Ship + TotExpenses.Custom + TotExpenses.Proxy + TotExpenses.Bot))
     $("#InventoryValue").text(Valuta + "" + parseInt(Conversion * Res.InventoryValue).toString())
     $("#InventoryValueNumber").text(Res.NumberOfItemsRetailResell + " items")
     $("#InventoryRetail").text(Valuta + "" + parseInt(Res.InventoryRetail).toString())
     $("#InventoryRetailNumber").text(Res.NumberOfItemsRetailResell + " items")
-    $("#Profit").text("Profit: " + Valuta + "" + parseInt(Res.Profit).toString())
+    $("#Profit").text("Profit: " + Valuta + "" + parseInt(Profit).toString())
     $("#Purchases").text(Valuta + "" + parseInt(Res.Purchases).toString())
     $("#PurchasesNumber").text(Res.NumberOfItemsPurchases + " items")
     $("#Sales").text(Valuta + "" + parseInt(Res.InventorySales).toString())
     $("#SalesNumber").text(Res.NumberOfItemsSold + " items")
     $("#Return").text(Valuta + "" + parseInt(Res.Return).toString())
+    $("#ProfitSold").text(Valuta + "" + parseInt(Res.ProfitSold).toString())
+    $("#ProfitSoldNumbers").text(Res.NumberOfItemsSold + " items")
 })
 
 function GetFormattedNumber(Number){
@@ -151,35 +154,36 @@ function GetFormattedNumber(Number){
 }
 
 function ChangeLog(){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT * FROM inventario WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-            if(error)console.log(error)
-            for(var i of results){
-                $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-primary text-dark","fa-list","text-primary",i.NomeProdotto,i.DataAggiunta,"Inventory"))
-            }
-            connection.query("SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC LIMIT 2",UserId,function(error,results,fields){
-                if(error)console.log(error)
-                for(var i of results){
-                    $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-success text-dark","fa-tag","text-success",i.NomeProdotto,i.DataVendita,"Sales"))
-                }
-                connection.query("SELECT * FROM spedizioni WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-                    if(error)console.log(error)
-                    for(var i of results){
-                        $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-warning text-dark","fa-truck","text-warning",i.Corriere,i.DataAggiunta,"Sales"))
-                    }
-                    connection.query("SELECT * FROM costi WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-                        console.log(results)
-                        if(error)console.log(error)
-                        for(var i of results){
-                            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-info text-dark","fa-credit-card","text-info",i.NomeSelezioneCosto,i.DataAggiunta,"Sales"))
-                        }
-                        connection.release()
-                    })
-                })
-            })
-        })
-    })
+    fetch("https://www.boringio.com:9008/GetChangeLog",{
+        method: 'POST',
+        body: "",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": JwtToken
+        },
+        referrer: 'no-referrer'
+    }).then(function (response) {
+        console.log(response.status)
+        if(response.ok){
+            return response.json()
+        } else {
+            window.alert("Something went wrong")
+        }
+    }).then(async function(data){
+        console.log(data)
+        for(var i of data.Results1){
+            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-primary text-dark","fa-list","text-primary",i.NomeProdotto,i.DataAggiunta,"Inventory"))
+        }
+        for(var i of data.Results2){
+            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-success text-dark","fa-tag","text-success",i.NomeProdotto,i.DataVendita,"Sales"))
+        }
+        for(var i of data.Results3){
+            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-warning text-dark","fa-truck","text-warning",i.Corriere,i.DataAggiunta,"Sales"))
+        }
+        for(var i of data.Results4){
+            $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-info text-dark","fa-credit-card","text-info",i.NomeSelezioneCosto,i.DataAggiunta,"Sales"))
+        }
+    }) 
 }
 
 function ChangeDate(DateToChange){

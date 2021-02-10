@@ -1,13 +1,9 @@
 var UserId = require('electron').remote.getGlobal('UserId')
-var Valuta = require('electron').remote.getGlobal('ValutaAcc')
+var Valuta = require('electron').remote.getGlobal('Valuta')
 console.log("Valuta")
 console.log(Valuta)
 console.log("Id Utente")
 console.log(UserId)
-var UtilCurr =  require(path.join(__dirname,"/currency-conversion.js"))
-
-var Currency = UtilCurr.GetCurrencyFromUTF8(Valuta)
-console.log(Currency)
 
 function SetInventoryRetailStats(ListOfItemsStockX,ListOfItemsCustom){
     var ResStockX = 0
@@ -19,7 +15,7 @@ function SetInventoryRetailStats(ListOfItemsStockX,ListOfItemsCustom){
         ResCustom += Item.PrezzoProdotto
     }
     var Res = ResCustom + ResStockX
-    document.getElementById("InventoryRetail").innerHTML = Currency + "" + Res.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
+    document.getElementById("InventoryRetail").innerHTML = Valuta + "" + Res.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 function SetInventoryValueStats(ListOfItemsStockX){
@@ -27,11 +23,10 @@ function SetInventoryValueStats(ListOfItemsStockX){
     for(var Shoe of ListOfItemsStockX){
         ResStockX += Shoe.PrezzoMedioResell
     }
-    document.getElementById("InventoryResell").innerHTML = Currency + "" + ResStockX.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
+    document.getElementById("InventoryResell").innerHTML = Valuta + "" + ResStockX.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
 }
 
 async function SetInventoryNrItemsStats(ListOfItems){
-    await GetValutaAsUtf8(UserId)
     var Res = ListOfItems.length
     document.getElementById("StockXItems").innerHTML = Res
     //$("#StockXItems").attr("data-countup",`{count":${Res},"format":"comma","prefix":""}`)

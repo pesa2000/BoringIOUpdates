@@ -5,6 +5,7 @@ var config = require('electron').remote.getGlobal('configuration')
 var connection = require('electron').remote.getGlobal('conn')
 var windowStats = require('electron').remote.getGlobal('windowStats')
 
+
 function minimize(){
     ipc.send("Minimize")
 }

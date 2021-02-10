@@ -2,8 +2,6 @@ var mysql = require("mysql");
 var moment = require("moment");
 const fs = require("fs");
 const path = require("path");
-var config = require("electron").remote.getGlobal("configuration");
-var connection = require("electron").remote.getGlobal("conn");
 const app = require("electron").remote.app
 
 var LogDirectory = app.getPath("userData")
@@ -66,8 +64,8 @@ function CreateSingleLog(Description,Action,Section,Date){
       break;
   }
 
-  return "<div class='card-body fs--1 p-0'>" +
-      "<a class='border-bottom-0 notification rounded-0 border-x-0 border border-300'>" +
+  return "<div class='card-body fs--1 p-0' style='background-color: #0A0A50 !important;'>" +
+      "<a class='border-bottom-0 notification rounded-0 border-x-0 border border-300' style='background-color: #0A0A50 !important'>" +
         "<div class='notification-avatar'>" +
           "<div class='avatar avatar-xl mr-3'>"+
             "<div class='avatar-emoji rounded-circle '><span role='img' aria-label='Emoji'>"+icon+"</span></div>" +

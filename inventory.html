@@ -98,8 +98,8 @@
     <!--    Main Content-->
     <!-- ===============================================-->
     <main class="main" id="top">
-      <div class="preloader" id = "Preloader1">
-        <div style = "position:fixed;top: 50%;left: 50%;">
+      <div class="preloader" id = "Preloader1" style="background-color: #080842;">
+        <div style = "position:fixed;top: 50%;left: 50%;background-color: #080842;">
           <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
           </div>
@@ -252,15 +252,6 @@
                     </div>
                   </a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="#">
-                    <div class="d-flex align-items-center">
-                      <span class="nav-link-icon">
-                        <span class="fas fa-code-branch"></span></span>
-                        <span class="nav-link-text">Changelog</span>
-                        <span class="badge badge-pill ml-2 badge-soft-primary">vBeta</span>
-                      </div>
-                  </a>
-                </li>
               </ul>
             </div>
           </div>
@@ -378,13 +369,13 @@
                       </div>
                     </div> <!-- / .row -->
                   </div>
-                  <div class="card mb-3 bg-200">
-                      <div style='text-align:center;display:none' id="AlertNoItem">
+                  <div class="card mb-3 bg-200" style="background-color: #080842;">
+                      <div style='text-align:center;display:none;background-color: #080842;' id="AlertNoItem">
                         <img style='height:300px' src='https://i.ibb.co/kKmwkJW/superscene-69-box-removebg-preview.png' alt=''>
                         <h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
                         <p style='margin-top: -20px;'>Start to add something</p>
                       </div>
-                        <table class="table table-borderless table-hover">
+                        <table class="table table-borderless table-hover" style="background-color: #080842;">
                           <thead class="text-900" id="TableInventory" style="display: none;">
                             <tr>
                               <th class="sort pr-1 align-middle">Name</th>
@@ -421,7 +412,7 @@
                               <div class="form-group col-2"></div>
                                 <div class="form-group col-8">
                                   <input type="text" id = "newShoe" class="btn btn-falcon-default btn-sm" placeholder="Search a product" style="width: 100%;"  oninput="SearchNewShoes();">
-                                  <div id="ShoesList" style="background-color:#132238;height: 280px;width: 100%;display: none;">
+                                  <div id="ShoesList" style="background-color:#141466;height: 280px;width: 100%;display: none;">
                                     <div style="height: 10px;"></div>
                                       <div id="Div1" style = "cursor: pointer;" class="media mb-3 hover-actions-trigger align-items-center">
                                         <input type="hidden" id="Url1" value = "">
@@ -478,7 +469,7 @@
                           <div class="form-group col-2"></div>
                           <div class="form-group col-12">
                             <div class="card mb-3">
-                              <div class="card-body">
+                              <div class="card-body" style="background-color: #080842;">
                                 <div class="row" id="ContainerSaved">
                                   <!--<div class="mb-4 col-md-6 col-lg-12" >
                                     <img class="card-img-top"/>
@@ -518,7 +509,7 @@
                     <div>
                       <h4 class="mb-0 text-white" id="authentication-modal-label">Edit image url</h4>
                     </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div><button style = "background-color: transparent;" class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body py-4 px-5">
                   <div>
@@ -545,7 +536,7 @@
                     <div>
                       <h4 class="mb-0 text-white" id="authentication-modal-label">New item custom</h4>
                     </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div><button style="background-color: transparent !important;" class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span style="background-color: transparent !important;" class="font-weight-light" aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body py-4 px-5">
                   <div>
@@ -586,7 +577,7 @@
                         <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
                         <p class="fs--1 mb-0">Edit your item</p>
                       </div>
-                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                    </div><button style="background-color: transparent !important;" class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true" style="background-color: transparent !important;">&times;</span></button>
                   </div>
                   <div class="modal-body py-4 px-5">
                     <div>
@@ -618,7 +609,7 @@
                       <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
                       <p class="fs--1 mb-0">Edit your item</p>
                     </div>
-                  </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                  </div><button style="background-color: transparent;" class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body py-4 px-5">
                   <div>
@@ -649,7 +640,7 @@
                         <h4 class="mb-0 text-white" id="authentication-modal-label">Sale item</h4>
                         <p class="fs--1 mb-0">Sales details</p>
                       </div>
-                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+                    </div><button style = "background-color: transparent !important;" class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true" style = "background-color: transparent !important;">&times;</span></button>
                   </div>
                   <div class="modal-body py-4 px-5">
                     <div>

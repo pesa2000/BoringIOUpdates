@@ -23,7 +23,7 @@ $(async function(){
 function CreateTemplateShoe(Img,Name,Date){
     return (
         `<div class="mb-4 col-md-4 col-lg-6" onclick = "VisualizeRelease('${Name}')">`+
-        "<div class='card-body' style='background-color: #132238;border-radius: 4px;cursor: pointer;'>" +
+        "<div class='card-body' style='background-color:#0A0A50 !important;border-radius: 4px;cursor: pointer;'>" +
         "<div class='row justify-content-between align-items-center'>" +
         "<div class='col'>" +
         "<div class='media'>" +

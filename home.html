@@ -14,7 +14,7 @@
     <link rel="manifest" href="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/manifest.json">
     <meta name="msapplication-TileImage" content="https://prium.github.io/falcon/v2.7.1/dark/assets/img/favicons/mstile-150x150.png">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#080842">
     <script src="https://prium.github.io/falcon/v2.7.1/dark/assets/js/config.navbar-vertical.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
     <link href="https://prium.github.io/falcon/v2.7.1/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
@@ -35,8 +35,11 @@
     </script>
   </head>
 
-  <body>
+  <body style="background-color: #080842;">
     <style>
+      body{
+        background-color: #080842;
+      }
       .dot {
         height: 10px;
         width: 10px;
@@ -140,16 +143,16 @@
     transform: translateX(-50%) translateX(-0.5rem);
 }
     </style>
-    <main class="main" id="top">
-        <div class="preloader" id = "Preloader1">
-          <div style = "position:fixed;top: 50%;left: 50%;">
+    <main class="main" id="top" style="background-color: #080842;">
+        <div class="preloader" id = "Preloader1" style="background-color: #080842;">
+          <div style = "position:fixed;top: 50%;left: 50%;" style="background-color: #080842;">
             <div class="spinner-border text-primary" role="status">
               <span class="sr-only">Loading...</span>
             </div>
           </div>
         </div>
           <div class="container-fluid" data-layout="container">
-            <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;">
+            <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;background-color: #080842;">
               <script>
                 var navbarStyle = localStorage.getItem("navbarStyle");
                 if (navbarStyle) {
@@ -160,7 +163,7 @@
                 <div class="toggle-icon-wrapper">
                   <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-toggle="tooltip" data-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
                 </div>
-                <a class="navbar-brand" href="home.html">
+                <a class="navbar-brand" href="home.html" style="background-color: #080842;">
                   <div class="d-flex align-items-center py-3">
                     <img src="img/logo-piccolo.png" alt="" width="35" style="border-radius: 50%;"/>
                     <span class="text-sans-serif" style="color: #fafafa; margin-left:10px;">boring</span>
@@ -295,24 +298,15 @@
                         </div>
                       </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#">
-                        <div class="d-flex align-items-center">
-                          <span class="nav-link-icon">
-                            <span class="fas fa-code-branch"></span></span>
-                            <span class="nav-link-text">Changelog</span>
-                            <span class="badge badge-pill ml-2 badge-soft-primary">vBeta</span>
-                          </div>
-                      </a>
-                    </li>
                   </ul>
                 </div>
               </div>
             </nav>
-            <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;">
+            <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;background-color: #080842;">
             </nav>
             <!--INZIO NAVBAR IN MODALITA' PICCOLA-->
-            <div class="content">
-              <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;-webkit-app-region: no-drag;">
+            <div class="content" style="background-color: #080842;">
+              <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;-webkit-app-region: no-drag;background-color: #080842;">
                 <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" onclick = "OpenClose()" type="button" data-toggle="collapse" data-target="navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
                 <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
                   <div class="d-flex align-items-center">
@@ -366,7 +360,7 @@
                   navbarTop.parentNode.removeChild(navbarTop);
                 }
               </script>
-        <div class="content">
+        <div class="content" style="background-color: #080842;">
           <div class="header-body">
             <div class="row align-items-end">
               <div class="col">       
@@ -385,7 +379,7 @@
             </div> <!-- / .row -->
           </div>
           <div class="card-deck">
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
               <div class="card-body position-relative">
                 <h6>Inventory Value<!--<span class="badge badge-soft-warning rounded-capsule ml-2">-0.23%</span>--></h6>
@@ -396,7 +390,7 @@
                
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-2.png');"></div>
               <div class="card-body position-relative">
                 <h6>Inventory Retail<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
@@ -407,39 +401,58 @@
                 
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-3.png');"></div>
               <div class="card-body position-relative">
                 <h6>Purchases<!--<span class="badge badge-soft-info rounded-capsule ml-2">0.0%</span>--></h6>
-                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" Id = "Purchases">0</div>
-                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning">
-                  <span class="badge badge-pill fs--2 badge-soft-warning" id="PurchasesNumber"></span>
+                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success" Id = "Purchases">0</div>
+                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success">
+                  <span class="badge badge-pill fs--2 badge-soft-success" id="PurchasesNumber"></span>
                 </div>
                 
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
-              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-3.png');"></div>
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
               <div class="card-body position-relative">
-                <h6>Sales or Return<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
-                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success" id = "Sales">0</div>
-                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-success">
-                  <span class="badge badge-pill fs--2 badge-soft-success" id="SalesNumber"></span>
+                <h6>Sales<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
+                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id = "Sales">0</div>
+                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning">
+                  <span class="badge badge-pill fs--2 badge-soft-warning" id="SalesNumber"></span>
+                </div>
+                <!--<a class="font-weight-semi-bold fs--1 text-nowrap" href="sales.html">See sales<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>-->
+              </div>
+            </div>
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-2.png');"></div>
+              <div class="card-body position-relative">
+                <h6>Profit Sold<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
+                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id = "ProfitSold">0</div>
+                <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info">
+                  <span class="badge badge-pill fs--2 badge-soft-info" id="ProfitSoldNumbers"></span>
                 </div>
                 <!--<a class="font-weight-semi-bold fs--1 text-nowrap" href="sales.html">See sales<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>-->
               </div>
             </div>
           </div>
           <div class="card-deck">
-              <div class="card mb-3" style="background-color:#002149">
-                <div class="card h-lg-100" style="background-color:#002149">
-                  <div class="card-header" style="background-color:#002149">
+              <div class="card mb-3" style="background-color: #141466;">
+                <div class="card h-lg-100" style="background-color: #141466;">
+                  <div class="card-header" style="background-color: #141466;">
                     <div class="row flex-between-center">
                       <div class="col">
                         <h4 class="text-white mb-0" id = "Profit"></h4>
                         <p class="fs--1 font-weight-semi-bold">Profit without expenses <span class="opacity-50" id="Return"></span></p>
                       </div>
-                      <div class="col-auto d-flex"><select class="custom-select custom-select-sm select-month mr-2" id="FilterDate" onchange="Changed()">
+                      <div class="col-auto d-flex"><select class="custom-select custom-select-sm select-month mr-1" id="FilterDateYears" onchange="ChangedYears()" style="background-color: #080842 !important;float: right;">
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="Lifetime">Lifetime</option>
+                      </select>
+                    </div>
+                      <div class="col-auto d-flex"><select class="custom-select custom-select-sm select-month mr-2" id="FilterDateMonths" onchange="ChangedMonths()" style="background-color: #080842 !important;float: right;">
                           <option value="1">January</option>
                           <option value="2">February</option>
                           <option value="3">March</option>
@@ -452,8 +465,7 @@
                           <option value="10">October</option>
                           <option value="11">November</option>
                           <option value="12">December</option>
-                          <option value="Year">This Year</option>
-                          <option value="Lifetime">Lifetime</option>
+                          <option value="All">All</option>
                         </select>
                       </div>
                     </div>
@@ -463,9 +475,9 @@
                  </div>
                 </div>
               </div>
-              <div class="card mb-3">
-                <div class="card h-lg-100">
-                  <div class="card-header d-flex flex-between-center">
+              <div class="card mb-3" style="background-color: #141466;">
+                <div class="card h-lg-100" style="background-color: #141466;">
+                  <div class="card-header d-flex flex-between-center" style="background-color: #141466;">
                     <h6 class="mb-0">Expenses</h6><a class="btn btn-sm btn-link pr-0 fs--1" href="expenses.html">View All</a>
                   </div>
                   <div class="card-body">
@@ -496,8 +508,8 @@
           </div>
           <div class="card-deck">
             <div class="mb-4" style="width: 100%;">
-                <div class="card h-lg-100">
-                  <div class="card-header d-flex flex-between-center bg-light py-2">
+                <div class="card h-lg-100" style="background-color: #141466;">
+                  <div class="card-header d-flex flex-between-center bg-light py-2" style="background-color: #141466 !important;">
                     <h6 class="mb-0">Activity</h6><a class="btn btn-sm btn-link pr-0 fs--1" href="log.html">Logs</a>
                   </div>
                   <div class="card-body pb-0" id="RecentActivities">
@@ -509,7 +521,7 @@
             </div>
           </div>
          </div>
-        <div class="modal fade modal-fixed-right modal-theme overflow-hidden" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal-label" aria-hidden="true">
+        <div class="modal fade modal-fixed-right modal-theme overflow-hidden" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal-label" aria-hidden="true" style="-webkit-app-region: no-drag;">
           <div class="modal-dialog modal-dialog-vertical" role="document">
             <div class="modal-content border-0 vh-100 scrollbar perfect-scrollbar">
               <div class="modal-header modal-header-settings">
@@ -578,14 +590,14 @@
           </div>
         </div>
 
-        <div class="modal modal-fixed-right fade" id="info" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-vertical" role="document">
-            <div class="modal-content border-0 min-vh-100">
-              <div class="modal-header">
+        <div style="-webkit-app-region: no-drag;" class="modal modal-fixed-right fade" id="info" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
+          <div style="-webkit-app-region: no-drag;" class="modal-dialog modal-dialog-vertical" role="document">
+            <div class="modal-content border-0 min-vh-100" style="background-color: #0A0A50;-webkit-app-region: no-drag;">
+              <div style="-webkit-app-region: no-drag;" class="modal-header">
                 <h5 class="modal-title" id="exampleModalRightLabel">Guide</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
               </div>
               <div class="card-deck">
-                <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                   <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                   <!--/.bg-holder-->
                   <div class="card-body position-relative">
@@ -595,7 +607,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                   <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                   <!--/.bg-holder-->
                   <div class="card-body position-relative">
@@ -605,7 +617,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                   <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
                   <!--/.bg-holder-->
                   <div class="card-body position-relative">
@@ -615,7 +627,7 @@
                     </p>
                   </div>
                 </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -625,7 +637,7 @@
                       </p>
                     </div>
                   </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -635,7 +647,7 @@
                       </p>
                     </div>
                   </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -646,7 +658,7 @@
                     </div>
                   </div>
 
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -655,6 +667,18 @@
                         It is the sum of the prices at which you bought the various items.</p>
                     </div>
                   </div>
+
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                    <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
+                    <!--/.bg-holder-->
+                    <div class="card-body position-relative">
+                      <h5>Profit Sold(New)</h5>
+                      <p>
+                        The sum of the profit of each sold shoes.</p>
+                    </div>
+                  </div>
+
+
                 </div>
             </div>
           </div>

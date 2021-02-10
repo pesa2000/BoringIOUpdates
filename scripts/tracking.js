@@ -4,6 +4,8 @@ const { SSL_OP_NETSCAPE_CHALLENGE_BUG } = require('constants')
 var config = require('electron').remote.getGlobal('configuration')
 var UserId = require('electron').remote.getGlobal('UserId')
 var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var Currency = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
 
 window.setInterval(CheckConnection,5000)
 
