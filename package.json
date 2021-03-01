@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-packager ./ --overwrite --platform=all --arch=x64 --out ./builds --overwrite --icon=./icon.ico",
-    "deploy": "electron-builder --publish never"
+    "deploy": "electron-builder --publish always"
   },
   "build": {
     "appId": "org.electron.Pesa2000",
