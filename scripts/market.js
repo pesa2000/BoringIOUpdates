@@ -36,17 +36,17 @@ function FlipDateAndChange(DateToChange){
 function SelectedShoesNr(Index){
     var SelectedShoes = GlobalProducts[Index]
     GlobalIndex = Index
-    $("#imageProd").attr("src",SelectedShoes.media.imageUrl)
+    $("#imageProd").attr("src",SelectedShoes.image)
     $("#nameProd").text(SelectedShoes.name)
     CreateLog(`Searched a pair of ${SelectedShoes.name}`,"Market","Search",moment().format('MMMM Do YYYY, h:mm:ss a'))
     console.log("Debug Market")
     console.log(SelectedShoes)
-    var RetailPrice = SelectedShoes.price
-    $("#UrlToHide").val("https://stockx.com/"+SelectedShoes.url)
+    var RetailPrice = SelectedShoes.retail
+    $("#UrlToHide").val("https://stockx.com/"+SelectedShoes.urlKey)
     $("#dateProd").text(FlipDateAndChange(SelectedShoes.release_date))
     $("#prodRetail").text("Retail: " + Currency + "" + RetailPrice)
     $("#prodSold").text("Tot.Sold: " + SelectedShoes.deadstock_sold)
-    ipc.send("RequestedShoeDetails",{Prod: SelectedShoes.url,Index: "Market"})
+    ipc.send("RequestedShoeDetails",{Prod: SelectedShoes.urlKey,Index: "Market"})
 }
 
 ipc.on("ReturnedProductDetails", async(event,arg) => {
@@ -89,7 +89,7 @@ function CreateTemplateVariant(Variant){
 function createTemplateResearch(Prods,Index){
     return "<div class='media' style='padding-top:10px;cursor: pointer;' onclick = 'SelectedShoesNr("+ Index +")'>" +
     "<div class='mr-2'> " +
-        "<img src='"+Prods[Index].media.imageUrl+"' style='width: 64px;border-radius: .25rem !important;margin-left: 5px;'>"+
+        "<img src='"+Prods[Index].image+"' style='width: 64px;border-radius: .25rem !important;margin-left: 5px;'>"+
     "</div>" +
     "<div class='media-body fs--1'>" +
         "<h6 class='fs-0'>" +Prods[Index].name+ "&nbsp&nbsp</h6><br>" +

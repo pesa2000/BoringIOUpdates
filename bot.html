@@ -343,6 +343,11 @@
                               <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
                             </span>
                           </button>
+                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #f1743f !important;color: #fff;" type="button" id="ExportButton">
+                            <span data-toggle="tooltip" data-placement="top" title="Export your bots">
+                            <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
+                            </span>
+                          </button>
                           <input type="text" id = "Filter" style="display:none;" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
                         </span>
                       </div>
@@ -373,14 +378,6 @@
                   <div class="modal fade" id="bot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
                     <div class="modal-dialog mt-6" role="document">
                       <div class="modal-content border-0">
-                        <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                          <div class="position-relative z-index-1">
-                            <div>
-                              <h4 class="mb-0 text-white" id="authentication-modal-label">New Bot</h4>
-                              <p class="fs--1 mb-0">Search your bot or write it</p>
-                            </div>
-                          </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                        </div>
                         <div class="modal-body py-4 px-5">
                           <div>
                             <div class="form-row">
@@ -458,14 +455,6 @@
             <div class="modal fade" id="editBot" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
               <div class="modal-dialog mt-6" role="document">
                 <div class="modal-content border-0">
-                  <div class="modal-header px-5 text-white position-relative modal-shape-header">
-                    <div class="position-relative z-index-1">
-                      <div>
-                        <h4 class="mb-0 text-white" id="authentication-modal-label">Edit item</h4>
-                        <p class="fs--1 mb-0">Edit your item</p>
-                      </div>
-                    </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                  </div>
                   <div class="modal-body py-4 px-5">
                     <div>
                       <div class="form-row">
@@ -485,41 +474,38 @@
   
             <div class="modal modal-fixed-right fade" id="stats" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-vertical" role="document">
-                <div class="modal-content border-0 min-vh-100">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalRightLabel">Statistics</h5><button class="close" type="button" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
-                  </div>
+                <div class="modal-content border-0 min-vh-100" style="background-color: #080842 !important;">
                   <div class="card-deck">
-                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                         <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                         <!--/.bg-holder-->
                         <div class="card-body position-relative">
                           <h6>Bots Purchases</h6>
-                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning" id="BotsPurchases"></div>
+                          <div class="display-4 mb-2 font-weight-normal text-sans-serif text-warning" id="BotsPurchases" style="font-size: 30px !important;"></div>
                         </div>
                       </div>
-                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                         <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                         <!--/.bg-holder-->
                         <div class="card-body position-relative">
                           <h6>Bots Sold</h6>
-                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="BotsSold"></div>
+                          <div class="display-4 mb-2 font-weight-normal text-sans-serif text-info" id="BotsSold" style="font-size: 30px !important;"></div>
                         </div>
                       </div>
-                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                         <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                         <!--/.bg-holder-->
                         <div class="card-body position-relative">
                           <h6>Bots Profit</h6>
-                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info" id="ProfitBots"></div>
+                          <div class="display-4 mb-2 font-weight-normal text-sans-serif text-info" id="ProfitBots" style="font-size: 30px !important;"></div>
                         </div>
                       </div>
-                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
+                      <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
                         <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
                         <!--/.bg-holder-->
                         <div class="card-body position-relative">
                           <h6>Number of Bots</h6>
-                          <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-items" id="NumberOfBots"></div>
+                          <div class="display-4  mb-2 font-weight-normal text-sans-serif text-items" id="NumberOfBots" style="font-size: 30px !important;"></div>
                         </div>
                       </div>
                     </div>

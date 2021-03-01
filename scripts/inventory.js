@@ -62,7 +62,7 @@ function sleep(ms) {
     catch(err){
       console.log(err)
     }
-  }
+}
 
 SwitchAlert()
 
@@ -355,12 +355,12 @@ function PrintSearchedProducts(Products){
     GlobalProducts = Products
     var c = 1
     for(var Prod of Products){
-        $("#Img" + c).attr("src",Prod.media.imageUrl)
+        $("#Img" + c).attr("src",Prod.image)
         $("#Name" + c).text(Prod.name)
         $("#Div" + c).show()
         console.log(Prod.name)
-        console.log(Prod.url)
-        Urls[c] = Prod.url
+        console.log(Prod.urlKey)
+        Urls[c] = Prod.urlKey
         c+=1
     }
     $("#Div1").on("click",() => {LoadShoesModal(Urls[1])})
@@ -543,28 +543,28 @@ var LoadShoesModal = function(SelectedUrl){
         Selected = true
         ipc.send("RequestedShoeDetails",{Prod: ProductChosen,Index: ContSaved})
         var SelectedProd = GlobalProducts.filter(function(prod){
-            return prod.url == ProductChosen
+            return prod.urlKey == ProductChosen
         })
         console.log("Selected product")
         console.log(SelectedProd[0])
         var ShoeToSave
         //alert(ContSaved)
-        if(SelectedProd[0].release_date == null || SelectedProd[0].release_date == undefined){
-            SelectedProd[0].release_date = GetTodaysDateSlashFormat()
-            ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].media.imageUrl,SelectedProd[0].name,SelectedProd[0].searchable_traits["Retail Price"],SelectedProd[0].release_date,ContSaved)
+        if(SelectedProd[0].releaseDate == null || SelectedProd[0].releaseDate == undefined){
+            SelectedProd[0].releaseDate = GetTodaysDateSlashFormat()
+            ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].image,SelectedProd[0].name,SelectedProd[0].retail,SelectedProd[0].releaseDate,ContSaved)
             $("#ContainerSaved").append(ShoeToSave)
             $("#prodDate"+ContSaved).val(GetTodaysDateSlashFormat())
         }else{
-            ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].media.imageUrl,SelectedProd[0].name,SelectedProd[0].searchable_traits["Retail Price"],FlipDate(SelectedProd[0].release_date),ContSaved)
+            ShoeToSave = SingleSavedShoe(SelectedUrl,SelectedProd[0].image,SelectedProd[0].name,SelectedProd[0].retail,FlipDate(SelectedProd[0].releaseDate),ContSaved)
             $("#ContainerSaved").append(ShoeToSave)
-            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
+            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].releaseDate))
         }
         $("#Save"+ContSaved).hide()
-        var Price = SelectedProd[0].searchable_traits["Retail Price"]
+        var Price = SelectedProd[0].retail
         if(Price == undefined || Price == null || Price == "undefined"){
             $("#prodPrice"+ContSaved).val(0)  
         }else{
-            $("#prodPrice"+ContSaved).val(SelectedProd[0].searchable_traits["Retail Price"])  
+            $("#prodPrice"+ContSaved).val(SelectedProd[0].retail)  
         }
         $("#prodSite"+ContSaved).val("No site")
         $("#NameSingle"+ContSaved).val(SelectedProd[0].name)

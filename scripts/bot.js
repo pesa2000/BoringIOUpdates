@@ -38,10 +38,11 @@ async function LoadBots(){
         window.alert("Something went wrong")
       }
   }).then(async function(data){
-      $("#BotsPurchases").text(Currency + " " + data.Results3.Acquisti)
-      $("#BotsSold").text(Currency + " " + data.Results3.Vendite)
-      $("#NumberOfBots").text(data.Results3.Conteggio)
-      $("#ProfitBots").text(Currency + " " + (data.Results3.Vendite - data.Results3.Acquisti))
+      console.log(data)
+      $("#BotsPurchases").text(Currency + " " + data.Results3[0].Acquisti)
+      $("#BotsSold").text(Currency + " " + data.Results3[0].Vendite)
+      $("#NumberOfBots").text(data.Results3[0].Conteggio)
+      $("#ProfitBots").text(Currency + " " + (data.Results3[0].Vendite - data.Results3[0].Acquisti))
       BotsList = data.Results2
       for(var Bot of data.Results2){
         var Element = SingleTemplateBot(Bot.BrandBot,Bot.ImmagineBot,Bot.PrezzoComprato,Bot.PrezzoVenduto,Bot.Note,Bot.IdBot)
@@ -202,4 +203,14 @@ function DeleteBot(IdBot){
   }).then(async function(data){
 
   })
+}
+
+
+document.getElementById("ExportButton").addEventListener("click",() => {
+  ExportBots()
+})
+
+function ExportBots(){
+  console.log("Exporting")
+  ipc.send("RequestedExportBots")
 }

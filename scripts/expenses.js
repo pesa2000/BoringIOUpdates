@@ -544,3 +544,12 @@ function CreateLog(Mess,Sec,Act,DateTime){
   }
   ipc.send("CreateLog",ObjTosend)
 }
+
+document.getElementById("ExportButton").addEventListener("click",() => {
+  ExportExpenses()
+})
+
+function ExportExpenses(){
+  console.log("Exporting")
+  ipc.send("RequestedExportExpenses")
+}

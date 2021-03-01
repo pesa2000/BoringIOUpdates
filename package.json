@@ -2,11 +2,11 @@
   "name": "BoringIO",
   "version": "1.4.0",
   "description": "First official release with AutoUpdater",
-  "main": "login/main.js",
+  "main": "login/mainCopy.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-packager ./ --overwrite --platform=all --arch=x64 --out ./builds --overwrite --icon=./icon.ico",
-    "deploy": "electron-builder --publish always"
+    "deploy": "electron-builder --publish never"
   },
   "build": {
     "appId": "org.electron.Pesa2000",

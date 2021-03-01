@@ -91,18 +91,6 @@ ipc.on("ReturnedFilters",(event,arg) => {
         LoadStats(YearFilter,MonthFilter)        
         ChangeLog()
     }
-    /*if(flag == true){
-        flag = false
-        if(arg == "Year"){
-            $("#FilterDate").val("Year")
-        }else if(arg == "Lifetime"){
-            $("#FilterDate").val("Lifetime")
-        }else{
-            $("#FilterDate").val(parseInt(arg))
-        }
-        LoadStats(arg)
-        ChangeLog()
-    }*/
 })
 
 async function ChangedYears(){
