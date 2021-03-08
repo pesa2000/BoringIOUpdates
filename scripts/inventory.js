@@ -12,6 +12,22 @@ var Valuta = require('electron').remote.getGlobal('Valuta')
 var Conversion = require('electron').remote.getGlobal('Conversion')
 var ContSaved = 0
 
+ipc.send("OpenStockXPage")
+
+ipc.on("ReturnedUrl",(event,arg) => {
+    console.log(arg.Url)
+    var Name = arg.Url.split(".com/")[1].replace("-"," ")
+    console.log(Name)
+    var UrlKey = arg.Url.split(".com/")[1]
+    console.log(UrlKey)
+
+
+
+    /*var Image = `https://stockx-360.imgix.net/adidas-Yeezy-Boost-350-V2-Core-Black-Red-2017/Images/adidas-Yeezy-Boost-350-V2-Core-Black-Red-2017/Lv2/img19.jpg?auto=format,compress&w=559&q=90&dpr=2&updated_at=1606320792`
+    var Image = `https://stockx-360.imgix.net/${UrlKey}/Images/${UrlKey}/Lv2/img01.jpg`*/
+    console.log(Image)
+})
+
 var Urls = []
 
 var Selected = false
