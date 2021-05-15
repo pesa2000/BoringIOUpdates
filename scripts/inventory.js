@@ -44,33 +44,6 @@ var Flag = false
 console.log("User attached") 
 console.log(UserAttachedInventory)
 
-/*function GetValutaAsUtf8(Id){
-    return new Promise((resolve,reject) => {
-        fetch("https://www.boringio.com:9004/GetCurrencyAndConversion",{
-            method: 'POST',
-            body: "",
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": JwtToken
-            },
-            referrer: 'no-referrer'
-        }).then(function (response) {
-            console.log(response.status)
-            if(response.ok){
-              return response.json()
-            } else {
-              window.alert("Something went wrong")
-            }
-        }).then(async function(data){
-            console.log(data)
-            Valuta = data.Symbol
-            Conversion = data.Conversion
-            resolve()
-        })  
-    })
-}*/
-
-
 function sleep(ms) {
     try{
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -225,8 +198,8 @@ function ChangedImg(){
 }
 
 function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
-    console.log("FOTO PORCCODIO")
-    console.log(Photo)
+    /*console.log("FOTO PORCCODIO")
+    console.log(Photo)*/
     if(Photo == "" || Photo == null){Photo = "img/InvEmpty.jpeg"}
     if(Site == ""){Site = "No Site"}
     if(UserAttachedInventory != null){
@@ -348,7 +321,7 @@ function GenerateRandomNumber(min, max) { // min and max included
   }
 
 ipc.on("ReturnedProducts",async (event,arg) => {
-    console.log(arg)
+    //console.log(arg)
     PrintSearchedProducts(arg)
 })
 
@@ -356,7 +329,7 @@ ipc.on("ReturnedProductDetailsServer", async(event,arg) => {
     arg = JSON.parse(arg)
     windowStats.webContents.send("fillVariantStats",arg)
     for(var Variant of arg.variants){
-        console.log(Variant)
+        //console.log(Variant)
         document.getElementById("prodSize").innerHTML += "<option value = '"+Variant.market.averageDeadstockPrice+"'>"+Variant.size+"</option>"
     }
 })
@@ -374,8 +347,8 @@ function PrintSearchedProducts(Products){
         $("#Img" + c).attr("src",Prod.image)
         $("#Name" + c).text(Prod.name)
         $("#Div" + c).show()
-        console.log(Prod.name)
-        console.log(Prod.urlKey)
+        /*console.log(Prod.name)
+        console.log(Prod.urlKey)*/
         Urls[c] = Prod.urlKey
         c+=1
     }
@@ -656,6 +629,10 @@ function ReturnObjectFromList(Id){
 }
 
 function Populate(){
+    console.time("prova")
+    var a = []
+    var b = []
+    var i = 0
     var Inventario = document.getElementById("Inventory")
     Inventario.innerHTML = ""
     if(ShoesList.length == 0 && CustomList.length == 0){
@@ -665,37 +642,22 @@ function Populate(){
     }else{
         document.getElementById("TableInventory").style.display = "table-header-group"
         for(var Shoe of ShoesList){
+            console.log(i)
+            i += 1
             var NewDate = FlipDateAndChange(Shoe.ReleaseDate)
             var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto,Shoe.UrlKey)
-            $("#Inventory").append(Shoe)
+            a.push(Shoe);
         }
         for(var CustomObj of CustomList){
+            console.log(i)
+            i += 1
             var NewDate = FlipDateAndChange(CustomObj.ReleaseDate)
             var Custom = TemplateShoeCustom(CustomObj.IdProdotto,CustomObj.NomeProdotto,NewDate,CustomObj.Sito,CustomObj.PrezzoProdotto,CustomObj.Taglia,CustomObj.ImmagineProdotto)
-            $("#Inventory").append(Custom)    
+            b.push(Custom)
         }
+        document.getElementById("Inventory").innerHTML = a.join("") +""+ b.join("") 
         $("#Preloader1").css("display","none")
     }
-}
-
-
-function PopulateTable(){
-    var Inventario = document.getElementById("Inventory")
-    Inventario.innerHTML = ""
-    for(var Shoe of ShoesList){
-        var NewDate = FlipDateAndChange(Shoe.ReleaseDate)
-        var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto,Shoe.UrlKey)
-        $("#Inventory").append(Shoe)    
-    }
-    //$("#Preloader1").css("display","none")
-}
-function PopulateTableCustom(){
-    for(var CustomObj of CustomList){
-        var NewDate = FlipDateAndChange(CustomObj.ReleaseDate)
-        var Custom = TemplateShoeCustom(CustomObj.IdProdotto,CustomObj.NomeProdotto,NewDate,CustomObj.Sito,CustomObj.PrezzoProdotto,CustomObj.Taglia,CustomObj.ImmagineProdotto)
-        $("#Inventory").append(Custom)    
-    }
-    $("#Preloader1").css("display","none")
 }
 
 function getRndInteger() {

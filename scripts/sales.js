@@ -142,6 +142,8 @@ async function LoadSales(){
 }
 
 function LoadAll(){
+    var a = []
+    var b = []
     console.log("Carico tutto")
     if(SalesList.length == 0 && SalesListCustom.length == 0){
         console.log("Liste vuote")
@@ -166,7 +168,8 @@ function LoadAll(){
             Sale.PrezzoVendita,
             Sale.Compratore,
             Sale.Taglia)
-            $("#SalesTable").append(Sold)
+            a.push(Sold)
+            //$("#SalesTable").append(Sold)
         }
         for(var SaleCustom of SalesListCustom){
             var SoldCustom = TemplateSingleSaleCustom(
@@ -181,8 +184,10 @@ function LoadAll(){
                 SaleCustom.PrezzoVendita,
                 SaleCustom.Compratore,
                 SaleCustom.Taglia)
-            $("#SalesTable").append(SoldCustom)
+            b.push(SoldCustom)
+            //$("#SalesTable").append(SoldCustom)
         }
+        document.getElementById("SalesTable").innerHTML = a.join("") + "" + b.join("")
     }
 }
 

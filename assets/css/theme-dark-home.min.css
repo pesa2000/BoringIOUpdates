@@ -83,13 +83,14 @@
 }
 
 html {
+    width:100%;
     font-family: sans-serif;
     line-height: 1.15;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0)
 }
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 0px;
 }
 
 /* Track */
@@ -121,6 +122,7 @@ section {
 }
 
 body {
+    width: 100%;
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
     -ms-user-select: none;
@@ -132,7 +134,11 @@ body {
     line-height: 1.5;
     color: #9da9bb;
     text-align: left;
-    background-color: #080842;
+    background-image: url('../../img/easybg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    overflow-x: hidden;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -16265,7 +16271,7 @@ label {
 
 .navbar-glass,
 .navbar-vertical .navbar-collapse {
-    background-color: #080842;
+    background-color: transparent;
     width: 100%;
 }
 
@@ -17094,7 +17100,8 @@ label {
 @media (max-width:1199.98px) {
     .navbar-vertical.navbar-expand-xl {
         margin-left: -15px;
-        margin-right: -15px
+        margin-right: -15px;
+        background-color: #111636 !important;
     }
     .navbar-vertical.navbar-expand-xl+.content .navbar-top .navbar-toggler {
         display: -webkit-box;

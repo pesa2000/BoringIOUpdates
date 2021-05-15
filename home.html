@@ -35,11 +35,8 @@
     </script>
   </head>
 
-  <body style="background-color: #080842;">
+  <body>
     <style>
-      body{
-        background-color: #080842;
-      }
       .dot {
         height: 10px;
         width: 10px;
@@ -143,16 +140,16 @@
     transform: translateX(-50%) translateX(-0.5rem);
 }
     </style>
-    <main class="main" id="top" style="background-color: #080842;">
-        <div class="preloader" id = "Preloader1" style="background-color: #080842;">
-          <div style = "position:fixed;top: 50%;left: 50%;" style="background-color: #080842;">
+    <main class="main" id="top" style="background-color:transparent;">
+        <div class="preloader" id = "Preloader1" style="background-color: transparent;">
+          <div style = "position:fixed;top: 50%;left: 50%;" style="background-color: transparent;">
             <div class="spinner-border text-primary" role="status">
               <span class="sr-only">Loading...</span>
             </div>
           </div>
         </div>
           <div class="container-fluid" data-layout="container">
-            <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;background-color: #080842;">
+            <nav class="navbar navbar-vertical navbar-expand-xl navbar-light" style="display:none;background-color: transparent;">
               <script>
                 var navbarStyle = localStorage.getItem("navbarStyle");
                 if (navbarStyle) {
@@ -163,7 +160,7 @@
                 <div class="toggle-icon-wrapper">
                   <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-toggle="tooltip" data-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
                 </div>
-                <a class="navbar-brand" href="home.html" style="background-color: #080842;">
+                <a class="navbar-brand" href="home.html" style="background-color: transparent;">
                   <div class="d-flex align-items-center py-3">
                     <img src="img/logo-piccolo.png" alt="" width="35" style="border-radius: 50%;"/>
                     <span class="text-sans-serif" style="color: #fafafa; margin-left:10px;">boring</span>
@@ -302,11 +299,11 @@
                 </div>
               </div>
             </nav>
-            <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;background-color: #080842;">
+            <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand-lg" style="display:none;background-color: transparent;">
             </nav>
             <!--INZIO NAVBAR IN MODALITA' PICCOLA-->
-            <div class="content" style="background-color: #080842;">
-              <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;-webkit-app-region: no-drag;background-color: #080842;">
+            <div class="content" style="background-color: transparent;">
+              <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand" style="display:none;-webkit-app-region: no-drag;background-color: transparent;">
                 <button style ="-webkit-app-region: no-drag;" class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" id="btnCloseNav" onclick = "OpenClose()" type="button" data-toggle="collapse" data-target="navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
                 <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
                   <div class="d-flex align-items-center">
@@ -360,7 +357,7 @@
                   navbarTop.parentNode.removeChild(navbarTop);
                 }
               </script>
-        <div class="content" style="background-color: #080842;">
+        <div class="content" style="background-color: transparent;">
           <div class="header-body">
             <div class="row align-items-end">
               <div class="col">       
@@ -379,7 +376,7 @@
             </div> <!-- / .row -->
           </div>
           <div class="card-deck">
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #111636;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
               <div class="card-body position-relative">
                 <h6>Inventory Value<!--<span class="badge badge-soft-warning rounded-capsule ml-2">-0.23%</span>--></h6>
@@ -390,7 +387,7 @@
                
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #111636;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-2.png');"></div>
               <div class="card-body position-relative">
                 <h6>Inventory Retail<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
@@ -401,7 +398,7 @@
                 
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #111636;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-3.png');"></div>
               <div class="card-body position-relative">
                 <h6>Purchases<!--<span class="badge badge-soft-info rounded-capsule ml-2">0.0%</span>--></h6>
@@ -412,7 +409,7 @@
                 
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #111636;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-1.png');"></div>
               <div class="card-body position-relative">
                 <h6>Sales<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
@@ -423,7 +420,7 @@
                 <!--<a class="font-weight-semi-bold fs--1 text-nowrap" href="sales.html">See sales<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>-->
               </div>
             </div>
-            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #141466;">
+            <div class="card mb-3 overflow-hidden" style="min-width: 12rem;background-color: #111636;">
               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustrations/corner-2.png');"></div>
               <div class="card-body position-relative">
                 <h6>Profit Sold<!--<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span>--></h6>
@@ -436,9 +433,9 @@
             </div>
           </div>
           <div class="card-deck">
-              <div class="card mb-3" style="background-color: #141466;">
-                <div class="card h-lg-100" style="background-color: #141466;">
-                  <div class="card-header" style="background-color: #141466;">
+              <div class="card mb-3" style="background-color: #111636;">
+                <div class="card h-lg-100" style="background-color: transparent;">
+                  <div class="card-header" style="background-color: transparent;">
                     <div class="row flex-between-center">
                       <div class="col">
                         <h4 class="text-white mb-0" id = "Profit"></h4>
@@ -475,9 +472,9 @@
                  </div>
                 </div>
               </div>
-              <div class="card mb-3" style="background-color: #141466;">
-                <div class="card h-lg-100" style="background-color: #141466;">
-                  <div class="card-header d-flex flex-between-center" style="background-color: #141466;">
+              <div class="card mb-3" style="background-color: #111636;">
+                <div class="card h-lg-100" style="background-color: #111636;">
+                  <div class="card-header d-flex flex-between-center" style="background-color: #111636;">
                     <h6 class="mb-0">Expenses</h6><a class="btn btn-sm btn-link pr-0 fs--1" href="expenses.html">View All</a>
                   </div>
                   <div class="card-body">
@@ -508,8 +505,8 @@
           </div>
           <div class="card-deck">
             <div class="mb-4" style="width: 100%;">
-                <div class="card h-lg-100" style="background-color: #141466;">
-                  <div class="card-header d-flex flex-between-center bg-light py-2" style="background-color: #141466 !important;">
+                <div class="card h-lg-100" style="background-color: #111636;">
+                  <div class="card-header d-flex flex-between-center bg-light py-2" style="background-color: #111636 !important;">
                     <h6 class="mb-0">Activity</h6><a class="btn btn-sm btn-link pr-0 fs--1" href="log.html">Logs</a>
                   </div>
                   <div class="card-body pb-0" id="RecentActivities">
@@ -592,9 +589,9 @@
 
         <div style="-webkit-app-region: no-drag;" class="modal modal-fixed-right fade" id="info" tabindex="-1" role="dialog" aria-labelledby="exampleModalRightLabel" aria-hidden="true">
           <div style="-webkit-app-region: no-drag;" class="modal-dialog modal-dialog-vertical" role="document">
-            <div class="modal-content border-0 min-vh-100" style="background-color: #0A0A50;-webkit-app-region: no-drag;">
+            <div class="modal-content border-0 min-vh-100" style="background-color: transparent;-webkit-app-region: no-drag;">
               <div class="card-deck">
-                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                   <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                   <!--/.bg-holder-->
                   <div class="card-body position-relative">
@@ -604,7 +601,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                   <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                   <!--/.bg-holder-->
                   <div class="card-body position-relative">
@@ -614,7 +611,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                   <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
                   <!--/.bg-holder-->
                   <div class="card-body position-relative">
@@ -624,7 +621,7 @@
                     </p>
                   </div>
                 </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -634,7 +631,7 @@
                       </p>
                     </div>
                   </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-2.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -644,7 +641,7 @@
                       </p>
                     </div>
                   </div>
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636 !important;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-3.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -655,7 +652,7 @@
                     </div>
                   </div>
 
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">
@@ -665,7 +662,7 @@
                     </div>
                   </div>
 
-                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #141466;">
+                  <div class="card mb-3 overflow-hidden" style="min-width: 12rem; background-color: #111636;">
                     <div class="bg-holder bg-card" style="background-image:url(assets/img/illustrations/corner-1.png);"></div>
                     <!--/.bg-holder-->
                     <div class="card-body position-relative">

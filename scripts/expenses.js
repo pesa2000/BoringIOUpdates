@@ -191,7 +191,7 @@ function CreateCard(Cost){
   }
 
   return "<div class='kanban-item'>" +
-  "<div class='card kanban-item-card hover-actions-trigger' data-toggle='modal' data-target='#kanban-modal-1' style='background-color:#0A0A50 !important;'>" +
+  "<div class='card kanban-item-card hover-actions-trigger' data-toggle='modal' data-target='#kanban-modal-1' style='background-color:#111636 !important;'>" +
     "<div class='card-body position-relative'>" +
       `<div class='mb-2'><span class='badge d-inline-block py-1 mr-1 mb-1 badge-soft-success'>Date: ${FlipDateAndChange(Cost.DataCosto)}</span><span class='badge d-inline-block py-1 mr-1 mb-1 badge-soft-primary'>Price: ${Cost.PrezzoCosto + " " + Currency} </span></div>`+
       `<p class='mb-0 font-weight-medium text-sans-serif'>${Cost.DescrizioneCosto}</p>`+ 

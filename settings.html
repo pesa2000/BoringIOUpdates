@@ -239,9 +239,9 @@
               navbarTop.parentNode.removeChild(navbarTop);
             }
           </script>
-          <div class="card mb-3" id="Content" style="display: none;background-color: #0A0A50 !important;">
-            <div class="card mb-3" style="background-color: #0A0A50 !important;">
-              <div class="card-header position-relative min-vh-25 mb-7" style="background-color: #0A0A50 !important">
+          <div class="card mb-3" id="Content" style="display: none;background-color: #111636 !important;">
+            <div class="card mb-3" style="background-color: #111636 !important;">
+              <div class="card-header position-relative min-vh-25 mb-7" style="background-color: #111636 !important">
                 <div class="bg-holder rounded-soft rounded-bottom-0" style="background-image:url('img/Sfondo.jpg');"></div>
                 <div class="avatar avatar-5xl avatar-profile"><img class="rounded-circle img-thumbnail shadow-sm" id="ImmagineProfilo" src="" width="200" alt="" /></div>
               </div>
@@ -254,16 +254,16 @@
                   <hr class="border-dashed my-4 d-lg-none"/>
                 </div>
                 <div class="col pl-2 pl-lg-3">
-                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;">
-                    <select class="form-control" id = "SelectCurrency" onchange="changeCurrency()">
+                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;background-color:  #080842 !important;">
+                    <select class="form-control" id = "SelectCurrency" onchange="changeCurrency()" style="background-color: #080842 !important">
                       <option selected disabled>Currency</option>
                       <option value="EUROS">Euros</option>
                       <option value="DOLLARS">Dollars</option>
                       <option value="POUNDS">Pounds</option>
                     </select>
                   </a>
-                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none;">
-                    <select class="form-control" id = "SelectLanguage" onchange="changeLanguage()">
+                  <a class="media align-items-center mb-2" style="text-decoration: none;outline: none; background-color: #080842 !important;">
+                    <select class="form-control" id = "SelectLanguage" onchange="changeLanguage()" style="background-color: #080842 !important">
                       <option selected disabled>Language</option>
                       <option value="EN">English</option>
                       <option value="IT" disabled>Italian(coming soon)</option>
@@ -277,11 +277,11 @@
             </div>
           </div>
 
-          <div class="card" style = "margin-top: 30px;background-color: #0A0A50;">
-            <div class="card-header" style="background-color: #0A0A50;">
+          <div class="card" style = "margin-top: 30px;background-color: #111636 !important;">
+            <div class="card-header" style="background-color: #111636 !important;">
               <h5 class="mb-0">Change logs (01/03/2021)</h5>
             </div>
-            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#0A0A50">
+            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#111636 !important">
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">Fix</span></div>
                 <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">StockX api fixed</code></div>
@@ -290,7 +290,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#0A0A50">
+            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#111636 !important">
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
                 <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Added expenses export</code></div>
@@ -299,7 +299,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#0A0A50">
+            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#111636 !important">
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">New</span></div>
                 <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Added bots export</code></div>
@@ -308,7 +308,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#0A0A50">
+            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#111636 !important">
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">Fix</span></div>
                 <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Fixed minor errors while exporting</code></div>
@@ -317,7 +317,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#0A0A50">
+            <div class="card-body border-top p-0" id="SubscriptionInfo" style="background-color:#111636 !important">
               <div class="row no-gutters align-items-center border-bottom py-2 px-3">
                 <div class="col-md-auto pr-3"><span class="badge badge-soft-success badge-pill" name="BadgeUp">Fix</span></div>
                 <div class="col-md mt-1 mt-md-0"><code name = "Update" style="color: whitesmoke;">Fixed stats in the bots section</code></div>
@@ -326,7 +326,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-footer bg-light p-0" style="background-color: #0A0A50;"><a class="btn btn-link btn-block" style="background-color: #0A0A50;"></a></div>
+            <div class="card-footer bg-light p-0" style="background-color: #111636 !important;"><a class="btn btn-link btn-block" style="background-color: #111636 !important;"></a></div>
           </div>
           <footer>
           </footer>

@@ -23,7 +23,7 @@ $(async function(){
 function CreateTemplateShoe(Img,Name,Date){
     return (
         `<div class="mb-4 col-md-4 col-lg-6" onclick = "VisualizeRelease('${Name}')">`+
-        "<div class='card-body' style='background-color:#0A0A50 !important;border-radius: 4px;cursor: pointer;'>" +
+        "<div class='card-body' style='background-color:#111636 !important;border-radius: 4px;cursor: pointer;'>" +
         "<div class='row justify-content-between align-items-center'>" +
         "<div class='col'>" +
         "<div class='media'>" +
@@ -121,7 +121,7 @@ function CreateWindow(Type){
 
 function CreateTemplateSite(UrlSite,ImgSite,NameSite,Description){
     return (`<a onclick="CreateWindow('${UrlSite}')">` +
-    `<div class='media mb-3 hover-actions-trigger align-items-center' style='background-color: #203859;padding: 8px;border-radius: 4px;'>` +
+    `<div class='media mb-3 hover-actions-trigger align-items-center' style='background-color: #111636 !important;padding: 8px;border-radius: 4px;'>` +
     `<div class='file-thumbnail'><img class='img-fluid' width = "80" src='${ImgSite}'/></div>` +
     `<div class='media-body ml-3'>` +
     `<h6 class='mb-1'>${NameSite}</h6>` +
